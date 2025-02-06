@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json", // Extend the root tsconfig.json
+  "compilerOptions": {
+    "outDir": "./dist/gateway-service" // Service-specific output directory
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/app.ts",
+    "../server.ts",
+    "src/express.d.ts"  
+  ]
+}

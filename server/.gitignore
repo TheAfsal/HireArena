@@ -1,0 +1,9 @@
+/node_modules
+
+/gateway-service/node_modules
+/gateway-service/.env
+
+/user-service/node_modules
+/user-service/.env
+/a.rest
+

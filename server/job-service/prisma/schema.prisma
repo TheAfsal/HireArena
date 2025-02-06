@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  REMOTE
+  INTERNSHIP
+}
+
+enum JobCategory {
+  ENGINEERING
+  DESIGN
+  MARKETING
+  HR
+  SALES
+}
+
+enum Skill {
+  JAVASCRIPT
+  REACT
+  NODEJS
+  PYTHON
+  JAVA
+}
+
+model Job {
+  id               String   @id @default(uuid())
+  jobTitle         String
+  salaryMin        Int
+  salaryMax        Int
+  jobDescription   String
+  responsibilities String
+  qualifications   String
+  niceToHave       String?
+  benefits         Json
+  companyId        String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  employmentTypes  JobEmploymentType[]
+  categories       JobCategoryRelation[]
+  requiredSkills   JobSkillRelation[]
+}
+
+model JobEmploymentType {
+  id         String          @id @default(uuid())
+  jobId      String
+  type       EmploymentType
+
+  job        Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, type])
+}
+
+model JobCategoryRelation {
+  id         String      @id @default(uuid())
+  jobId      String
+  category   JobCategory
+
+  job        Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, category])
+}
+
+model JobSkillRelation {
+  id        String    @id @default(uuid())
+  jobId     String
+  skill     Skill
+
+  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skill])
+}
