@@ -12,9 +12,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { setTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <nav className="w-full border-b z-10">
@@ -52,7 +54,11 @@ export default function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button size="sm" className="bg-[#6366F1] hover:bg-[#4F46E5] ">
+          <Button
+            size="sm"
+            className="bg-[#6366F1] hover:bg-[#4F46E5]"
+            onClick={()=>router.push("/panel/post-job")}
+          >
             Post a job
           </Button>
         </div>

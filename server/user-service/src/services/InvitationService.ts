@@ -111,7 +111,7 @@ class InvitationService {
     await this.invitationRepository.delete(token);
 
     const accessToken = this.tokenService.generateAccessToken(employee.id);
-    const refreshToken = this.tokenService.generateRefreshToken(employee.id);
+    const refreshToken = this.tokenService.generateRefreshToken(employee.id,role);
 
     await this.redisService.setWithTTL(
       email,

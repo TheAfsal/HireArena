@@ -12,7 +12,6 @@ const page = () => {
       <FeaturedJobs />
       <LatestJobs />
       <Footer />
-      <Footer />
     </>
   );
 };

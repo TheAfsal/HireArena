@@ -9,5 +9,5 @@ export interface IAuthService {
   login: (email: string, password: string) => Promise<IAuthResponse>;
   signupCompany: (userData: IUserCreateRequest) => Promise<{message:string}>;
   loginCompany: (email: string, password: string) => Promise<IAuthResponse>;
-  // refresh:(refreshToken:string)=> Promise<IAuthResponse>;
+  refresh:(refreshToken:string)=> Promise<IAuthResponse>;
 }

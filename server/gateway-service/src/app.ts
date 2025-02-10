@@ -12,7 +12,6 @@ dotenv.config();
 
 const app: Application = express();
 
-// Middleware
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -22,7 +21,6 @@ app.use(
 
 app.use(helmet());
 app.use(morgan("dev"));
-// app.use(express.json());
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "Gateway Service is up and running!" });
@@ -51,11 +49,22 @@ app.use(
   proxyMiddleware
 );
 
+app.use(
+  "/job-service/",
+  validateAccessToken,
+  createProxyMiddleware({
+    target: "http://localhost:5002",
+    changeOrigin: true,
+    on: {
+      proxyReq: (proxyReq, req, res) => {
+        if (req.user) {
+          proxyReq.setHeader("x-user", JSON.stringify(req.user));
+        }
+      },
+    },
+  })
+);
 
-// app.use((req, res, next) => {
-//   console.log(req.url);
-//   next();
-// });
 
 // app.use(
 //   '/user-service',

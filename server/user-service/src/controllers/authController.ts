@@ -247,7 +247,7 @@ class AuthController {
       res.cookie("refreshToken", authResponse.tokens.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "development",
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -287,42 +287,67 @@ class AuthController {
   //   }
   // };
 
-  // refresh = async (
-  //   req: Request,
-  //   res: Response<IGenericResponse<IAuthResponse | IError>>
-  // ) => {
-  //   try {
-  //     const refreshToken = req.cookies.refreshToken;
-  //     if (!refreshToken) {
-  //       res
-  //         .status(401)
-  //         .json({ status: "error", message: "Refresh token is missing" });
-  //       return;
-  //     }
+  refresh = async (
+    req: Request,
+    res: Response<IGenericResponse<IAuthResponse | IError>>
+  ) => {
+    try {
+      console.log("req.cookies", req.cookies.refreshToken);
 
-  //     const authResponse = await this.authService.refresh(refreshToken);
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        res
+          .status(401)
+          .json({ status: "error", message: "Refresh token is missing" });
+        return;
+      }
 
-  //     res.cookie("refreshToken", authResponse.tokens.refreshToken, {
-  //       httpOnly: true, // Ensures that the cookie is not accessible via JavaScript
-  //       secure: process.env.NODE_ENV === "production", // Set to true in production (requires HTTPS)
-  //       sameSite: "strict", // CSRF protection
-  //       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
-  //     });
+      const authResponse = await this.authService.refresh(refreshToken);
 
-  //     res.status(200).json({
-  //       status: "success",
-  //       message: "Tokens refreshed successfully",
-  //       data: { tokens: authResponse.tokens },
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(500).json({
-  //       status: "error",
-  //       message: "An error occurred during token refresh",
-  //       error: (error as Error).message,
-  //     });
-  //   }
-  // };
+      res.status(200).json({
+        status: "success",
+        message: "Tokens refreshed successfully",
+        data: { tokens: authResponse.tokens },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during token refresh",
+        error: (error as Error).message,
+      });
+    }
+  };
+
+  whoAmI = async (
+    req: Request,
+    res: Response<IGenericResponse<{ role: string } | IError>>
+  ) => {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        res
+          .status(401)
+          .json({ status: "error", message: "Identification failed" });
+        return;
+      }
+
+      // const authResponse = await this.authService.whoAmI(refreshToken);
+
+      res.status(200).json({
+        status: "success",
+        message: "user verified successfully",
+        // role:authResponse.role,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during identification",
+        error: (error as Error).message,
+      });
+    }
+  };
 }
 
 export default AuthController;

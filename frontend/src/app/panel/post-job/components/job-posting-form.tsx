@@ -13,6 +13,9 @@ import JobInformation from "./job-information";
 import JobDescription from "./job-description";
 import PerksAndBenefits from "./perks-and-benefits";
 import { Separator } from "@/components/ui/separator";
+import { createJob } from "@/app/api/job";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export interface JobFormData {
   // Step 1: Job Information
@@ -58,6 +61,7 @@ const INITIAL_FORM_DATA: JobFormData = {
 export default function JobPostingForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<JobFormData>(INITIAL_FORM_DATA);
+  const router = useRouter()
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, 3));
@@ -67,8 +71,53 @@ export default function JobPostingForm() {
     setCurrentStep(state);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!formData.jobTitle.trim()) {
+      alert("Job title is required");
+      return;
+    }
+    if (!formData.employmentTypes || formData.employmentTypes.length === 0) {
+      alert("At least one employment type is required");
+      return;
+    }
+    if (!formData.salaryRange?.min || formData.salaryRange.min < 0) {
+      alert("Minimum salary must be a positive number");
+      return;
+    }
+    if (
+      !formData.salaryRange?.max ||
+      formData.salaryRange.max < formData.salaryRange.min
+    ) {
+      alert("Maximum salary must be greater than minimum salary");
+      return;
+    }
+    if (!formData.categories || formData.categories.length === 0) {
+      alert("At least one category is required");
+      return;
+    }
+    if (!formData.requiredSkills || formData.requiredSkills.length === 0) {
+      alert("At least one required skill is needed");
+      return;
+    }
+    if (!formData.jobDescription.trim()) {
+      alert("Job description is required");
+      return;
+    }
+    if (!formData.responsibilities.trim()) {
+      alert("Responsibilities field is required");
+      return;
+    }
+
     console.log("Form submitted with data:", formData);
+
+    try {
+      await createJob(formData);
+      router.push('/panel')
+      toast("Job posted successfully!");
+    } catch (error) {
+      console.error("Error creating job:", error);
+      toast("Failed to create job.");
+    }
   };
 
   const updateFormData = (data: Partial<JobFormData>) => {

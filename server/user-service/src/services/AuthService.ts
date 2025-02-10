@@ -8,6 +8,7 @@ import { ITokenService } from "../interfaces/ITokenService";
 import { IJobSeeker } from "../interfaces/IJobSeeker";
 import { IAuthResponse } from "../types/IAuthResponse";
 import { IUser } from "../types/IUser";
+import { ROLES } from "../../../constants/roles";
 
 class AuthService implements IAuthService {
   private jobSeekerRepository: IJobSeekerRepository;
@@ -153,7 +154,10 @@ class AuthService implements IAuthService {
       await this.redisService.delete(token);
 
       const accessToken = this.tokenService.generateAccessToken(savedUser.id);
-      const refreshToken = this.tokenService.generateRefreshToken(savedUser.id);
+      const refreshToken = this.tokenService.generateRefreshToken(
+        savedUser.id,
+        ROLES.COMPANY
+      );
 
       await this.redisService.setWithTTL(
         savedUser.email,
@@ -231,13 +235,12 @@ class AuthService implements IAuthService {
     }
 
     const accessToken = this.tokenService.generateAccessToken(user.id);
-    const refreshToken = this.tokenService.generateRefreshToken(user.id);
-
-    await this.redisService.setWithTTL(
-      user.email,
-      refreshToken,
-      7 * 24 * 60 * 60
+    const refreshToken = this.tokenService.generateRefreshToken(
+      user.id,
+      ROLES.JOB_SEEKER
     );
+
+    await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
 
     return { tokens: { accessToken, refreshToken }, user };
   }
@@ -258,59 +261,50 @@ class AuthService implements IAuthService {
     }
 
     const accessToken = this.tokenService.generateAccessToken(user.id);
-    const refreshToken = this.tokenService.generateRefreshToken(user.id);
-
-    await this.redisService.setWithTTL(
-      user.email,
-      refreshToken,
-      7 * 24 * 60 * 60
+    const refreshToken = this.tokenService.generateRefreshToken(
+      user.id,
+      ROLES.COMPANY
     );
+
+    await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
 
     return { tokens: { accessToken, refreshToken }, user };
   }
 
-  // async refresh(refreshToken: string): Promise<IAuthResponse> {
-  //   // Decode the refresh token
-  //   const decoded = jwt.verify(
-  //     refreshToken,
-  //     process.env.REFRESH_TOKEN_SECRET || ""
-  //   ) as jwt.JwtPayload;
+  async refresh(refreshToken: string): Promise<IAuthResponse> {
+    const decoded = this.tokenService.verifyRefreshToken(refreshToken);
 
-  //   // Fetch the stored refresh token from the repository/database using the userId
-  //   const storedToken = await this.userRepository.getRefreshToken(
-  //     decoded.userId
-  //   );
+    if (!decoded) {
+      throw new Error("Invalid or expired refresh token");
+    }
 
-  //   // Validate the refresh token
-  //   if (!storedToken || storedToken !== refreshToken) {
-  //     throw new Error("Invalid or expired refresh token");
-  //   }
+    const redisData = await this.redisService.get(decoded);
 
-  //   const tokens = this.generateTokens(decoded.userId);
+    if (!redisData) {
+      throw new Error("Invalid or expired refresh token");
+    }
 
-  //   await this.userRepository.storeRefreshToken(
-  //     decoded.userId,
-  //     tokens.refreshToken
-  //   );
+    const accessToken = this.tokenService.generateAccessToken(decoded);
+    return { tokens: { accessToken } };
+  }
 
-  //   const user = await this.userRepository.findById(decoded.userId);
+  async whoAmI(token: string): Promise<{ role: string }> {
+    const decoded = this.tokenService.verifyRefreshToken(token);
 
-  //   return { tokens: tokens, user };
-  // }
+    if (!decoded) {
+      throw new Error("Invalid or expired refresh token");
+    }
 
-  // private generateTokens(userId: string) {
-  //   const accessToken = jwt.sign(
-  //     { userId },
-  //     process.env.ACCESS_TOKEN_SECRET || "",
-  //     { expiresIn: "15m" }
-  //   );
-  //   const refreshToken = jwt.sign(
-  //     { userId },
-  //     process.env.REFRESH_TOKEN_SECRET || "",
-  //     { expiresIn: "7d" }
-  //   );
-  //   return { accessToken, refreshToken };
-  // }
+    const redisData = await this.redisService.get(decoded);
+
+    if (!redisData) {
+      throw new Error("Invalid or expired refresh token");
+    }
+
+    const accessToken = this.tokenService.generateAccessToken(decoded);
+    //@ts-ignore
+    return "{ tokens: { accessToken } }";
+  }
 }
 
 export default AuthService;

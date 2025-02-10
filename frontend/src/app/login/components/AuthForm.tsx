@@ -89,7 +89,9 @@ function AuthForm() {
               loginSuccess({ user, token: accessToken, role: formType })
             );
           }
-          router.push("/");
+          setTimeout(() => {
+            router.push("/");
+          }, 0);
         } else {
           console.log("response");
           console.log(response);
@@ -132,7 +134,7 @@ function AuthForm() {
       if (formType === "job-seeker") {
         response = await SignupJobSeeker(formValues);
         if (response.status === "success") {
-
+          alert(response.message);
         } else {
           const errorMessage =
             typeof response === "string"
