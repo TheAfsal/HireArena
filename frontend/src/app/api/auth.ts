@@ -28,7 +28,7 @@ export async function LoginJobSeeker(
   try {
     console.log(details);
     const response = await axiosInstance.post(
-      "http://localhost:4000/user-service/api/auth/login",
+      "/user-service/auth/api/auth/login",
       details
     );
     return response.data;
@@ -55,7 +55,7 @@ export async function SignupJobSeeker(
   try {
     console.log(details);
     const response = await axiosInstance.post(
-      "http://localhost:4000/user-service/auth/api/auth/signup",
+      "/user-service/auth/api/auth/signup",
       details
     );
     return response.data;
@@ -75,7 +75,7 @@ export async function LoginCompany(details: LoginState): Promise<AuthResponse> {
   try {
     console.log("------details");
     const response = await axiosInstance.post(
-      "http://localhost:4000/user-service/auth/api/auth/company-login",
+      "/user-service/auth/api/auth/company-login",
       details
     );
     return response.data;
@@ -97,7 +97,7 @@ export async function SignupCompany(
     console.log(details);
 
     const response = await axiosInstance.post(
-      "http://localhost:4000/user-service/auth/api/auth/company-signup",
+      "/user-service/auth/api/auth/company-signup",
       details
     );
     return response.data;
@@ -117,7 +117,7 @@ export async function VerifyUserEmail(
 ): Promise<AuthResponse & { accessToken: string; role?: string }> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/user-service/auth/api/auth/verify-email/${token}`
+      `/user-service/auth/api/auth/verify-email/${token}`
     );
 
     return response.data;
@@ -139,7 +139,7 @@ export async function sendInvitation(inviteDetails: {
 }): Promise<AuthResponse & { accessToken: string; role?: string }> {
   try {
     const response = await axiosInstance.post(
-      "http://localhost:4000/user-service/auth/api/company/invite",
+      "/user-service/auth/api/company/invite",
       inviteDetails
     );
 
@@ -158,7 +158,7 @@ export async function sendInvitation(inviteDetails: {
 export async function fetchInvitationDetails(token: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/auth/api/company/invite/${token}`
+      `/user-service/auth/api/company/invite/${token}`
     );
 
     return response.data;
@@ -180,7 +180,7 @@ export async function AcceptInvitation(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/user-service/auth/api/company/accept-invite`,
+      `/user-service/auth/api/company/accept-invite`,
       { token, name, password }
     );
 

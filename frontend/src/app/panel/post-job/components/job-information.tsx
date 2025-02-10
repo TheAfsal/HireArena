@@ -25,20 +25,19 @@ import {
 import { JobFormData } from "./job-posting-form";
 
 const EMPLOYMENT_TYPES = [
-  "Full-Time",
-  "Part-Time",
-  "Remote",
-  "Internship",
-  "Contract",
+  "FULL_TIME",
+  "PART_TIME",
+  "REMOTE",
+  "INTERNSHIP",
+  "CONTRACT",
 ];
 
 const JOB_CATEGORIES = [
-  "Engineering",
-  "Design",
-  "Product",
-  "Marketing",
-  "Sales",
-  "Customer Support",
+  "ENGINEERING",
+  "DESIGN",
+  "MARKETING",
+  "SALES",
+  "HR",
 ];
 
 interface Props {

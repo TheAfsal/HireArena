@@ -3,32 +3,41 @@ import JobRepository from "../repositories/JobRepository";
 class JobService {
   private jobRepository: JobRepository;
 
-  constructor() {
-    this.jobRepository = new JobRepository();
+  constructor(jobRepository: any) {
+    this.jobRepository = jobRepository;
   }
 
-  async createJob(data: any) {
-    if (!data.jobTitle || !data.companyId) {
+  async createJob(data: any, companyId: string) {
+    if (!data.jobTitle || !companyId) {
       throw new Error("Job title and company ID are required.");
     }
 
-    // Transform the data before storing it
-    const jobData = {
+    const job = await this.jobRepository.createJob({
       jobTitle: data.jobTitle,
-      employmentTypes: data.employmentTypes || [],
       salaryMin: data.salaryRange?.min || 0,
       salaryMax: data.salaryRange?.max || 0,
-      categories: data.categories || [],
-      requiredSkills: data.requiredSkills || [],
       jobDescription: data.jobDescription,
       responsibilities: data.responsibilities,
       qualifications: data.qualifications,
       niceToHave: data.niceToHave || "",
       benefits: data.benefits || [],
-      companyId: data.companyId,
-    };
+      companyId,
+      employmentTypes: {
+        create: data.employmentTypes.map((type: string) => ({ type })),
+      },
+      categories: {
+        create: data.categories.map((category: string) => ({ category })),
+      },
+      requiredSkills: {
+        create: data.requiredSkills.map((skill: string) => ({ skill })),
+      },
+    });
 
-    return this.jobRepository.createJob(jobData);
+    return job;
+  }
+
+  async getAllJobs() {
+    return await this.jobRepository.getAllJobs();
   }
 }
 

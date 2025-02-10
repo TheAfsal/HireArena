@@ -20,7 +20,7 @@ export default function Page() {
     <div className="min-h-screen bg-white">
       <Navbar />
       <main className="grid lg:grid-cols-2 gap-12 px-4 max-w-7xl mx-auto">
-        {/* <HeaderCard /> */}
+        <HeaderCard />
         <AuthForm />
       </main>
     </div>

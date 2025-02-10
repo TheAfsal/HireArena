@@ -19,14 +19,22 @@ class TokenService implements ITokenService {
 
   generateAccessToken(userId: string): string {
     return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET || "", {
-      expiresIn: "15m", // 15 minutes
+      expiresIn: "1m", // 1 minutes
     });
   }
 
-  generateRefreshToken(userId: string): string {
-    return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET || "", {
+  generateRefreshToken(userId: string,role:string): string {
+    return jwt.sign({ userId,role }, process.env.REFRESH_TOKEN_SECRET || "", {
       expiresIn: "7d", // 7 days
     });
+  }
+
+  verifyRefreshToken(token: string): string {
+    const payload = jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET || ""
+    ) as jwt.JwtPayload;
+    return payload.userId;
   }
 
   generate(): string {

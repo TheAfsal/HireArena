@@ -5,7 +5,7 @@ const initialState = {
   user: null,
   error: null,
   token: typeof window !== 'undefined' ? localStorage.getItem("authToken") : null,
-  role: "company",
+  role: null,
   loading: false,
 };
 

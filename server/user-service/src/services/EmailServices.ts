@@ -52,7 +52,7 @@ class EmailService implements IEmailService {
 
   async sendInvitationEmail(email: string, token: string, companyName: string, role: string): Promise<void> {
     try {
-      const invitationUrl = `${process.env.FRONT_END_URL}/auth/invite-user/${token}`;
+      const invitationUrl = `${process.env.FRONT_END_URL}/auth/invitation-user/${token}`;
       const message = `
         <p>Dear Sir/Madam,</p>
 

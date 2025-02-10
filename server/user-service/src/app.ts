@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import "./config/prismaClient";
 import authRoutes from "./routes/authRoutes";
 import companyRoutes from "./routes/companyRoutes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(
   cors({

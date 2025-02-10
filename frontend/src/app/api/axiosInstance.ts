@@ -1,23 +1,38 @@
 "use client";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import axios from "axios";
 
-// Create an Axios instance
+const refreshToken = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:4000/user-service/auth/api/auth/refresh-token",
+      {},
+      { withCredentials: true }
+    );
+
+    const { accessToken } = response.data.data.tokens;
+    localStorage.setItem("authToken", accessToken);
+
+    return accessToken;
+  } catch (error) {
+    localStorage.removeItem("authToken");
+    window.location.href = "/login";
+    return null;
+  }
+};
+
 const axiosInstance = axios.create({
-  baseURL: "http://your-gateway-server",
+  baseURL: "http://localhost:4000",
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
 });
 
-// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      // eslint-disable-next-line no-param-reassign
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -27,10 +42,30 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = "/login";
+  async (error) => {
+    const originalRequest = error.config;
+    console.log("!!!!", error);
+
+    if (error.response?.status === 403 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const newAccessToken = await refreshToken();
+
+        console.log(newAccessToken);
+
+        //@ts-ignore
+        if (newAccessToken) {
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+          return axiosInstance(originalRequest);
+        }
+      } catch (err) {
+        window.location.href = "/login";
+        return;
+      }
     }
+
     return Promise.reject(error);
   }
 );

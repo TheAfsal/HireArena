@@ -62,6 +62,7 @@ router.post("/company-login", authController.loginCompany);
 router.get("/invite/:token", companyController.invitationDetails);
 router.post("/company/invite", companyController.sendInvitation);
 router.post("/company/accept-invite", companyController.acceptInvitation);
-// router.post("/refresh-token", authController.refresh);
+router.post("/refresh-token", authController.refresh);
+router.post("/who-am-i", authController.whoAmI);
 
 export default router;
