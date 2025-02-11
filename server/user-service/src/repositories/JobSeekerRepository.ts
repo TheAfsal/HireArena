@@ -34,13 +34,13 @@ class JobSeekerRepository implements IJobSeekerRepository {
     try {
       return await this.prisma.jobSeeker.create({
         data: {
-          name: userData.name,
+          fullName: userData.name,
           email: userData.email,
           password: userData.password,
         },
         select: {
           id: true,
-          name: true,
+          fullName: true,
           email: true,
           password: true,
         },
@@ -49,6 +49,52 @@ class JobSeekerRepository implements IJobSeekerRepository {
       console.error("Error creating job seeker:", error);
       throw new Error("Database query failed");
     }
+  }
+
+  async updateProfile(data: any) {
+    return await this.prisma.jobSeeker.update({
+      where: { id: data.userId },
+      data: {
+        fullName: data.fullName,
+        phone: data.phone,
+        dob: data.dob,
+        gender: data.gender,
+        image: data.profileImage,
+      },
+    });
+  }
+
+  async getProfile(userId: string) {
+    return await this.prisma.jobSeeker.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        dob: true,
+        gender: true,
+        image: true,
+      },
+    });
+  }
+
+  async getMinimalProfile(userId: string) {
+    return await this.prisma.jobSeeker.findUnique({
+      where: { id: userId },
+      select: {
+        fullName: true,
+        email: true,
+        image: true,
+      },
+    });
+  }
+
+  async updatePassword(id: string, hashedPassword: string) {
+    return await this.prisma.jobSeeker.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
   }
 }
 

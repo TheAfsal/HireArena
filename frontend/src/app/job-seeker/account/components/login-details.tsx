@@ -18,28 +18,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { changeJobSeekerPassword } from "@/app/api/profile";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 
 const passwordSchema = z.object({
-  oldPassword: z.string().min(8, "Password must be at least 8 characters"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  oldPassword: z.string().min(6, "Password must be at least 6 characters"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const emailSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
+// const emailSchema = z.object({
+//   email: z.string().email("Invalid email address"),
+// });
 
 type PasswordFormValues = z.infer<typeof passwordSchema>;
-type EmailFormValues = z.infer<typeof emailSchema>;
+// type EmailFormValues = z.infer<typeof emailSchema>;
 
 export default function LoginDetails() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { toast } = useToast();
 
-  const emailForm = useForm<EmailFormValues>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
+  // const emailForm = useForm<EmailFormValues>({
+  //   resolver: zodResolver(emailSchema),
+  //   defaultValues: {
+  //     email: "",
+  //   },
+  // });
 
   const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
@@ -49,14 +54,36 @@ export default function LoginDetails() {
     },
   });
 
-  function onEmailSubmit(data: EmailFormValues) {
-    console.log(data);
-    // Handle email update
-  }
+  // function onEmailSubmit(data: EmailFormValues) {
+  //   console.log(data);
+  //   // Handle email update
+  // }
 
-  function onPasswordSubmit(data: PasswordFormValues) {
-    console.log(data);
-    // Handle password update
+  async function onPasswordSubmit(data: PasswordFormValues) {
+    if (data.oldPassword === data.newPassword) {
+      toast({
+        variant: 'destructive',
+        title: "Failed to change",
+        //@ts-ignore;
+        description: "New password cannot be the same as the old password.",
+      })
+      return;
+    }
+
+    try {
+      await changeJobSeekerPassword(data.oldPassword, data.newPassword);
+      toast({
+        variant:"default",
+        title: "Password updated successfully.",
+      })
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: "Failed to change",
+        //@ts-ignore;
+        description: error.message,
+      })
+    }
   }
 
   return (
@@ -68,7 +95,7 @@ export default function LoginDetails() {
         </p>
       </div>
 
-      <Separator />
+      {/* <Separator />
 
       <div className="space-y-4">
         <div>
@@ -107,7 +134,7 @@ export default function LoginDetails() {
             <Button type="submit">Update Email</Button>
           </form>
         </Form>
-      </div>
+      </div> */}
 
       <Separator />
 
@@ -137,7 +164,7 @@ export default function LoginDetails() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Minimum 8 characters</FormDescription>
+                  <FormDescription>Minimum 6 characters</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -156,7 +183,7 @@ export default function LoginDetails() {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Minimum 8 characters</FormDescription>
+                  <FormDescription>Minimum 6 characters</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

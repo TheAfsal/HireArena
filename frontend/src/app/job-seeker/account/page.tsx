@@ -1,12 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MyProfile from "./components/my-profile";
 import LoginDetails from "./components/login-details";
+import { fetchJobSeekerProfile } from "@/app/api/profile";
 
 export default function ProfileSettings() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [userProfileData, setUserProfileData] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetchJobSeekerProfile();
+        console.log(response);
+        setUserProfileData(response);
+      } catch (error) {
+        console.error("Error fetching profile data", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   return (
     <div className="p-10">
@@ -25,7 +41,11 @@ export default function ProfileSettings() {
         </TabsList>
 
         <TabsContent value="profile">
-          <MyProfile />
+          {userProfileData ? (
+            <MyProfile userProfileData={userProfileData} />
+          ) : (
+            <p>Loading...</p>
+          )}
         </TabsContent>
 
         <TabsContent value="login">

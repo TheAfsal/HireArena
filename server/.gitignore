@@ -5,5 +5,12 @@
 
 /user-service/node_modules
 /user-service/.env
+
+/job-service/node_modules
+/job-service/.env
+
+/file-service/node_modules
+/file-service/.env
+
 /a.rest
 

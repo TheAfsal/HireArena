@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "../panel/components/app-sidebar";
 import Navbar from "./components/navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,15 +21,16 @@ export default function RootLayout({
       <AppSidebar />
       <SidebarInset>
         <Navbar />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </SidebarInset>
+      <Toaster />
     </SidebarProvider>
   );
 }

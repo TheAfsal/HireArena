@@ -16,13 +16,18 @@ enum CompanyRole {
 }
 
 model JobSeeker {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  fullName      String
+  email         String   @unique
+  password      String
+  phone         String?   
+  dob           DateTime? 
+  gender        String?   
+  image  String?   
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
+
 
 model Company {
   id        String   @id @default(uuid())

@@ -43,11 +43,6 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/invitationBanner.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -275,7 +270,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

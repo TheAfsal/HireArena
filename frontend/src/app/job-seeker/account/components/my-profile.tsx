@@ -11,7 +11,6 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,6 +32,9 @@ import {
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { updateJobSeekerProfile } from "@/app/api/profile";
+import { toast } from "sonner";
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -44,29 +46,47 @@ const profileFormSchema = z.object({
   gender: z.string({
     required_error: "Please select a gender",
   }),
-  accountType: z.enum(["jobSeeker", "employer"], {
-    required_error: "Please select an account type",
-  }),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
-const defaultValues: Partial<ProfileFormValues> = {
-  fullName: "Jake Gyll",
-  phone: "+44 1245 572 135",
-  email: "jakegyll@gmail.com",
-  dob: new Date("1997-08-09"),
-  gender: "male",
-  accountType: "jobSeeker",
+interface UserProfileData {
+  fullName: string;
+  phone: string;
+  email: string;
+  dob: Date;
+  gender: string;
+  image: string;
+}
+
+type MyProfileProps = {
+  userProfileData: UserProfileData | null;
 };
 
-export default function MyProfile() {
+export default function MyProfile({ userProfileData }: MyProfileProps) {
   const [photo, setPhoto] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
+  console.log(userProfileData);
+
+  function parseDate(dateString: string): Date {
+    if (!dateString) return new Date();
+
+    const parsedDate = new Date(dateString);
+    return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+  }
+
+  const formValues: ProfileFormValues = {
+    fullName: userProfileData?.fullName || "",
+    email: userProfileData?.email || "",
+    phone: userProfileData?.phone || "",
+    dob: new Date(userProfileData?.dob.toString()!),
+    gender: userProfileData?.gender || "",
+  };
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: formValues,
   });
 
   const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -95,28 +115,22 @@ export default function MyProfile() {
   };
 
   const onSubmit = async (data: ProfileFormValues) => {
-    console.log("Form Data:", data);
-    if (file) {
-      console.log("Image file selected:", file);
-      const formData = new FormData();
-      formData.append("fullName", data.fullName);
-      formData.append("phone", data.phone);
-      formData.append("email", data.email);
-      formData.append("dob", data.dob.toISOString());
-      formData.append("gender", data.gender);
-      formData.append("accountType", data.accountType);
-      formData.append("profileImage", file); // Appending image file
+    const formData = new FormData();
+    formData.append("fullName", data.fullName);
+    formData.append("phone", data.phone);
+    formData.append("email", data.email);
+    formData.append("dob", data.dob.toISOString());
+    formData.append("gender", data.gender);
+    formData.append("image", userProfileData!.image);
+    formData.append("profileImage", file!);
 
-      // const response = await fetch("/api/profile", {
-      //   method: "POST",
-      //   body: formData,
-      // });
-
-      // if (response.ok) {
-      //   console.log("Profile updated successfully");
-      // } else {
-      //   console.log("Failed to update profile");
-      // }
+    try {
+      const response = await updateJobSeekerProfile(formData);
+      console.log(response);
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update profile");
     }
   };
 
@@ -140,8 +154,8 @@ export default function MyProfile() {
           </p>
         </div>
         <div className="flex items-center justify-center gap-16 w-full">
-          <div className="w-28 h-28 rounded-full overflow-hidden">
-            {photo ? (
+          {photo ? (
+            <div className="w-28 h-28 rounded-full overflow-hidden">
               <Image
                 src={photo}
                 alt="Profile"
@@ -149,17 +163,29 @@ export default function MyProfile() {
                 height={500}
                 className="w-full h-full object-cover"
               />
-            ) : (
-              <div className="flex justify-center items-center w-full h-full bg-[#4640de] text-white font-extrabold text-5xl">
-                J
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <Avatar className="w-28 h-28">
+              {userProfileData?.image ? (
+                <div className="w-28 h-28 rounded-full overflow-hidden">
+                  <img
+                    src={userProfileData?.image}
+                    alt="Profile"
+                    width={500}
+                    height={500}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <AvatarFallback>{userProfileData?.fullName[0]}</AvatarFallback>
+              )}
+            </Avatar>
+          )}
           <div
             className="w-96 border-2 border-dashed border-[#4640de] rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleImageDrop}
-            onClick={() => document.getElementById("image-upload")?.click()} // Trigger file input click on section click
+            onClick={() => document.getElementById("image-upload")?.click()}
           >
             <Upload className="w-8 h-8 mx-auto mb-2 text-[#4640de]" />
             <p className="text-sm font-medium mb-1 text-[#4640de]">
@@ -223,7 +249,7 @@ export default function MyProfile() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
