@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { loginFailure, loginSuccess } from "@/redux/slices/authSlice";
+import { toast } from "sonner";
 
 type FormType = "job-seeker" | "company";
 type FormState = "login" | "signup";
@@ -134,7 +135,8 @@ function AuthForm() {
       if (formType === "job-seeker") {
         response = await SignupJobSeeker(formValues);
         if (response.status === "success") {
-          alert(response.message);
+          //@ts-ignore
+          toast(response.message);
         } else {
           const errorMessage =
             typeof response === "string"

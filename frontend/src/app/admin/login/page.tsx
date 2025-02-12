@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { loginAdmin } from "./actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,24 +14,48 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Building2, Loader2 } from "lucide-react";
+import { LoginAdmin } from "@/app/api/auth";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "@/redux/store";
+import { loginSuccess } from "@/redux/slices/authSlice";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  async function handleSubmit(formData: FormData) {
+  const dispatch = useDispatch<AppDispatch>();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
     setIsPending(true);
 
-    const result = await loginAdmin(formData);
+    try {
+      const response = await LoginAdmin({ email, password });
+      console.log(response);
 
-    if (result.error) {
-      setError(result.error);
-    } else if (result.success) {
-      router.push("/dashboard");
+      if (response.status === "success") {
+        const { accessToken } = response.data!.tokens;
+        const { user } = response.data!;
+
+        if (accessToken) {
+          localStorage.setItem("authToken", accessToken);
+          //@ts-ignore
+          dispatch(loginSuccess({ user, token: accessToken, role: user.role }));
+        }
+        setTimeout(() => {
+          router.push("/admin");
+        }, 0);
+      } else {
+        //@ts-ignore
+        setError(response.error?.error);
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
     }
-
     setIsPending(false);
   }
 
@@ -52,7 +75,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={() => handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" method="POST">
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
               <Input
@@ -63,6 +86,8 @@ export default function LoginPage() {
                 required
                 autoComplete="email"
                 autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -73,6 +98,8 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 

@@ -47,6 +47,14 @@ const Navbar = () => {
             </li>
             <li>
               <Link
+                href="/admin/manage"
+                className="text-sm font-medium text-muted-foreground"
+              >
+                Manage
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/admin/reports"
                 className="text-sm font-medium text-muted-foreground"
               >

@@ -67,15 +67,6 @@ export default function MyProfile({ userProfileData }: MyProfileProps) {
   const [photo, setPhoto] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
-  console.log(userProfileData);
-
-  function parseDate(dateString: string): Date {
-    if (!dateString) return new Date();
-
-    const parsedDate = new Date(dateString);
-    return isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-  }
-
   const formValues: ProfileFormValues = {
     fullName: userProfileData?.fullName || "",
     email: userProfileData?.email || "",
