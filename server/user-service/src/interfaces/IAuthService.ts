@@ -5,9 +5,17 @@ import { IJobSeeker } from "./IJobSeeker";
 
 export interface IAuthService {
   signup: (userData: IUserCreateRequest) => Promise<{ message: string }>;
-  verifyToken: (token: string) => Promise<{ user: IJobSeeker; accessToken: string,refreshToken?: string,role:string }  | null>;
+  verifyToken: (
+    token: string
+  ) => Promise<{
+    user: IJobSeeker;
+    accessToken: string;
+    refreshToken?: string;
+    role: string;
+  } | null>;
   login: (email: string, password: string) => Promise<IAuthResponse>;
-  signupCompany: (userData: IUserCreateRequest) => Promise<{message:string}>;
+  signupCompany: (userData: IUserCreateRequest) => Promise<{ message: string }>;
   loginCompany: (email: string, password: string) => Promise<IAuthResponse>;
-  refresh:(refreshToken:string)=> Promise<IAuthResponse>;
+  loginAdmin: (email: string, password: string) => Promise<IAuthResponse>;
+  refresh: (refreshToken: string) => Promise<IAuthResponse>;
 }

@@ -15,8 +15,10 @@ import EmployeeRepository from "../repositories/EmployeeRepository";
 import InvitationService from "../services/InvitationService";
 import CompanyController from "../controllers/companyController";
 import InvitationRepository from "../repositories/InvitationRepository";
+import AdminRepository from "../repositories/AdminRepository";
 
-const userRepository = new JobSeekerRepository(prisma);
+const jobSeekerRepository = new JobSeekerRepository(prisma);
+const adminRepository = new AdminRepository(prisma);
 const companyRepository = new CompanyRepository(prisma);
 const companyEmployeeRoleRepository = new CompanyEmployeeRoleRepository(prisma);
 const employeeRepository = new EmployeeRepository(prisma);
@@ -27,7 +29,8 @@ const emailService = new EmailService();
 const invitationRepository = new InvitationRepository(prisma);
 
 const authService = new AuthService(
-  userRepository,
+  jobSeekerRepository,
+  adminRepository,
   companyRepository,
   employeeRepository,
   companyEmployeeRoleRepository,
@@ -54,15 +57,21 @@ const authController = new AuthController(authService);
 
 const router = Router();
 
-router.post("/signup", authController.signup);
-router.post("/verify-email/:token", authController.verifyToken);
 router.post("/login", authController.login);
-router.post("/company-signup", authController.signupCompany);
 router.post("/company-login", authController.loginCompany);
+router.post("/admin-login", authController.loginAdmin);
+
+router.post("/signup", authController.signup);
+router.post("/company-signup", authController.signupCompany);
+
+router.post("/verify-email/:token", authController.verifyToken);
+
 router.get("/invite/:token", companyController.invitationDetails);
 router.post("/company/invite", companyController.sendInvitation);
 router.post("/company/accept-invite", companyController.acceptInvitation);
+
 router.post("/refresh-token", authController.refresh);
+
 router.post("/who-am-i", authController.whoAmI);
 
 export default router;

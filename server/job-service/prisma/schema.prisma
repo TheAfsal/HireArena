@@ -1,3 +1,12 @@
+datasource db {
+  provider = "postgresql" // Use your database provider (e.g., mysql, sqlite, etc.)
+  url      = env("DATABASE_URL") // The connection string from your .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -6,7 +15,7 @@ enum EmploymentType {
   INTERNSHIP
 }
 
-enum JobCategory {
+enum JobCategories {
   ENGINEERING
   DESIGN
   MARKETING
@@ -14,7 +23,7 @@ enum JobCategory {
   SALES
 }
 
-enum Skill {
+enum Skills {
   JAVASCRIPT
   REACT
   NODEJS
@@ -23,7 +32,7 @@ enum Skill {
 }
 
 model Job {
-  id               String         @id @default(uuid())
+  id               String   @id @default(uuid())
   jobTitle         String
   salaryMin        Int
   salaryMax        Int
@@ -33,33 +42,69 @@ model Job {
   niceToHave       String?
   benefits         Json
   companyId        String
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // Relations
-  employmentTypes  JobEmploymentType[]
-  categories       JobCategoryRelation[]
-  requiredSkills   JobSkillRelation[]
-
+  employmentTypes JobEmploymentType[]
+  categories      JobCategoryRelation[]
+  requiredSkills  JobSkillRelation[]
 }
 
 model JobEmploymentType {
-  id            String         @id @default(uuid())
-  jobId         String
-  type         EmploymentType
-  job          Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id    String         @id @default(uuid())
+  jobId String
+  type  EmploymentType
+  job   Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
 
 model JobCategoryRelation {
-  id            String        @id @default(uuid())
-  jobId         String
-  category      JobCategory
-  job          Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id       String        @id @default(uuid())
+  jobId    String
+  category JobCategories
+  job      Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
 
 model JobSkillRelation {
+  id    String @id @default(uuid())
+  jobId String
+  skill Skills
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+// Skills Section
+
+model CategoryType {
   id            String        @id @default(uuid())
-  jobId         String
-  skill         Skill
-  job          Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  name          String
+  description   String
+  status        Boolean
+  jobCategories JobCategory[] // A category type can have multiple job categories
+}
+
+model JobCategory {
+  id             String       @id @default(uuid())      // Unique identifier (UUID)
+  name           String                              // Name of the job category
+  description    String                              // Description of the job category
+  status         Boolean                             // Active status of the job category
+  categoryType   CategoryType @relation(fields: [categoryTypeId], references: [id])  // Relationship with CategoryType model
+  categoryTypeId String                              // Foreign key to CategoryType
+  skills         Skill[]                             // One-to-many relationship: A job category can have multiple skills
+}
+
+
+// model TechStack {
+//   id            String        @id @default(uuid())
+//   name          String
+//   status        Boolean
+// }
+
+model Skill {
+  id              String        @id @default(uuid())      // Unique identifier (UUID)
+  name            String                                // Name of the skill
+  status          Boolean                               // Active status of the skill
+  jobCategory     JobCategory @relation(fields: [jobCategoryId], references: [id])  // Relationship with JobCategory
+  jobCategoryId   String                                // Foreign key to JobCategory
+  createdAt       DateTime      @default(now())          // Automatically sets creation timestamp
+  modifiedAt      DateTime      @updatedAt               // Automatically updates the timestamp when modified
 }

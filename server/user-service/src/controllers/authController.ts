@@ -270,6 +270,60 @@ class AuthController {
     }
   };
 
+  loginAdmin = async (
+    req: Request,
+    res: Response<IGenericResponse<IAuthResponse | IError>>
+  ) => {
+    try {
+      const { email, password } = req.body;
+      console.log(email, password);
+
+      if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        res.status(400).json({
+          status: "error",
+          message: "An error occurred during login",
+          error: "Invalid email address",
+        });
+        return;
+      }
+
+      if (!password || password.length < 6) {
+        res.status(400).json({
+          status: "error",
+          message: "An error occurred during login",
+          error: "Password must be at least 6 characters",
+        });
+        return;
+      }
+
+      const authResponse = await this.authService.loginAdmin(email, password);
+
+      res.cookie("refreshToken", authResponse.tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "development",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "User logged in successfully",
+        data: {
+          tokens: { accessToken: authResponse.tokens.accessToken },
+          user: authResponse.user,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during login",
+        error: (error as Error).message,
+      });
+    }
+  };
+
   // sendInvitation = async (req: Request, res: Response): Promise<void> => {
   //   try {
   //     const {email,role,message} = req.body;

@@ -12,6 +12,7 @@ import { ROLES } from "../../../constants/roles";
 
 class AuthService implements IAuthService {
   private jobSeekerRepository: IJobSeekerRepository;
+  private adminRepository: any;
   private companyRepository: any;
   private employeeRepository: any;
   private companyEmployeeRoleRepository: any;
@@ -22,6 +23,7 @@ class AuthService implements IAuthService {
 
   constructor(
     jobSeekerRepository: IJobSeekerRepository,
+    adminRepository: any,
     companyRepository: any,
     employeeRepository: any,
     companyEmployeeRoleRepository: any,
@@ -31,6 +33,7 @@ class AuthService implements IAuthService {
     tokenService: ITokenService
   ) {
     this.jobSeekerRepository = jobSeekerRepository;
+    this.adminRepository = adminRepository;
     this.companyRepository = companyRepository;
     this.employeeRepository = employeeRepository;
     this.companyEmployeeRoleRepository = companyEmployeeRoleRepository;
@@ -247,6 +250,32 @@ class AuthService implements IAuthService {
 
   async loginCompany(email: string, password: string): Promise<IAuthResponse> {
     const user: IUser | null = await this.employeeRepository.findByEmail(email);
+
+    if (!user || !user.password) {
+      throw new Error("Invalid credentials");
+    }
+
+    const isPasswordValid = await this.passwordService.compare(
+      password,
+      user.password
+    );
+    if (!isPasswordValid) {
+      throw new Error("Invalid credentials");
+    }
+
+    const accessToken = this.tokenService.generateAccessToken(user.id);
+    const refreshToken = this.tokenService.generateRefreshToken(
+      user.id,
+      ROLES.COMPANY
+    );
+
+    await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
+
+    return { tokens: { accessToken, refreshToken }, user };
+  }
+
+  async loginAdmin(email: string, password: string): Promise<IAuthResponse> {
+    const user: IUser | null = await this.adminRepository.findByEmail(email);
 
     if (!user || !user.password) {
       throw new Error("Invalid credentials");

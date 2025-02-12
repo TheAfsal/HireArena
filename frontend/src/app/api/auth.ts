@@ -90,6 +90,24 @@ export async function LoginCompany(details: LoginState): Promise<AuthResponse> {
   }
 }
 
+export async function LoginAdmin(details: LoginState): Promise<AuthResponse> {
+  try {
+    const response = await axiosInstance.post(
+      "/user-service/auth/api/auth/admin-login",
+      details
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return {
+        success: false,
+        error: error.response ? error.response.data : "Something went wrong",
+      };
+    }
+    return { success: false, error: "Unknown error occurred" };
+  }
+}
+
 export async function SignupCompany(
   details: LoginState
 ): Promise<AuthResponse> {
