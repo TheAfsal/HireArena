@@ -1,24 +1,46 @@
-"use client"
+"use client";
 
+import { fetchMediaLinks, updateMediaLinks } from "@/app/api/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TabsContent } from "@/components/ui/tabs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+export interface CompanySocialLinks {
+  Instagram: string;
+  Twitter: string;
+  Facebook: string;
+  LinkedIn: string;
+  Youtube: string;
+}
 
 const SocialLinksSections = () => {
-  const [socialLinks, setSocialLinks] = useState({
-    instagram: "",
-    twitter: "",
-    facebook: "",
-    linkedin: "",
-    youtube: "",
+  const [socialLinks, setSocialLinks] = useState<CompanySocialLinks>({
+    Instagram: "",
+    Twitter: "",
+    Facebook: "",
+    LinkedIn: "",
+    Youtube: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log(socialLinks);
+    const response = await updateMediaLinks(socialLinks);
+    setSocialLinks(response)
   };
+
+  useEffect(() => {
+    const getMediaLinks = async () => {
+      try {
+        const response = await fetchMediaLinks();
+        setSocialLinks(response)
+      } catch (err) {
+        console.log((err as Error).message);
+      }
+    };
+
+    getMediaLinks();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSocialLinks({
@@ -52,9 +74,9 @@ const SocialLinksSections = () => {
                 </label>
                 <Input
                   id="instagram"
-                  name="instagram"
+                  name="Instagram"
                   placeholder="https://www.instagram.com/nomad/"
-                  value={socialLinks.instagram}
+                  value={socialLinks.Instagram}
                   onChange={handleChange}
                   className="w-full"
                 />
@@ -69,9 +91,9 @@ const SocialLinksSections = () => {
                 </label>
                 <Input
                   id="twitter"
-                  name="twitter"
+                  name="Twitter"
                   placeholder="https://twitter.com/nomad/"
-                  value={socialLinks.twitter}
+                  value={socialLinks.Twitter}
                   onChange={handleChange}
                   className="w-full"
                 />
@@ -86,9 +108,9 @@ const SocialLinksSections = () => {
                 </label>
                 <Input
                   id="facebook"
-                  name="facebook"
+                  name="Facebook"
                   placeholder="https://web.facebook.com/nomad/"
-                  value={socialLinks.facebook}
+                  value={socialLinks.Facebook}
                   onChange={handleChange}
                   className="w-full"
                 />
@@ -103,9 +125,9 @@ const SocialLinksSections = () => {
                 </label>
                 <Input
                   id="linkedin"
-                  name="linkedin"
+                  name="LinkedIn"
                   placeholder="Enter your LinkedIn address"
-                  value={socialLinks.linkedin}
+                  value={socialLinks.LinkedIn}
                   onChange={handleChange}
                   className="w-full"
                 />
@@ -120,9 +142,9 @@ const SocialLinksSections = () => {
                 </label>
                 <Input
                   id="youtube"
-                  name="youtube"
+                  name="Youtube"
                   placeholder="Enter your youtube address"
-                  value={socialLinks.youtube}
+                  value={socialLinks.Youtube}
                   onChange={handleChange}
                   className="w-full"
                 />

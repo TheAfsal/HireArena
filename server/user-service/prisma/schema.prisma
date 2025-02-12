@@ -16,51 +16,66 @@ enum CompanyRole {
 }
 
 model JobSeeker {
-  id            String   @id @default(uuid())
-  fullName      String
-  email         String   @unique
-  password      String
-  phone         String?   
-  dob           DateTime? 
-  gender        String?   
-  image  String?   
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String    @id @default(uuid())
+  fullName  String
+  email     String    @unique
+  password  String
+  phone     String?
+  dob       DateTime?
+  gender    String?
+  image     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
-
 model Company {
-  id        String   @id @default(uuid())
-  name      String   @unique
+  id            String   @id @default(uuid())
+  companyName   String   @unique
+  website       String?
+  location      String?
+  employeeCount String?
+  industry      String?
+  foundingDay   String?
+  foundingMonth String?
+  foundingYear  String?
+  aboutCompany  String?
+  jobCategories String[]
+  logo          String?
+  Youtube       String?
+  LinkedIn      String?
+  Facebook      String?
+  Twitter       String?
+  Instagram     String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  employees CompanyEmployeeRole[]
+
+  employees   CompanyEmployeeRole[]
   invitations Invitation[]
 }
 
 model Employee {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String                @id @default(uuid())
+  name                String
+  email               String                @unique
+  password            String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
   companyAssociations CompanyEmployeeRole[]
 }
 
 model CompanyEmployeeRole {
-  id         String       @id @default(uuid())
-  userId     String       
-  companyId  String       
-  role       CompanyRole 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id        String      @id @default(uuid())
+  userId    String      @unique
+  companyId String
+  role      CompanyRole
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  employee   Employee     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company    Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, companyId])  
+  @@unique([userId, companyId])
 }
 
 model Admin {
@@ -73,20 +88,18 @@ model Admin {
 }
 
 model Invitation {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  companyId   String
-  role        CompanyRole
-  token       String   @unique
-  message       String   
-  expiredAt   DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String      @id @default(uuid())
+  email     String      @unique
+  companyId String
+  role      CompanyRole
+  token     String      @unique
+  message   String
+  expiredAt DateTime
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
-  company     Company  @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 }
-
-
 
 // generator client {
 //   provider = "prisma-client-js"

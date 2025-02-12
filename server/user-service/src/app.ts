@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import "./config/prismaClient";
 import authRoutes from "./routes/authRoutes";
 import companyRoutes from "./routes/companyRoutes";
-import jobSeekerRoutes from "./routes/jobSeeker";
+import jobSeekerRoutes from "./routes/jobSeekerRoutes";
 import cookieParser from "cookie-parser";
 
 dotenv.config();

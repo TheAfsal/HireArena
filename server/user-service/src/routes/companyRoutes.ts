@@ -12,15 +12,25 @@ import InvitationService from "../services/InvitationService";
 import CompanyController from "../controllers/companyController";
 import EmailService from "../services/EmailServices";
 import RedisService from "../services/RedisServices";
+import ProfileService from "../services/ProfileService";
+import JobSeekerRepository from "../repositories/JobSeekerRepository";
+import upload from "../middlewares/userProfileConfig";
 
 const companyRepository = new CompanyRepository(prisma);
 const companyEmployeeRoleRepository = new CompanyEmployeeRoleRepository(prisma);
 const employeeRepository = new EmployeeRepository(prisma);
 const invitationRepository = new InvitationRepository(prisma);
+const jobSeekerRepository = new JobSeekerRepository(prisma);
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
 const emailService = new EmailService();
 const redisService = new RedisService();
+const profileService = new ProfileService(
+  jobSeekerRepository,
+  companyRepository,
+  companyEmployeeRoleRepository,
+  passwordService,
+);
 
 const invitationService = new InvitationService(
   invitationRepository,
@@ -33,7 +43,10 @@ const invitationService = new InvitationService(
   redisService
 );
 
-const companyController = new CompanyController(invitationService);
+const companyController = new CompanyController(
+  invitationService,
+  profileService
+);
 
 const router = Router();
 
@@ -41,5 +54,14 @@ router.get("/invite/:token", companyController.invitationDetails);
 router.post("/invite", companyController.sendInvitation);
 router.post("/accept-invite", companyController.acceptInvitation);
 
+router
+.route("/profile")
+.get(companyController.getProfile)
+.put(upload.any(), companyController.updateProfile);
+
+router
+.route("/media-links")
+.get(companyController.fetchMediaLinks)
+.put(companyController.updateMediaLinks);
 
 export default router;

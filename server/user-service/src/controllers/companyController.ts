@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
 import InvitationService from "../services/InvitationService";
+import ProfileService from "../services/ProfileService";
 
 class CompanyController {
   private invitationService: any;
+  private profileService: any;
 
-  constructor(invitationService: InvitationService) {
+  constructor(
+    invitationService: InvitationService,
+    profileService: ProfileService
+  ) {
     this.invitationService = invitationService;
+    this.profileService = profileService;
   }
 
   sendInvitation = async (
@@ -131,6 +137,118 @@ class CompanyController {
         message: "An error occurred while accepting the invitation",
         error: (error as Error).message,
       });
+      return;
+    }
+  };
+
+  getProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const companyProfile = await this.profileService.fetchCompanyProfile(
+        userId
+      );
+
+      if (!companyProfile) {
+        res.status(404).json({ message: "Company not found" });
+        return;
+      }
+
+      res.status(200).json(companyProfile);
+      return;
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  };
+
+  updateProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const {
+        companyName,
+        website,
+        location,
+        employeeCount,
+        industry,
+        foundingDay,
+        foundingMonth,
+        foundingYear,
+        aboutCompany,
+        jobCategories,
+      } = req.body;
+
+      const files = req.files as Express.Multer.File[];
+      let logo;
+
+      if (files[0]) {
+        logo = files[0];
+      } else {
+        logo = req.body.logo;
+      }
+
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const updatedCompany = await this.profileService.updateProfileCompany({
+        companyId: userId,
+        companyName,
+        website,
+        location,
+        employeeCount,
+        industry,
+        foundingDay,
+        foundingMonth,
+        foundingYear,
+        aboutCompany,
+        jobCategories,
+        logo,
+      });
+
+      res.status(200).json(updatedCompany);
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
+  };
+
+  fetchMediaLinks = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const CompanyDetails = await this.profileService.medialLinks(userId);
+
+      res.status(200).json(CompanyDetails);
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
+  };
+
+  updateMediaLinks = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const updatedMediaLinks = await this.profileService.updateMediaLinks(
+        userId,req.body
+      );
+
+      res.status(200).json(updatedMediaLinks);
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: (error as Error).message });
       return;
     }
   };
