@@ -1,8 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { IJobSeekerRepository } from "../interfaces/IJobSeekerRepository";
-import { IUser } from "../types/IUser";
-import { IUserCreateRequest } from "../types/IUserCreateRequest";
-import { IJobSeeker } from "../interfaces/IJobSeeker";
 
 interface IAdmin {
   id: string;

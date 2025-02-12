@@ -113,7 +113,7 @@ class AuthService implements IAuthService {
       console.log(userData);
 
       const savedCompany = await this.companyRepository.create({
-        name: userData.name,
+        companyName: userData.name,
       });
 
       const savedEmployee = await this.employeeRepository.create({

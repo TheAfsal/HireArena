@@ -15,6 +15,12 @@ class CompanyEmployeeRoleRepository {
     });
   }
 
+  async findCompanyByUserId(userId: string) {
+    return this.prisma.companyEmployeeRole.findUnique({
+      where: { userId },
+    });
+  }
+
   async create(roleData: { userId: string; companyId: string; role: CompanyRole }) {
     return this.prisma.companyEmployeeRole.create({ data: roleData });
   }

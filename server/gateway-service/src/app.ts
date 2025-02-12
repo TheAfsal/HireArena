@@ -2,8 +2,7 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
-import type { Filter, Options, RequestHandler } from "http-proxy-middleware";
+import { createProxyMiddleware } from "http-proxy-middleware";
 import dotenv from "dotenv";
 
 import { validateAccessToken } from "./middleware/validateToken";
