@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { JobFormData } from "./job-posting-form";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Category } from "@/app/admin/manage/components/job-category";
+import { Skill } from "@/app/admin/manage/page";
 
 interface Props {
   formData: JobFormData;
@@ -23,6 +25,7 @@ export default function JobDescription({
   formData,
   updateFormData,
   onNext,
+
 }: Props) {
   return (
     <div className="space-y-8">

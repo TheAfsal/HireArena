@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Briefcase,
@@ -16,6 +16,13 @@ import { Separator } from "@/components/ui/separator";
 import { createJob } from "@/app/api/job";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  fetchCategoryType,
+  fetchJobCategory,
+  fetchSkills,
+} from "@/app/api/skills";
+import { Skill } from "@/app/admin/manage/page";
+import { Category } from "@/app/admin/manage/components/job-category";
 
 export interface JobFormData {
   // Step 1: Job Information
@@ -61,7 +68,11 @@ const INITIAL_FORM_DATA: JobFormData = {
 export default function JobPostingForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<JobFormData>(INITIAL_FORM_DATA);
-  const router = useRouter()
+  const [jobCategories, setJobCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const router = useRouter();
 
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, 3));
@@ -112,7 +123,7 @@ export default function JobPostingForm() {
 
     try {
       await createJob(formData);
-      router.push('/panel')
+      router.push("/panel");
       toast("Job posted successfully!");
     } catch (error) {
       console.error("Error creating job:", error);
@@ -123,6 +134,35 @@ export default function JobPostingForm() {
   const updateFormData = (data: Partial<JobFormData>) => {
     setFormData((prev: any) => ({ ...prev, ...data }));
   };
+
+  useEffect(() => {
+    const getJobCategory = async () => {
+      try {
+        const response = await fetchJobCategory();
+        console.log(response);
+
+        setJobCategories(response);
+      } catch (err) {
+        console.log((err as Error).message);
+      }
+    };
+
+    getJobCategory();
+  }, []);
+
+  useEffect(() => {
+    const getSkills = async () => {
+      try {
+        const response = await fetchSkills();
+        console.log(response);
+        setSkills(response);
+      } catch (err) {
+        console.log((err as Error).message);
+      }
+    };
+
+    getSkills();
+  }, []);
 
   return (
     <div className="container p-8">
@@ -202,6 +242,8 @@ export default function JobPostingForm() {
           formData={formData}
           updateFormData={updateFormData}
           onNext={handleNext}
+          jobCategories={jobCategories}
+          skills={skills}
         />
       )}
       {currentStep === 2 && (

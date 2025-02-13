@@ -228,9 +228,9 @@ import { CategoryType } from "./category-type";
 
 export default function JobCategoryTable() {
   const [jobCategories, setJobCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [categoryTypes, setCategoryTypes] = useState<CategoryType[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {

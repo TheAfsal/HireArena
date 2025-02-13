@@ -7,6 +7,7 @@ import "./config/prismaClient";
 import authRoutes from "./routes/authRoutes";
 import companyRoutes from "./routes/companyRoutes";
 import jobSeekerRoutes from "./routes/jobSeekerRoutes";
+import adminRoutes from "./routes/adminRoutes";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/job-seeker", jobSeekerRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "User Service is running!" });

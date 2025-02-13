@@ -17,6 +17,7 @@ import CompanyController from "../controllers/companyController";
 import InvitationRepository from "../repositories/InvitationRepository";
 import AdminRepository from "../repositories/AdminRepository";
 import ProfileService from "../services/ProfileService";
+import CompanyService from "../services/CompanyServices";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const adminRepository = new AdminRepository(prisma);
@@ -26,6 +27,7 @@ const employeeRepository = new EmployeeRepository(prisma);
 const redisService = new RedisService();
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
+const companyService = new CompanyService(companyEmployeeRoleRepository);
 const emailService = new EmailService();
 const invitationRepository = new InvitationRepository(prisma);
 
@@ -59,7 +61,11 @@ const profileService = new ProfileService(
   passwordService
 );
 
-const companyController = new CompanyController(invitationService,profileService);
+const companyController = new CompanyController(
+  invitationService,
+  profileService,
+  companyService
+);
 
 const authController = new AuthController(authService);
 
