@@ -13,19 +13,22 @@ const userServiceClient = new userProto.UserService(
   grpc.credentials.createInsecure()
 );
 
-const getCompanyIdByUserId = (userId: string) => {
-  return new Promise<string>((resolve, reject) => {
-    userServiceClient.GetCompanyIdByUserId({ userId }, (error: any, response: any) => {
+const GetAllJobSeekers = () => {
+  
+  return new Promise<any>((resolve, reject) => {
+    userServiceClient.GetAllJobSeekers({ }, (error: any, response: any) => {
+      console.log(response);
+      
       if (error) {
         reject(error);
       } else {
-        resolve(response.companyId);
+        resolve(response);
       }
     });
   });
 };
 
-export { getCompanyIdByUserId };
+export { GetAllJobSeekers };
 
 
 

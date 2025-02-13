@@ -1,4 +1,7 @@
+"use client"
+import { useEffect, useState } from "react";
 import { DataTable } from "../components/data-table"
+import { fetchCompanies } from "@/app/api/company";
 
 const companies = [
   { name: "TechCorp", location: "San Francisco", industry: "Technology", status: "Active", dateAdded: "2 days ago" },
@@ -20,15 +23,29 @@ const companies = [
 ]
 
 const columns = [
-  { key: "name", label: "Name" },
+  { key: "companyName", label: "Name" },
   { key: "location", label: "Location" },
   { key: "industry", label: "Industry" },
   { key: "status", label: "Status" },
-  { key: "dateAdded", label: "Date Added" },
   { key: "actions", label: "Actions" },
 ]
 
 export default function CompaniesPage() {
-  return <DataTable title="Companies" columns={columns} data={companies} searchPlaceholder="Search companies" />
+  const [companies, setCompanies] = useState([]);
+
+  useEffect(() => {
+    const getCompanies = async () => {
+      try {
+        const response = await fetchCompanies();
+        console.log(response);
+        setCompanies(response);
+      } catch (err) {
+        console.log((err as Error).message);
+      }
+    };
+
+    getCompanies();
+  }, []);
+  return <DataTable title="Companies" data={companies} columns={columns} searchPlaceholder="Search companies" />
 }
 

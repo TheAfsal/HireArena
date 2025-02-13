@@ -71,6 +71,10 @@ class CompanyRepository {
       data
     });
   }
+
+  async findMany() {
+    return await this.prisma.company.findMany();
+  }
 }
 
 export default CompanyRepository;

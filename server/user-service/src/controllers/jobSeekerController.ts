@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import * as grpc from "@grpc/grpc-js";
 import ProfileService from "../services/ProfileService";
 
-class jobSeekerController {
+class JobSeekerController {
   private profileService: any;
 
   constructor(profileService: ProfileService) {
@@ -110,6 +111,28 @@ class jobSeekerController {
       return;
     }
   };
+
+  // getAllJobSeekers = async (req: Request, res: Response) => {
+  //   try {
+
+  //     const usersProfile = await this.profileService.getAllProfiles();
+  //     res.status(200).json(usersProfile);
+
+  //   } catch (error) {
+  //     console.log(error);
+
+  //     res.status(400).json({ error: (error as Error).message });
+  //   }
+  // };
+
+  getAllJobSeekers = (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    console.log("reaching 3");
+    
+    this.profileService.getAllProfiles(callback);
+  };
 }
 
-export default jobSeekerController;
+export default JobSeekerController;

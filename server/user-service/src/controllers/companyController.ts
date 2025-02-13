@@ -264,8 +264,23 @@ class CompanyController {
     callback: grpc.sendUnaryData<any>
   ) => {
     const { userId } = call.request;
+    
     this.companyService.getCompanyIdByUserId(userId, callback);
   };
+
+  getAllCompanies = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const CompaniesDetails = await this.companyService.getAllCompanies();
+
+      res.status(200).json(CompaniesDetails);
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
+  };
+
 }
 
 export default CompanyController;

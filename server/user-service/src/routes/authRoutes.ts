@@ -27,7 +27,7 @@ const employeeRepository = new EmployeeRepository(prisma);
 const redisService = new RedisService();
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
-const companyService = new CompanyService(companyEmployeeRoleRepository);
+const companyService = new CompanyService(companyEmployeeRoleRepository,redisService,companyRepository);
 const emailService = new EmailService();
 const invitationRepository = new InvitationRepository(prisma);
 

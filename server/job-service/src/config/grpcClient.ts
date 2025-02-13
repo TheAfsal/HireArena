@@ -15,6 +15,8 @@ const userServiceClient = new userProto.UserService(
 
 const getCompanyIdByUserId = (userId: string) => {
   return new Promise<string>((resolve, reject) => {
+    console.log("reaching 4");
+    
     userServiceClient.GetCompanyIdByUserId({ userId }, (error: any, response: any) => {
       if (error) {
         reject(error);

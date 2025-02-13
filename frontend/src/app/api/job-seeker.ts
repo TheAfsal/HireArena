@@ -3,9 +3,8 @@ import axiosInstance from "./axiosInstance";
 
 export async function fetchCandidates(): Promise<any> {
   try {
-    const response = await axiosInstance.post(
-      `http://localhost:4000/job-service/api/jobs/`,
-    //   formData
+    const response = await axiosInstance.get(
+      `http://localhost:4000/admin-service/api/admin/candidates`
     );
 
     return response.data;
@@ -20,5 +19,21 @@ export async function fetchCandidates(): Promise<any> {
   }
 }
 
+export async function updateJobSeekerStatus(id: string): Promise<any> {
+  try {
+    const response = await axiosInstance.put(
+      `http://localhost:4000/user-service/api/admin/candidates`,
+      { userId: id }
+    );
 
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
 
+    throw new Error("Unknown error occurred");
+  }
+}

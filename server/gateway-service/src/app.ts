@@ -64,6 +64,22 @@ app.use(
   })
 );
 
+app.use(
+  "/admin-service/",
+  // validateAccessToken,
+  createProxyMiddleware({
+    target: "http://localhost:5003",
+    changeOrigin: true,
+    on: {
+      // proxyReq: (proxyReq, req, res) => {
+      //   if (req.user) {
+      //     proxyReq.setHeader("x-user", JSON.stringify(req.user));
+      //   }
+      // },
+    },
+  })
+);
+
 
 // app.use(
 //   '/user-service',

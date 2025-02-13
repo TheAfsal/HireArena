@@ -1,3 +1,5 @@
+import * as grpc from "@grpc/grpc-js";
+
 import grpcClient from "../config/grpcClient";
 import { IPasswordService } from "../interfaces/IPasswordService";
 import JobSeekerRepository from "../repositories/JobSeekerRepository";
@@ -147,18 +149,42 @@ class ProfileService {
     if (!relationDetails) {
       throw new Error("User not found in any company");
     }
-    return await this.companyRepository.findMedialLinksById(relationDetails.companyId);
+    return await this.companyRepository.findMedialLinksById(
+      relationDetails.companyId
+    );
   };
 
-  updateMediaLinks = async (userId:string,data: any) => {
-
+  updateMediaLinks = async (userId: string, data: any) => {
     let relationDetails =
-      await this.companyEmployeeRoleRepository.findCompanyByUserId(
-        userId
-      );
+      await this.companyEmployeeRoleRepository.findCompanyByUserId(userId);
 
-    return await this.companyRepository.updateMediaLinks(relationDetails.companyId,data);
+    return await this.companyRepository.updateMediaLinks(
+      relationDetails.companyId,
+      data
+    );
   };
+
+  async getAllProfiles(callback: grpc.sendUnaryData<any>) {
+    this.JobSeekerRepository.getAllProfiles()
+      .then((details: any) => {
+        console.log(details);
+
+        if (details) {
+          callback(null, {jobSeekers:details} );
+        } else {
+          callback({
+            code: grpc.status.NOT_FOUND,
+            details: "User not found",
+          });
+        }
+      })
+      .catch((err: any) => {
+        callback({
+          code: grpc.status.INTERNAL,
+          details: err.message,
+        });
+      });
+  }
 }
 
 export default ProfileService;

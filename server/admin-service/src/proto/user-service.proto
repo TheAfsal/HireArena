@@ -3,13 +3,20 @@ syntax = "proto3";
 package user;
 
 service UserService {
-  rpc GetCompanyIdByUserId (GetCompanyIdRequest) returns (GetCompanyIdResponse);
+  rpc GetAllJobSeekers (Empty) returns (JobSeekerList);
 }
 
-message GetCompanyIdRequest {
-  string userId = 1; 
+message Empty {}
+
+message JobSeeker {
+  string id = 1;
+  string fullName = 2;
+  string email = 3;
+  string image = 4;
+  bool status = 5;
+  string createdAt = 6;
 }
 
-message GetCompanyIdResponse {
-  string companyId = 1; 
+message JobSeekerList {
+  repeated JobSeeker jobSeekers = 1;
 }
