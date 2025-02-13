@@ -1,101 +1,31 @@
-"use client"
+"use client";
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
+import { fetchCandidates, updateJobSeekerStatus } from "@/app/api/job-seeker";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 interface User {
-  name: string;
+  id: string;
+  fullName: string;
   email: string;
-  role: "Admin" | "Recruiter" | "Member";
-  status: "Active";
-  memberSince: string;
+  status: boolean;
+  createdAt: Date;
+  image: string;
 }
 
-const users: User[] = [
-  {
-    name: "Hannah Smith",
-    email: "hannah@acme.co",
-    role: "Admin",
-    status: "Active",
-    memberSince: "Aug 1, 2022",
-  },
-  {
-    name: "Emily Davis",
-    email: "emily@acme.co",
-    role: "Recruiter",
-    status: "Active",
-    memberSince: "Jul 15, 2022",
-  },
-  {
-    name: "Michael Johnson",
-    email: "michael@acme.co",
-    role: "Recruiter",
-    status: "Active",
-    memberSince: "Jun 28, 2022",
-  },
-  {
-    name: "Sarah Miller",
-    email: "sarah@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "Jun 12, 2022",
-  },
-  {
-    name: "David Brown",
-    email: "david@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "May 25, 2022",
-  },
-  {
-    name: "Jessica White",
-    email: "jessica@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "May 10, 2022",
-  },
-  {
-    name: "William Lee",
-    email: "william@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "Apr 22, 2022",
-  },
-  {
-    name: "Olivia Garcia",
-    email: "olivia@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "Apr 5, 2022",
-  },
-  {
-    name: "Daniel Martinez",
-    email: "daniel@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "Mar 18, 2022",
-  },
-  {
-    name: "Sophia Lopez",
-    email: "sophia@acme.co",
-    role: "Member",
-    status: "Active",
-    memberSince: "Mar 3, 2022",
-  },
-];
-
 export default function UsersPage() {
-  const [candidates, setCandidates] = useState([]);
+  const [candidates, setCandidates] = useState<User[]>([]);
 
   useEffect(() => {
     const getCandidates = async () => {
       try {
         const response = await fetchCandidates();
-        console.log(response);
-        setCandidates(response);
+        setCandidates(response.jobSeekers);
       } catch (err) {
         console.log((err as Error).message);
       }
@@ -103,6 +33,22 @@ export default function UsersPage() {
 
     getCandidates();
   }, []);
+
+  const toggleStatus = async (user: User) => {
+    try {
+      let response = await updateJobSeekerStatus(user.id);
+      console.log(response);
+
+      setCandidates((prevCandidates) =>
+        prevCandidates.map((candidate) =>
+          candidate.email === response.email ? response : candidate
+        )
+      );
+      toast.success(`Candidate ${response.status?"unblocked":"blocked"} successfully`)
+    } catch (err) {
+      toast.error("Error toggling user status")
+    }
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -129,9 +75,6 @@ export default function UsersPage() {
                   Email
                 </th>
                 <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                  Role
-                </th>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
                   Status
                 </th>
                 <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
@@ -143,36 +86,43 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {candidates.map((user) => (
                 <tr key={user.email} className="border-b last:border-b-0">
-                  <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
+                  <td className="flex items-center gap-3 px-6 py-4 whitespace-nowrap">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={user.image} />
+                      <AvatarFallback>{user.fullName[0]}</AvatarFallback>
+                    </Avatar>
+                    {user.fullName}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                     {user.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Badge
-                      variant={user.role === "Admin" ? "default" : "secondary"}
-                    >
-                      {user.role}
-                    </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Badge
                       variant="secondary"
                       className="bg-gray-100 hover:bg-gray-100"
                     >
-                      {user.status}
+                      {user.status ? "Active" : "Disabled"}
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                    {user.memberSince}
+                    {new Date(user.createdAt).toLocaleString("en-US", {
+                      weekday: "short", // 'Thu'
+                      year: "numeric", // '2025'
+                      month: "short", // 'Feb'
+                      hour: "2-digit", // '03'
+                      minute: "2-digit", // '39'
+                      hour12: true, // 'AM/PM'
+                    })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <Button
                       variant="ghost"
                       className="text-gray-500 hover:text-gray-700"
+                      onClick={() => toggleStatus(user)}
                     >
-                      View Details
+                      {user.status ? "Block" : "Unblock"}
                     </Button>
                   </td>
                 </tr>

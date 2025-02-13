@@ -51,8 +51,6 @@ model Job {
   requiredSkills   Skill[]             @relation("JobRequiredSkills") // Many-to-many relation with Skill
 }
 
-
-
 model JobEmploymentType {
   id    String         @id @default(uuid())
   jobId String
@@ -83,12 +81,12 @@ model CategoryType {
 }
 
 model JobCategory {
-  id             String       @id @default(uuid())   // Unique identifier for the job category
-  name           String       // Name of the category (e.g., "Software Engineering")
-  description    String       // A short description of the job category
-  status         Boolean      // Indicates whether the category is active
-  categoryTypeId String       // Foreign key reference to CategoryType model
-  categoryType   CategoryType @relation(fields: [categoryTypeId], references: [id]) // Relationship to CategoryType
+  id             String       @id @default(uuid())
+  name           String       
+  description    String       
+  status         Boolean      
+  categoryTypeId String       
+  categoryType   CategoryType @relation(fields: [categoryTypeId], references: [id])
 
   jobs            Job[]        @relation("JobCategories") // Many-to-many relation with Job
   skills          Skill[]      // One-to-many relation with Skill

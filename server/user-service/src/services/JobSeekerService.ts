@@ -1,14 +1,18 @@
 import grpcClient from "../config/grpcClient";
 import { IPasswordService } from "../interfaces/IPasswordService";
 import JobSeekerRepository from "../repositories/JobSeekerRepository";
+import RedisService from "./RedisServices";
 
 class JobSeekerService {
-  private JobSeekerRepository: JobSeekerRepository;
+  private jobSeekerRepository: JobSeekerRepository;
+  private redisService: any;
 
   constructor(
-    JobSeekerRepository: JobSeekerRepository,
+    jobSeekerRepository: JobSeekerRepository,
+    redisService: RedisService
   ) {
-    this.JobSeekerRepository = JobSeekerRepository;
+    this.jobSeekerRepository = jobSeekerRepository;
+    this.redisService = redisService;
   }
 
   getAllCandidateProfile = async (userId: any) => {
@@ -21,6 +25,20 @@ class JobSeekerService {
     // return await this.companyRepository.findById(relationDetails.companyId);
   };
 
+  async toggleStatus(userId: string): Promise<any> {
+    const updatedCandidate =
+      await this.jobSeekerRepository.updateJobSeekerStatus(userId);
+
+    if (!updatedCandidate) {
+      throw new Error("User not found");
+    }
+
+    if (!updatedCandidate.status) {
+      await this.redisService.delete(userId);
+    }
+
+    return updatedCandidate;
+  }
 }
 
 export default JobSeekerService;

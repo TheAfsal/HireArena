@@ -11,6 +11,6 @@ app.listen(PORT, () =>
 
 
 server.bindAsync(`0.0.0.0:${5051}`, grpc.ServerCredentials.createInsecure(), () => {
-  console.log(`🚀 User Service running on port ${PORT}`);
+  console.log(`🚀 User Service running on port ${5051}`);
   server.start();
 });

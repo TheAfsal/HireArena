@@ -3,11 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import "./config/prismaClient";
-import jobRoutes from "./routes/jobRoutes";
-import categoryRoutes from "./routes/categoryRoutes";
-import jobCategoryRoutes from "./routes/jobCategoryRoutes";
-import skillRoutes from "./routes/skillRoutes";
+import adminRoutes from "./routes/adminRoutes";
 
 dotenv.config();
 
@@ -32,10 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/jobs", jobRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/job-categories", jobCategoryRoutes);
-app.use("/api/skills", skillRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "User Service is running!" });

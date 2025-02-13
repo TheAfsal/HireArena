@@ -21,6 +21,26 @@ export async function createJob(formData: JobFormData): Promise<any> {
   }
 }
 
+export async function fetchAllJobs(): Promise<any> {
+  try {
+    const response = await axiosInstance.get(
+      `http://localhost:4000/job-service/api/jobs/`
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+
+
 // export async function createJob(formData: JobFormData): Promise<any> {
 //   try {
 //     const response = await axiosInstance.get(

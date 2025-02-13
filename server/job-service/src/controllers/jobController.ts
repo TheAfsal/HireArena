@@ -18,9 +18,6 @@ class JobController {
 
   createJob = async (req: Request, res: Response) => {
     try {
-console.log("asd");
-
-
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;

@@ -37,6 +37,7 @@ class JobSeekerRepository implements IJobSeekerRepository {
           fullName: userData.name,
           email: userData.email,
           password: userData.password,
+          status: true,
         },
         select: {
           id: true,
@@ -75,6 +76,20 @@ class JobSeekerRepository implements IJobSeekerRepository {
         dob: true,
         gender: true,
         image: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async getAllProfiles() {
+    return await this.prisma.jobSeeker.findMany({
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        image: true,
+        status: true,
+        createdAt: true,
       },
     });
   }
@@ -95,6 +110,26 @@ class JobSeekerRepository implements IJobSeekerRepository {
       where: { id },
       data: { password: hashedPassword },
     });
+  }
+
+  async updateJobSeekerStatus(id: string) {
+    const jobSeeker = await this.prisma.jobSeeker.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+
+    if (!jobSeeker) {
+      throw new Error("Job Seeker not found");
+    }
+
+    const updatedStatus = !jobSeeker.status;
+
+    const updatedJobSeeker = await this.prisma.jobSeeker.update({
+      where: { id },
+      data: { status: updatedStatus },
+    });
+
+    return updatedJobSeeker;
   }
 }
 

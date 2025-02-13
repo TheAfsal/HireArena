@@ -15,6 +15,7 @@ import InvitationService from "../services/InvitationService";
 import CompanyController from "../controllers/companyController";
 import CompanyService from "../services/CompanyServices";
 import path from "path";
+import JobSeekerController from "../controllers/jobSeekerController";
 
 const PROTO_PATH = path.join(__dirname, "../proto/user-service.proto");
 
@@ -30,9 +31,13 @@ const invitationRepository = new InvitationRepository(prisma);
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
-const companyService = new CompanyService(companyEmployeeRoleRepository);
 const emailService = new EmailService();
 const redisService = new RedisService();
+const companyService = new CompanyService(
+  companyEmployeeRoleRepository,
+  redisService,
+  companyRepository
+);
 const profileService = new ProfileService(
   jobSeekerRepository,
   companyRepository,
@@ -57,9 +62,14 @@ const companyController = new CompanyController(
   companyService
 );
 
+const jobSeekerController = new JobSeekerController(profileService);
+
+console.log(userProto);
+
 //@ts-ignore
 server.addService(userProto.UserService.service, {
   GetCompanyIdByUserId: companyController.getCompanyIdByUserId,
+  GetAllJobSeekers: jobSeekerController.getAllJobSeekers,
 });
 
 export default server;

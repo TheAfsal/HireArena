@@ -22,9 +22,13 @@ const invitationRepository = new InvitationRepository(prisma);
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
-const companyService = new CompanyService(companyEmployeeRoleRepository);
 const emailService = new EmailService();
 const redisService = new RedisService();
+const companyService = new CompanyService(
+  companyEmployeeRoleRepository,
+  redisService,
+  companyRepository
+);
 const profileService = new ProfileService(
   jobSeekerRepository,
   companyRepository,
@@ -64,5 +68,7 @@ router
   .route("/media-links")
   .get(companyController.fetchMediaLinks)
   .put(companyController.updateMediaLinks);
+
+
 
 export default router;

@@ -35,6 +35,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateJobSeekerProfile } from "@/app/api/profile";
 import { toast } from "sonner";
+import { isValid } from "date-fns";
 
 const profileFormSchema = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters"),
@@ -71,7 +72,7 @@ export default function MyProfile({ userProfileData }: MyProfileProps) {
     fullName: userProfileData?.fullName || "",
     email: userProfileData?.email || "",
     phone: userProfileData?.phone || "",
-    dob: new Date(userProfileData?.dob.toString()!),
+    dob: new Date(userProfileData?.dob?.toString() || ""),
     gender: userProfileData?.gender || "",
   };
 
@@ -265,8 +266,8 @@ export default function MyProfile({ userProfileData }: MyProfileProps) {
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value ? (
-                            format(field.value, "PPP")
+                          {field.value && isValid(new Date(field.value)) ? (
+                            format(new Date(field.value), "PPP")
                           ) : (
                             <span>Pick a date</span>
                           )}
