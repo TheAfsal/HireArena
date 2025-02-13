@@ -21,7 +21,6 @@ interface Skill {
 
 export default function SkillsTable() {
   const [skills, setSkills] = useState<Skill[]>([]);
-
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 

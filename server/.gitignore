@@ -12,5 +12,8 @@
 /file-service/node_modules
 /file-service/.env
 
+/admin-service/node_modules
+/admin-service/.env
+
 /a.rest
 

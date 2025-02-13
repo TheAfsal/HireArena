@@ -23,6 +23,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { JobFormData } from "./job-posting-form";
+import { Category } from "@/app/admin/manage/components/job-category";
+import { Skill } from "@/app/admin/manage/page";
 
 const EMPLOYMENT_TYPES = [
   "FULL_TIME",
@@ -32,40 +34,52 @@ const EMPLOYMENT_TYPES = [
   "CONTRACT",
 ];
 
-const JOB_CATEGORIES = [
-  "ENGINEERING",
-  "DESIGN",
-  "MARKETING",
-  "SALES",
-  "HR",
-];
-
 interface Props {
   formData: JobFormData;
   updateFormData: (data: Partial<JobFormData>) => void;
   onNext: () => void;
+  jobCategories: Category[];
+  skills: Skill[];
 }
 
 export default function JobInformation({
   formData,
   updateFormData,
   onNext,
+  jobCategories,
+  skills,
 }: Props) {
   const [newSkill, setNewSkill] = useState("");
+  const [filteredSkills, setFilteredSkills] = useState<Skill[]>([]); // For filtering skills based on user input
 
-  const addSkill = () => {
-    if (newSkill && !formData.requiredSkills.includes(newSkill)) {
+  // Add a skill to the requiredSkills list
+  const addSkill = (skillName: string, skillId: string) => {
+    if (skillName && !formData.requiredSkills.includes(skillId)) {
       updateFormData({
-        requiredSkills: [...formData.requiredSkills, newSkill],
+        requiredSkills: [...formData.requiredSkills, skillId],
       });
-      setNewSkill("");
+      setNewSkill(""); // Clear input after adding the skill
+      setFilteredSkills([]); // Clear suggestions after adding skill
     }
   };
 
-  const removeSkill = (skill: string) => {
+  // Remove a skill from the requiredSkills list
+  const removeSkill = (skillId: string) => {
     updateFormData({
-      requiredSkills: formData.requiredSkills.filter((s) => s !== skill),
+      requiredSkills: formData.requiredSkills.filter((s) => s !== skillId),
     });
+  };
+
+  // Filter skills based on user input
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewSkill(value);
+
+    // Filter available skills based on input text
+    const filtered = skills.filter((skill) =>
+      skill.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredSkills(filtered);
   };
 
   return (
@@ -74,7 +88,7 @@ export default function JobInformation({
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
           <CardDescription>
-          This information will be displayed publicly.
+            This information will be displayed publicly.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -107,7 +121,7 @@ export default function JobInformation({
               <div className="w-3/12">
                 <Label>Type of Employment</Label>
                 <p className="text-sm text-gray-500 mt-1">
-                  You can select multiple type of employment
+                  You can select multiple types of employment
                 </p>
               </div>
               <div className="grid gap-2 w-full">
@@ -202,9 +216,9 @@ export default function JobInformation({
                     <SelectValue placeholder="Select Job Categories" />
                   </SelectTrigger>
                   <SelectContent>
-                    {JOB_CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                    {jobCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -223,35 +237,53 @@ export default function JobInformation({
               </div>
               <div className="flex gap-2 mb-2 w-full">
                 <Input
-                  placeholder="Add required skills"
+                  placeholder="Search or Add skills"
                   value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addSkill();
-                    }
-                  }}
+                  onChange={handleInputChange} // Handle input change to filter skills
                 />
-                <Button onClick={addSkill}>Add Skills</Button>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.requiredSkills.map((skill) => (
-                  <Badge key={skill} variant="secondary">
-                    {skill}
-                    <button
-                      onClick={() => removeSkill(skill)}
-                      className="ml-2 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
+
+              {/* Skill Suggestions */}
+              {newSkill && (
+                <div className="absolute bg-white shadow-lg rounded mt-10 ml-60 p-2 w-4/12 max-h-60 overflow-auto z-10">
+                  {filteredSkills.length > 0 ? (
+                    filteredSkills.map((skill) => (
+                      <div
+                        key={skill.id}
+                        className="cursor-pointer p-2 hover:bg-gray-100"
+                        onClick={() => addSkill(skill.name, skill.id)} // Add skill when clicked
+                      >
+                        {skill.name}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-500">No suggestions found</p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.requiredSkills.map((skillId) => {
+                  // Find the skill by id
+                  const skill = skills.find((s) => s.id === skillId);
+                  return (
+                    skill && (
+                      <Badge key={skill.id} variant="secondary">
+                        {skill.name}
+                        <button
+                          onClick={() => removeSkill(skill.id)}
+                          className="ml-2 hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    )
+                  );
+                })}
               </div>
             </div>
           </div>
         </CardContent>
-        
       </Card>
       <div className="flex justify-end mt-7">
         <Button onClick={onNext}>Next Step</Button>
