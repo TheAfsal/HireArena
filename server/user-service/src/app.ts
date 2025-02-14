@@ -8,15 +8,46 @@ import authRoutes from "./routes/authRoutes";
 import companyRoutes from "./routes/companyRoutes";
 import jobSeekerRoutes from "./routes/jobSeekerRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import subscriptionRoutes from "./routes/subscriptionRoutes";
+import jwt from "jsonwebtoken";
+//
+import session from "express-session";
 import cookieParser from "cookie-parser";
-
+import passport from "passport";
+import "../src/utils/passport";
+import cookieSession from "cookie-session";
+// import stripeLib from "stripe";
 dotenv.config();
+// const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 
 const app: Application = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// app.use(
+//   cookieSession({
+//     name: "session",
+//     keys: [process.env.COOKIE_SECRET || "default_secret"],
+//     maxAge: 24 * 60 * 60 * 1000, // 1 day
+//     secure: false, // Set true in production with HTTPS
+//     httpOnly: true, // Prevent XSS attacks
+//   })
+// );
+app.use(
+  session({
+    secret: "your_random_secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 app.use(
   cors({
@@ -34,10 +65,111 @@ app.use((req, res, next) => {
   next();
 });
 
+// const YOUR_DOMAIN = 'http://localhost:3000';
+
+// // Create Checkout Session endpoint
+// app.post('/create-checkout-session', async (req, res) => {
+//   try {
+//     const session = await stripe.checkout.sessions.create({
+//       line_items: [
+//         {
+//           price_data: {
+//             currency: 'usd', // Currency
+//             product_data: {
+//               name: 'T-shirt', // Product name
+//             },
+//             unit_amount: 2000, // Price in cents (this is $20.00)
+//           },
+//           quantity: 1, // Quantity
+//         },
+//       ],
+//       mode: 'payment',  // Indicating this is for a payment
+//       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,  // Redirect after successful payment
+//       cancel_url: `${YOUR_DOMAIN}/cancel`,  // Redirect if the user cancels the payment
+//     });
+
+//     // Redirect the user to the Stripe Checkout page
+//     res.redirect(303, session.url||"");
+//   } catch (error) {
+//     console.error('Error creating checkout session:', error);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Google Callback Route
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000/login",
+  }),
+  // (req, res) => {
+  //   res.redirect("http://localhost:3000/job-seeker");
+  // }
+  async (req, res) => {
+    if (!req.user) {
+      return res.redirect("http://localhost:3000/login");
+    }
+
+    const user = req.user as { id: string; email: string };
+
+    const accessToken =  jwt.sign({ userId:"asdasd" }, process.env.ACCESS_TOKEN_SECRET || "", {
+      expiresIn: "1m", 
+    });
+    const refreshToken =  jwt.sign({ userId:"asdasd",role:"HR" }, process.env.REFRESH_TOKEN_SECRET || "", {
+      expiresIn: "7d", 
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
+
+    res.redirect(`http://localhost:3000/job-seeker?token=${accessToken}`);
+  }
+);
+
+// Logout Route
+app.get("/auth/logout", (req, res) => {
+  req.logout(() => {
+    res.redirect("/");
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/job-seeker", jobSeekerRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/subscription", subscriptionRoutes);
+
+// app.get(
+//   "/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
+
+// app.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", {
+//     successRedirect: process.env.CLIENT_URL || "sad",
+//     failureRedirect: "/auth/login/failed",
+//   })
+//   // (req, res) => {
+//   // res.redirect(process.env.CLIENT_URL || "http://localhost:3000");
+//   // }
+// );
+
+// app.get("/auth/logout", (req, res) => {
+//   req.logout(() => {
+//     res.clearCookie("session");
+//     res.redirect(process.env.CLIENT_URL || "sad");
+//   });
+// });
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "User Service is running!" });

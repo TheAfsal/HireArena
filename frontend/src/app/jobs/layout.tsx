@@ -7,12 +7,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <NavigationBar />
-        {children}
-        <Footer />
-      </body>
-    </html>
+    <>
+      <NavigationBar />
+      {children}
+      <Footer />
+    </>
   );
 }

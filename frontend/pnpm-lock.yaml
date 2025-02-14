@@ -56,6 +56,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: ^2.5.0
         version: 2.5.0(react-redux@9.2.0(@types/react@19.0.7)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
+      '@stripe/stripe-js':
+        specifier: github:stripe/stripe-js
+        version: https://codeload.github.com/stripe/stripe-js/tar.gz/8f06b618389454449211970023f04a947d5fdcde
       '@tanstack/react-table':
         specifier: ^8.20.6
         version: 8.20.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1063,6 +1066,11 @@ packages:
 
   '@rushstack/eslint-patch@1.10.5':
     resolution: {integrity: sha512-kkKUDVlII2DQiKy7UstOR1ErJP8kUKAQ4oa+SQtM0K+lPdmmjj0YnnxBgtTVYH7mUKtbsxeFC9y0AmK7Yb78/A==}
+
+  '@stripe/stripe-js@https://codeload.github.com/stripe/stripe-js/tar.gz/8f06b618389454449211970023f04a947d5fdcde':
+    resolution: {tarball: https://codeload.github.com/stripe/stripe-js/tar.gz/8f06b618389454449211970023f04a947d5fdcde}
+    version: 5.6.0
+    engines: {node: '>=12.16'}
 
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
@@ -4070,6 +4078,8 @@ snapshots:
   '@rtsao/scc@1.1.0': {}
 
   '@rushstack/eslint-patch@1.10.5': {}
+
+  '@stripe/stripe-js@https://codeload.github.com/stripe/stripe-js/tar.gz/8f06b618389454449211970023f04a947d5fdcde': {}
 
   '@swc/counter@0.1.3': {}
 

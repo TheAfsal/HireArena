@@ -1,6 +1,6 @@
 datasource db {
-  provider = "postgresql" // Use your database provider (e.g., mysql, sqlite, etc.)
-  url      = env("DATABASE_URL") // The connection string from your .env
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -48,8 +48,21 @@ model Job {
   // Relations
   employmentTypes  JobEmploymentType[] // Relation to employment types
   categories       JobCategory[]       @relation("JobCategories") // Many-to-many relation with JobCategory
-  requiredSkills   Skill[]             @relation("JobRequiredSkills") // Many-to-many relation with Skill
+  requiredSkills   Skill[]             @relation("JobRequiredSkills") 
+  applications     JobApplication[] 
 }
+
+model JobApplication {
+  id            String   @id @default(uuid())  
+  jobId         String   // Foreign key to Job (Job Service)
+  jobSeekerId   String   // Foreign key (but reference exists in User Service)
+  status        String   @default("PENDING") // Status (APPLIED, INTERVIEW, HIRED, REJECTED)
+  resumeUrl     String?  // Resume file URL (optional)
+  appliedAt     DateTime @default(now()) // Timestamp of application
+
+  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
 
 model JobEmploymentType {
   id    String         @id @default(uuid())

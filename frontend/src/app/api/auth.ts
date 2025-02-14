@@ -157,7 +157,7 @@ export async function sendInvitation(inviteDetails: {
 }): Promise<AuthResponse & { accessToken: string; role?: string }> {
   try {
     const response = await axiosInstance.post(
-      "/user-service/auth/api/company/invite",
+      "/user-service/api/company/invite",
       inviteDetails
     );
 
@@ -176,7 +176,7 @@ export async function sendInvitation(inviteDetails: {
 export async function fetchInvitationDetails(token: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/auth/api/company/invite/${token}`
+      `/user-service/api/company/invite/${token}`
     );
 
     return response.data;
@@ -198,7 +198,7 @@ export async function AcceptInvitation(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/auth/api/company/accept-invite`,
+      `/user-service/api/company/accept-invite`,
       { token, name, password }
     );
 

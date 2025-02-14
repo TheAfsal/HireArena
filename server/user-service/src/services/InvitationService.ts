@@ -79,8 +79,8 @@ class InvitationService {
     }
 
     const { email, message, role } = invitation;
-    const { name } = company;
-    return { email, message, role, name };
+    const { companyName } = company;
+    return { email, message, role, name:companyName };
   }
 
   async acceptInvitation(

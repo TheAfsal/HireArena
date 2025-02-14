@@ -31,6 +31,9 @@ class CompanyController {
 
       const { email, role, message } = req.body;
 
+      console.log(email, role, message);
+      console.log(userId);
+
       if (!email || !userId || !role) {
         res.status(400).json({
           status: "error",
@@ -81,6 +84,9 @@ class CompanyController {
         token
       );
 
+      console.log(invitationDetails);
+      
+
       res.status(200).json({
         status: "success",
         message: "Invitation fetched successfully",
@@ -107,6 +113,9 @@ class CompanyController {
   ): Promise<void> => {
     try {
       const { token, name, password } = req.body;
+
+      console.log(token, name, password);
+      
 
       if (!token || !name || !password) {
         res.status(400).json({
@@ -264,7 +273,7 @@ class CompanyController {
     callback: grpc.sendUnaryData<any>
   ) => {
     const { userId } = call.request;
-    
+
     this.companyService.getCompanyIdByUserId(userId, callback);
   };
 
@@ -281,6 +290,14 @@ class CompanyController {
     }
   };
 
+  getCompanyDetails = (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    const { companyIds } = call.request;
+
+    this.companyService.getCompanyDetailsById(companyIds, callback);
+  };
 }
 
 export default CompanyController;

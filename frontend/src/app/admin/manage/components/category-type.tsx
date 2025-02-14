@@ -17,6 +17,7 @@ import {
   EditCategoryType,
   fetchCategoryType,
 } from "@/app/api/skills";
+import { toast } from "sonner";
 
 export interface CategoryType {
   id: string;
@@ -45,7 +46,9 @@ export default function CategoryTypesTable() {
           category.id === response.id ? response : category
         )
       );
+      toast.success("Category Type updated successfully");
     } catch (error) {
+      toast.error("Failed to update category type");
       console.log(error);
     }
   };
@@ -55,7 +58,9 @@ export default function CategoryTypesTable() {
       const response = await AddCategoryType(name, description);
       console.log(response);
       setCategories([...categories, response]);
+      toast.success("Category Type created successfully");
     } catch (error) {
+      toast.error("Failed to create category type");
       console.log(error);
     }
   };

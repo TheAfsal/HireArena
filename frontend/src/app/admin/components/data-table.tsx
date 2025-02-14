@@ -1,11 +1,7 @@
-"use client";
-
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
-import { fetchCompanies } from "@/app/api/company";
 
 interface Column {
   key: string;
@@ -14,9 +10,10 @@ interface Column {
 
 interface DataTableProps {
   title: string;
-  data: any;
+  data: any[];
   columns: Column[];
   searchPlaceholder?: string;
+  onBlockUnblock: (companyName: string) => void; 
 }
 
 export function DataTable({
@@ -24,8 +21,8 @@ export function DataTable({
   data,
   columns,
   searchPlaceholder,
+  onBlockUnblock,
 }: DataTableProps) {
-
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
@@ -55,7 +52,7 @@ export function DataTable({
               </tr>
             </thead>
             <tbody>
-              {data.map((item:any, index:number) => (
+              {data.map((item, index) => (
                 <tr key={index} className="border-b last:border-b-0">
                   {columns.map((column) => (
                     <td
@@ -64,23 +61,25 @@ export function DataTable({
                     >
                       {column.key === "status" ? (
                         <Badge
-                          variant="secondary"
+                          variant={item[column.key] ? "destructive" : "secondary"}
                           className="bg-gray-100 hover:bg-gray-100"
                         >
-                          {item[column.key] ? "Active" : "Disabled"}
+                          {!item[column.key]?"Active":"destructive"}
                         </Badge>
                       ) : column.key === "actions" ? (
-                        <Button
-                          variant="ghost"
-                          className="text-gray-500 hover:text-gray-700"
-                        >
-                          View
-                        </Button>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="ghost"
+                            className="text-gray-500 hover:text-gray-700"
+                            onClick={() => onBlockUnblock(item.name)}
+                          >{}
+                            {item.status === "Active" ? "Block" : "Unblock"}
+                          </Button>
+                        </div>
                       ) : (
                         <span
                           className={
-                            column.key === "dateAdded" ||
-                            column.key === "location"
+                            column.key === "dateAdded" || column.key === "location"
                               ? "text-gray-500"
                               : ""
                           }

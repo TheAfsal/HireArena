@@ -15,19 +15,33 @@ const userServiceClient = new userProto.UserService(
 
 const getCompanyIdByUserId = (userId: string) => {
   return new Promise<string>((resolve, reject) => {
-    console.log("reaching 4");
-    
-    userServiceClient.GetCompanyIdByUserId({ userId }, (error: any, response: any) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(response.companyId);
+    userServiceClient.GetCompanyIdByUserId(
+      { userId },
+      (error: any, response: any) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(response.companyId);
+        }
       }
-    });
+    );
   });
 };
 
-export { getCompanyIdByUserId };
+const getCompaniesDetails = (companyIds: string[]): Promise<any[]> => {
+  return new Promise((resolve, reject) => {
+    userServiceClient.GetCompaniesDetails(
+      { companyIds },
+      (error: any, response: any) => {
+        if (error) {
+          reject(error);
+        } else {
 
+          resolve(response.companies);
+        }
+      }
+    );
+  });
+};
 
-
+export { getCompanyIdByUserId, getCompaniesDetails };

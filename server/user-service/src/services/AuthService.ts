@@ -223,7 +223,6 @@ class AuthService implements IAuthService {
       email
     );
 
-    console.log(user);
 
     if (!user || !user.password) {
       throw new Error("Invalid credentials");
@@ -235,6 +234,10 @@ class AuthService implements IAuthService {
     );
     if (!isPasswordValid) {
       throw new Error("Invalid credentials");
+    }
+
+    if(user?.status === false){
+      throw new Error("Account Blocked");
     }
 
     const accessToken = this.tokenService.generateAccessToken(user.id);
