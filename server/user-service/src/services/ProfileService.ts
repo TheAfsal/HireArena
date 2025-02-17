@@ -24,6 +24,8 @@ class ProfileService {
   async updateProfile(data: any) {
     let fileUrl = "";
     if (data.profileImage.mimetype) {
+      console.log(data);
+      
       fileUrl = await new Promise((resolve, reject) => {
         grpcClient.uploadFile(
           {

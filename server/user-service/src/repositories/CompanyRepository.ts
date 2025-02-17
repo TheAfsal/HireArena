@@ -68,12 +68,33 @@ class CompanyRepository {
   async updateMediaLinks(companyId: string, data: any) {
     return await this.prisma.company.update({
       where: { id: companyId },
-      data
+      data,
     });
   }
 
   async findMany() {
     return await this.prisma.company.findMany();
+  }
+
+  async findByIds(companyIds: string[]) {
+    try {
+      if (!Array.isArray(companyIds) || companyIds.length === 0) {
+        throw new Error("No company IDs provided");
+      }
+
+      const companies = await this.prisma.company.findMany({
+        where: {
+          id: {
+            in: companyIds,
+          },
+        },
+      });
+
+      return companies;
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      throw error; 
+    }
   }
 }
 

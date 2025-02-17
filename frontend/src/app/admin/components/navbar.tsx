@@ -1,10 +1,31 @@
 // components/Navbar.tsx
+"use client";
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import type { AppDispatch, RootState } from "@/redux/store";
+import { useRouter } from "next/navigation";
+import { logoutAdmin } from "@/redux/slices/authSlice";
 
 const Navbar = () => {
+  const auth = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const [loadingState, setLoadingState] = useState(true);
+
+  useEffect(() => {
+    setLoadingState(false);
+    if(!auth.token){
+      router.push("/admin/login");
+    }
+  }, [auth]);
+
+  const handleLogout = () => {
+    dispatch(logoutAdmin());
+  };
+
   return (
     <header className="flex border-b justify-between items-center h-16 p-10">
       <h1 className="text-xl font-semibold">
@@ -65,9 +86,26 @@ const Navbar = () => {
         </nav>
 
         {/* Notification Bell Button */}
-        <Button size="icon" variant="ghost" className="bg-slate-100 rounded-xl">
-          <Bell className="h-5 w-5" />
-        </Button>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-4">
+            {loadingState ? (
+              <div>Loading...</div>
+            ) : auth.token ? (
+              <Button className="rounded-xl" onClick={handleLogout}>
+                Log out
+              </Button>
+            ) : (
+              <></>
+            )}
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="bg-slate-100 rounded-xl"
+          >
+            <Bell className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
     </header>
   );

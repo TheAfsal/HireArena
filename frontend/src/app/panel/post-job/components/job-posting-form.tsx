@@ -84,38 +84,38 @@ export default function JobPostingForm() {
 
   const handleSubmit = async () => {
     if (!formData.jobTitle.trim()) {
-      alert("Job title is required");
+      toast.error("Job title is required");
       return;
     }
     if (!formData.employmentTypes || formData.employmentTypes.length === 0) {
-      alert("At least one employment type is required");
+      toast.error("At least one employment type is required");
       return;
     }
     if (!formData.salaryRange?.min || formData.salaryRange.min < 0) {
-      alert("Minimum salary must be a positive number");
+      toast.error("Minimum salary must be a positive number");
       return;
     }
     if (
       !formData.salaryRange?.max ||
       formData.salaryRange.max < formData.salaryRange.min
     ) {
-      alert("Maximum salary must be greater than minimum salary");
+      toast.error("Maximum salary must be greater than minimum salary");
       return;
     }
     if (!formData.categories || formData.categories.length === 0) {
-      alert("At least one category is required");
+      toast.error("At least one category is required");
       return;
     }
     if (!formData.requiredSkills || formData.requiredSkills.length === 0) {
-      alert("At least one required skill is needed");
+      toast.error("At least one required skill is needed");
       return;
     }
     if (!formData.jobDescription.trim()) {
-      alert("Job description is required");
+      toast.error("Job description is required");
       return;
     }
     if (!formData.responsibilities.trim()) {
-      alert("Responsibilities field is required");
+      toast.error("Responsibilities field is required");
       return;
     }
 

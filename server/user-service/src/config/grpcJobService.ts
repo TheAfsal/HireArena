@@ -70,6 +70,7 @@ console.log(userProto);
 server.addService(userProto.UserService.service, {
   GetCompanyIdByUserId: companyController.getCompanyIdByUserId,
   GetAllJobSeekers: jobSeekerController.getAllJobSeekers,
+  GetCompaniesDetails: companyController.getCompanyDetails,
 });
 
 export default server;

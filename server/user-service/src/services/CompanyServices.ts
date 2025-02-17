@@ -49,6 +49,59 @@ class CompanyService {
   async getAllCompanies(): Promise<any> {
     return await this.companyRepository.findMany();
   }
+
+  async getCompanyDetailsById(
+    companyIds: string[],
+    callback: grpc.sendUnaryData<any>
+  ): Promise<any> {
+    this.companyRepository
+      .findByIds(companyIds)
+      .then((details: any) => {
+
+        if (details) {
+          console.log(details);
+          
+          callback(null, { companies:details });
+        } else {
+          callback({
+            code: grpc.status.NOT_FOUND,
+            details: "User not found",
+          });
+        }
+      })
+      .catch((err: any) => {
+        callback({
+          code: grpc.status.INTERNAL,
+          details: err.message,
+        });
+      });
+  }
+
+  // getCompanyIdByUserId = (
+  //   userId: string,
+  //   callback: grpc.sendUnaryData<any>
+  // ) => {
+  //   this.companyEmployeeRoleRepository
+  //     .findCompanyByUserId(userId)
+  //     .then((details: any) => {
+  //       console.log(details);
+
+  //       if (details.companyId) {
+  //         callback(null, { companyId: details.companyId });
+  //       } else {
+  //         callback({
+  //           code: grpc.status.NOT_FOUND,
+  //           details: "User not found",
+  //         });
+  //       }
+  //     })
+  //     .catch((err: any) => {
+  //       callback({
+  //         code: grpc.status.INTERNAL,
+  //         details: err.message,
+  //       });
+  //     });
+  // };
 }
 
 export default CompanyService;

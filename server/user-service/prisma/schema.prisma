@@ -27,7 +27,30 @@ model JobSeeker {
   status    Boolean
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  subscription Subscription?
 }
+
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+model Subscription {
+  id                   String   @id @default(uuid())
+  jobSeekerId          String   @unique  // Linked to JobSeeker
+  stripeCustomerId     String   // Stripe Customer ID
+  stripeSubscriptionId String?  // Active Subscription ID (if any)
+  plan                 SubscriptionPlan  // BASIC, PRO, ENTERPRISE
+  status               String   @default("ACTIVE") 
+  expiresAt            DateTime? // Subscription Expiry Date
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  jobSeeker            JobSeeker @relation(fields: [jobSeekerId], references: [id])
+}
+
 
 model Company {
   id            String   @id @default(uuid())

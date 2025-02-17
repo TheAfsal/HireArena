@@ -81,7 +81,7 @@ function AuthForm() {
       if (formType === "job-seeker") {
         const response = await LoginJobSeeker(formValues);
         if (response.status === "success") {
-          const { accessToken } = response.data!.tokens;
+          const { accessToken } = response.data!.tokens ;
           const { user } = response.data!;
 
           if (accessToken) {
@@ -91,7 +91,7 @@ function AuthForm() {
             );
           }
           setTimeout(() => {
-            router.push("/");
+            router.push("/job-seeker");
           }, 0);
         } else {
           console.log("response");
@@ -124,8 +124,8 @@ function AuthForm() {
           const errorMessage =
             typeof response === "string"
               ? "Login failed"
-              //@ts-ignore
-              : response?.error.error || "Login failed";
+              : //@ts-ignore
+                response?.error.error || "Login failed";
           setErrorMessage(errorMessage);
           dispatch(loginFailure(errorMessage));
         }
@@ -142,26 +142,24 @@ function AuthForm() {
             typeof response === "string"
               ? "Signup failed"
               : response?.error || "Signup failed";
-          //@ts-ignore    
+          //@ts-ignore
           setErrorMessage(errorMessage.error);
           dispatch(loginFailure(errorMessage));
         }
       } else {
         response = await SignupCompany(formValues);
         if (response.status === "success") {
-        //   const { accessToken } = response.data!.tokens;
-        //   const { user } = response.data!;
-
-        //   if (accessToken) {
-        //     localStorage.setItem("authToken", accessToken);
-        //     dispatch(
-        //       loginSuccess({ user, token: accessToken, role: "company" })
-        //     );
-        //   }
-
-        // setTimeout(() => {
-        //   router.push("/panel");
-        // }, 0);
+          //   const { accessToken } = response.data!.tokens;
+          //   const { user } = response.data!;
+          //   if (accessToken) {
+          //     localStorage.setItem("authToken", accessToken);
+          //     dispatch(
+          //       loginSuccess({ user, token: accessToken, role: "company" })
+          //     );
+          //   }
+          // setTimeout(() => {
+          //   router.push("/panel");
+          // }, 0);
         } else {
           const errorMessage =
             typeof response === "string"
@@ -199,6 +197,10 @@ function AuthForm() {
     } else {
       setErrorMessage("Something went wrong");
     }
+  };
+
+  const googleLogin = () => {
+    window.open("http://localhost:5000/auth/google", "_self");
   };
 
   return (
@@ -243,6 +245,7 @@ function AuthForm() {
         <Button
           variant="outline"
           className="w-full mb-8 h-12 text-base font-normal"
+          onClick={googleLogin}
         >
           <img
             src="/google.svg"

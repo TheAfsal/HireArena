@@ -32,6 +32,7 @@ export default function SkillsTable() {
       ...skills,
       {...response, jobCategory:response.jobCategory.name},
     ]);
+    toast.success("Skill created successfully");
   };
 
   const handleEditSkill = (
@@ -236,6 +237,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { AddSkills, fetchJobCategory, fetchSkills } from "@/app/api/skills";
 import { Category } from "./job-category";
+import { toast } from "sonner";
 
 interface EditSkillDialogProps {
   isOpen: boolean;

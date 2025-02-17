@@ -57,8 +57,10 @@ export default function SignupPage() {
         let response = await fetchInvitationDetails(token as string);
         console.log(response);
         setInvitationDetails(response.data);
+        setLoading(false)
       } catch (error: unknown) {
         console.log(error);
+        setLoading(false)
       }
     };
 

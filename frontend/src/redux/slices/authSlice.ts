@@ -40,7 +40,7 @@ const authSlice = createSlice({
       state.error = null;
       state.token = null;
       state.role = null;
-      localStorage.removeItem("token");
+      localStorage.removeItem("authToken");
     },
     changeToken(state, action) {
       state.token = action.payload;

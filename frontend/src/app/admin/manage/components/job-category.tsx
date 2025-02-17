@@ -225,6 +225,7 @@ import {
   fetchJobCategory,
 } from "@/app/api/skills";
 import { CategoryType } from "./category-type";
+import { toast } from "sonner";
 
 export default function JobCategoryTable() {
   const [jobCategories, setJobCategories] = useState<Category[]>([]);
@@ -274,6 +275,7 @@ export default function JobCategoryTable() {
       ...jobCategories,
       { ...response, categoryType: response.categoryType.name },
     ]);
+    toast.success("Category created successfully");
   };
 
   const handleEditJobCategory = async (
@@ -297,6 +299,7 @@ export default function JobCategoryTable() {
         category.id === response.id ? response : category
       )
     );
+    toast.success("Category edited successfully");
   };
 
   return (

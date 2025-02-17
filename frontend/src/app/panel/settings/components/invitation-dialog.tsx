@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -74,6 +75,10 @@ function InviteDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     const response = await sendInvitation(values);
+    toast({
+      title: "Success",
+      description: "Invitation sent successfully",
+    });
   }
 
   return (
