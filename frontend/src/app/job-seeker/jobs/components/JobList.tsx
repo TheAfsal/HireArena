@@ -21,7 +21,7 @@ export interface JobsList {
   companyName: string;
   companyLocation?: string;
   companyId?: string;
-  isApplied: boolean;
+  isApplied: boolean;  
 }
 
 function JobList({ filters }: { filters: any }) {

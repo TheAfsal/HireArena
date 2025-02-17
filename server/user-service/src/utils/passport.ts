@@ -21,7 +21,7 @@ passport.use(
         //@ts-ignore
         return done(error, null);
       }
-    }
+    } 
   )
 );
 
