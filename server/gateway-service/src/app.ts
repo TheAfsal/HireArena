@@ -13,7 +13,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: `http://${process.env.CLIENT_URL}:3000`,
     credentials: true,
   })
 );
@@ -26,10 +26,10 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 const proxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: "http://localhost:5000",
+  target: `http://${process.env.USER_SERVER_URL}:5000`,
   changeOrigin: true,
   on: {
-    proxyReq: (proxyReq, req, res) => {
+    proxyReq: (proxyReq, req: Request, res: Response) => {
       if (req.user) {
         proxyReq.setHeader("x-user", JSON.stringify(req.user));
       }
@@ -39,23 +39,24 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
 
 app.use(
   "/user-service/auth",
+  (req, res, next) => {
+    console.log(`http://${process.env.USER_SERVER_URL}:5000`);
+    console.log(process.env.USER_SERVER_URL);
+    next();
+  },
   proxyMiddleware
 );
 
-app.use(
-  "/user-service/",
-  validateAccessToken,
-  proxyMiddleware
-);
+app.use("/user-service/", validateAccessToken, proxyMiddleware);
 
 app.use(
   "/job-service/",
   validateAccessToken,
   createProxyMiddleware({
-    target: "http://localhost:5002",
+    target: `http://${process.env.JOB_SERVER_URL}:5002`,
     changeOrigin: true,
     on: {
-      proxyReq: (proxyReq, req, res) => {
+      proxyReq: (proxyReq, req: Request, res: Response) => {
         if (req.user) {
           proxyReq.setHeader("x-user", JSON.stringify(req.user));
         }
@@ -79,7 +80,6 @@ app.use(
     },
   })
 );
-
 
 // app.use(
 //   '/user-service',
@@ -118,6 +118,8 @@ app.use(
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+
   console.error("Error:", err.message);
   res
     .status(500)

@@ -1,27 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: #FFFAFA;
+    --foreground: #F0F0F0;
+    --card: #FFFFFF;
+    --card-foreground: #F0F0F0;
+    --popover: #FFFFFF;
+    --popover-foreground: #F0F0F0;
+    --primary: #4640de;
+    --primary-foreground: #515b6f;
+    --secondary: #25324B;
+    --secondary-foreground: #7c8493;
+    --muted: #F0F0F0;
+    --muted-foreground: #4C4E5B;
+    --accent: #F0F0F0;
+    --accent-foreground: #181818;
+    --destructive: #FF6619;
+    --destructive-foreground: #FCFCFF;
+    --border: #C2C2C2;
+    --input: #C2C2C2;
+    --text-header: #202430;
+    --text-sub-header: #515b6f;
+    --text-content: #7c8493;
+    --ring: #458511;
+    --radius: 0.75rem;
+    --chart-1: #DA4B2C;
+    --chart-2: #148658;
+    --chart-3: #174E58;
+    --chart-4: #7C9240;
+    --chart-5: #726E13;
   }
 
   .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: #202430;
+    --foreground: #EFEFEF;
+    --card: #271D19;
+    --card-foreground: #EFEFEF;
+    --popover: #080809;
+    --popover-foreground: #EFEFEF;
+    --primary: #4640de;
+    --primary-foreground: #A48513;
+    --secondary: #F8F8FF;
+    --secondary-foreground: #EFEFEF;
+    --muted: #2C2C2D;
+    --muted-foreground: #C2B89B;
+    --accent: #29292B;
+    --accent-foreground: #EFEFEF;
+    --destructive: #FF7D19;
+    --destructive-foreground: #FCFFF4;
+    --border: #2C2C2D;
+    --input: #2C2C2D;
+    --text-header: #202430;
+    --text-sub-header: #515b6f;
+    --text-content: #7c8493;
+    --ring: #417D26;
+    --chart-1: #3885FF;
+    --chart-2: #61A870;
+    --chart-3: #D08500;
+    --chart-4: #CE62CA;
+    --chart-5: #FF62A0;
   }
-}
 
+}

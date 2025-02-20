@@ -4,7 +4,17 @@ import "./globals.css";
 import { ReduxProvider } from "@/redux/ReduxProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-// import { Toaster } from "@/components/ui/sonner";
+import { McLaren } from "next/font/google";
+
+// Yatra_One
+// Sriracha
+// Commissioner
+
+const dmSerifDisplay = McLaren({
+  weight: ["400"],
+  style: ["normal"],
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${dmSerifDisplay.className}`}>
         <ReduxProvider>
           <ThemeProvider
             attribute="class"

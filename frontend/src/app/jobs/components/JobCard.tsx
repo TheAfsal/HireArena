@@ -15,7 +15,7 @@ interface Job {
 
  function JobCard({ job }: { job: Job }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border bg-white p-6">
+    <div className="flex items-center justify-between rounded-lg border bg-[] p-6">
       <div className="flex items-start gap-4">
         <Image
           src={job.logo || "/placeholder.svg"}
@@ -45,7 +45,7 @@ interface Job {
         </div>
       </div>
       <div className="flex flex-col items-end gap-2">
-        <Button>Apply</Button>
+        <Button className="dark:bg-gray-700">Apply</Button>
         <p className="text-sm text-gray-500">
           {job.applied} applied of {job.capacity} capacity
         </p>

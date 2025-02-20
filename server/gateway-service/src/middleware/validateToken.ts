@@ -1,7 +1,14 @@
-import { IUser } from "./../../../user-service/src/types/IUser";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import "colors";
+
+interface IUser {
+  id: string;
+  fullName: string;
+  email: string;
+  password?: string;
+  status?: boolean;
+}
 
 declare global {
   namespace Express {

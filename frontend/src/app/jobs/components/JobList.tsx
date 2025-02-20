@@ -39,7 +39,7 @@ const jobs = [
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Sort by:</span>
-            <select className="rounded-md border-gray-300 text-sm">
+            <select className="rounded-md border-gray-300 text-sm p-2">
               <option>Most relevant</option>
               <option>Latest</option>
               <option>Oldest</option>

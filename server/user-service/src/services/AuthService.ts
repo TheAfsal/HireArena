@@ -8,7 +8,7 @@ import { ITokenService } from "../interfaces/ITokenService";
 import { IJobSeeker } from "../interfaces/IJobSeeker";
 import { IAuthResponse } from "../types/IAuthResponse";
 import { IUser } from "../types/IUser";
-import { ROLES } from "../../../constants/roles";
+import { ROLES } from "../../src/constants/roles";
 
 class AuthService implements IAuthService {
   private jobSeekerRepository: IJobSeekerRepository;
@@ -223,7 +223,6 @@ class AuthService implements IAuthService {
       email
     );
 
-
     if (!user || !user.password) {
       throw new Error("Invalid credentials");
     }
@@ -236,7 +235,7 @@ class AuthService implements IAuthService {
       throw new Error("Invalid credentials");
     }
 
-    if(user?.status === false){
+    if (user?.status === false) {
       throw new Error("Account Blocked");
     }
 

@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts --color=always"
+    "dev": "nodemon src/server.ts --legacy-watch"
   },
   "keywords": [],
   "author": "",
@@ -28,9 +28,11 @@
     "@typescript-eslint/eslint-plugin": "^8.20.0",
     "@typescript-eslint/parser": "^8.20.0",
     "colors": "^1.4.0",
+    "debug": "^4.4.0",
     "eslint": "^9.18.0",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
     "typescript-eslint": "^8.20.0"
   }
 }

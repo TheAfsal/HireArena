@@ -4,15 +4,16 @@ import Hero from "@/components/Hero";
 import JobCategories from "@/components/JobCategories";
 import LatestJobs from "@/components/LatestJobs";
 import React from "react";
+
 const page = () => {
   return (
-    <>
+    <div className="bg-background">
       <Hero />
       <JobCategories />
       <FeaturedJobs />
       <LatestJobs />
       <Footer />
-    </>
+    </div>
   );
 };
 

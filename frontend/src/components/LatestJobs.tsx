@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Job } from "../app/dashboard/components/types/job";
+import Image from "next/image";
 
 //   id: string;
 //   title: string;
@@ -101,7 +102,7 @@ const jobs: Job[] = [
 
 function LatestJobs() {
   return (
-    <section className="bg-gray-50 py-12 px-4">
+    <section className=" py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-bold">
@@ -121,24 +122,26 @@ function LatestJobs() {
             <Link
               key={job.id}
               href={`/jobs/${job.id}`}
-              className="bg-white p-6 rounded-lg hover:shadow-md transition-shadow"
+              className="bg-white p-6 rounded-lg hover:shadow-sm"
             >
               <div className="flex items-start gap-4">
-                {/* <Image
-                //   src={job.logo}
+                <Image
+                  src="/vodafone.png"
                   alt={`${job.company} logo`}
-                  width={40}
-                  height={40}
+                  width={120}
+                  height={120}
                   className="rounded"
-                /> */}
+                />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{job.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3">
+                  <h3 className="font-semibold text-lg text-text-sub-header">
+                    {job.title}
+                  </h3>
+                  <p className="text-text-content text-sm mb-3">
                     {job.company} ·{job.location}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <Badge
-                      variant="secondary"
+                      variant="normal"
                       className="bg-green-100 text-green-800 hover:bg-green-100"
                     >
                       {job.tags?.type}
@@ -146,7 +149,7 @@ function LatestJobs() {
                     {job.tags?.categories.map((category) => (
                       <Badge
                         key={category}
-                        variant="secondary"
+                        variant="normal"
                         className={
                           category === "Marketing"
                             ? "bg-orange-100 text-orange-800 hover:bg-orange-100"

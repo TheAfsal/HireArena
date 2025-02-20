@@ -94,7 +94,7 @@ function FeaturedJobs() {
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">
           Featured
-          <span className="text-blue-600">jobs</span>
+          <span className="text-blue-600"> jobs</span>
         </h2>
         <Link
           href="/jobs"
@@ -107,28 +107,29 @@ function FeaturedJobs() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {jobs.map((job) => (
-          <Card
-            key={job.id}
-            className="group hover:border-blue-600 transition-colors"
-          >
-            <CardContent className="p-6">
+          <Card key={job.id} className="group transition-colors">
+            <CardContent className="p-6 bg-[#F8F8FF] rounded-sm text-gray-600">
               <div className="flex justify-between items-start mb-4">
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-lg font-bold">
                   {/* {job.logo} */}
                 </div>
                 <Badge
-                  variant="outline"
+                  variant="normal"
                   className="bg-blue-50 text-blue-700 border-blue-200"
                 >
                   {job.type}
                 </Badge>
               </div>
 
-              <h3 className="font-semibold text-lg mb-1">{job.title}</h3>
-              <p className="text-gray-600 text-sm mb-2">
+              <h3 className="font-semibold text-lg mb-2 text-text-header">
+                {job.title}
+              </h3>
+              <p className="text-sm mb-2 text-text-sub-content">
                 {job.company}·{job.location}
               </p>
-              <p className="text-gray-600 text-sm mb-4">{job.description}</p>
+              <p className="text-sm mb-4 text-text-content">
+                {job.description}
+              </p>
 
               <div className="flex flex-wrap gap-2">
                 {job.categories?.map((category) => (

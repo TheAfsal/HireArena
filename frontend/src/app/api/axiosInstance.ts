@@ -5,7 +5,7 @@ import axios from "axios";
 const refreshToken = async () => {
   try {
     const response = await axios.post(
-      "http://localhost:4000/user-service/auth/api/auth/refresh-token",
+      `${process.env.NEXT_PUBLIC_GATEWAY_URL}/user-service/auth/api/auth/refresh-token`,
       {},
       { withCredentials: true }
     );
@@ -22,7 +22,7 @@ const refreshToken = async () => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: `http://${process.env.NEXT_PUBLIC_GATEWAY_URL}:4000`,
   headers: {
     "Content-Type": "application/json",
   },

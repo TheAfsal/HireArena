@@ -1,5 +1,5 @@
-import { IGenericResponse } from "../../../types/IGenericResponse";
-import { IError } from "../../../types/IError";
+import { IGenericResponse } from "../types/IGenericResponse";
+import { IError } from "../types/IError";
 import { Request, Response } from "express";
 import { IAuthService } from "../interfaces/IAuthService";
 import { IAuthResponse } from "../types/IAuthResponse";

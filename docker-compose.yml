@@ -1,0 +1,209 @@
+services:
+  # Gateway service
+  gateway-service:
+    build:
+      context: ./server/gateway-service
+    container_name: gateway-service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/gateway-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      - NODE_ENV=development 
+      - REDIS_HOST=redis
+      - CLIENT_URL=localhost
+      - USER_SERVER_URL=user-service
+      - JOB_SERVER_URL=job-service
+    networks:
+      - app-network
+    depends_on:
+      - user-service
+      - job-service
+      - redis
+  # gateway-service_two:
+  #   build:
+  #     context: ./server/gateway-service
+  #   container_name: gateway-service-two
+  #   ports:
+  #     - "4001:4000"
+  #   volumes:
+  #     - ./server/gateway-service:/app
+  #     - /app/node_modules
+  #   command: npm run dev
+  #   environment:
+  #     - NODE_ENV=development 
+  #     - REDIS_HOST=redis
+  #     - CLIENT_URL=localhost
+  #     - USER_SERVER_URL=user-service
+  #     - JOB_SERVER_URL=job-service
+  #   networks:
+  #     - app-network
+  #   # depends_on:
+  #   #   - user-service
+  #   #   - job-service
+  #   #   - redis
+
+  # User service
+  user-service:
+    build:
+      context: ./server/user-service
+    container_name: user-service
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server/user-service:/app
+      - /app/node_modules  
+    depends_on:
+      - db-postgres
+      - redis  
+    # command: npx prisma migrate dev && npx prisma generate && npm run dev  
+    command: npm run dev  
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=hirearena
+      - DB_HOST=db-postgres  
+      - DB_PORT=5432  
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/hirearena
+      - VERIFICATION_TOKEN_SECRET="d13d23qwe341r342e23eqe32"
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password (optional)
+      - GOOGLE_CLIENT_ID=892370541918-tpo69pcvf47h0k3r5i2tm6mbj31t3vup.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
+      - SESSION_SECRET=your_secret_key
+      - CLIENT_URL=localhost
+      - GATEWAY_URL=gateway-service
+      - STRIPE_PUBLISH_KEY=pk_test_51QsD8pJtvAld9KrEaCGt4OohObgN59tumaWYrxBhenHHJzguKP2n4bcKk2Q0xJRkBoLCG4OspvSDgtVQUhkfSPTV00zfNEiSSb
+      - STRIPE_SECRET_KEY=sk_test_51QsD8pJtvAld9KrEzbzfrvAvoMRYhUtAHznZmdggraojmTXGyAxPqkY34z4qNMBhRj78ValWRTCMBIVM1LnHa7Wm00rNDZpwy9
+    networks:
+      - app-network
+
+  # Job service
+  job-service:
+    build:
+      context: ./server/job-service
+    container_name: job-service
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./server/job-service:/app
+      - /app/node_modules    
+    depends_on:
+      - db-postgres
+      - redis 
+    # command: npx prisma migrate dev && npx prisma generate && npm run dev  
+    command: npm run dev  
+    environment:
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=hirearenaJobDB
+      - DB_HOST=db-postgres  
+      - DB_PORT=5432  
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/hirearenaJobDB
+      - VERIFICATION_TOKEN_SECRET="d13d23qwe341r342e23eqe32"
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password (optional)
+    networks:
+      - app-network
+
+  # File service
+  file-service:
+    build:
+      context: ./server/file-service
+    container_name: file-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./server/file-service:/app
+      - /app/node_modules    
+    command: npm run dev  
+    environment:
+      - NODE_ENV=development
+      - PORT = 5004
+      - AWS_ACCESS_KEY=AKIAUW4RBCVVVKCHLO4Y
+      - AWS_SECRET_KEY=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
+      - AWS_REGION=eu-north-1
+      - AWS_BUCKET_NAME=hirearena-user-images
+    networks:
+      - app-network  
+
+  # Admin service
+  admin-service:
+    build:
+      context: ./server/admin-service
+    container_name: admin-service
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./server/admin-service:/app
+      - /app/node_modules    
+    command: npm run dev  
+    environment:
+      - PORT=5003
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - DB_USER=postgres
+      - DB_PASSWORD="root"
+      - DB_NAME=hirearena
+      - DB_HOST=localhost  
+      - DB_PORT=5432
+      - VERIFICATION_TOKEN_SECRET=d13d23qwe341r342e23eqe32
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password
+    networks:
+      - app-network    
+
+  # Client-side (Frontend)
+  client:
+    build:
+      context: ./frontend
+    container_name: client
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_GATEWAY_URL=localhost
+    networks:
+      - app-network
+
+  # Redis setup
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+   # Postgres setup for User Server
+  db-postgres:
+    image: postgres
+    container_name: db-postgres
+    environment:
+      - POSTGRES_USER=postgres  
+      - POSTGRES_PASSWORD=root  
+      - POSTGRES_DB=hirearena 
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

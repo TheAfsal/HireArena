@@ -33,6 +33,8 @@ export async function LoginJobSeeker(
     );
     return response.data;
   } catch (error: unknown) {
+    console.log(error);
+
     if (axios.isAxiosError(error)) {
       return {
         success: false,

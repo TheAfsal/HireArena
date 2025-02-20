@@ -59,16 +59,10 @@ router.get("/invite/:token", companyController.invitationDetails);
 router.post("/invite", companyController.sendInvitation);
 router.post("/accept-invite", companyController.acceptInvitation);
 
-router
-  .route("/profile")
-  .get(companyController.getProfile)
-  .put(upload.any(), companyController.updateProfile);
+router.get("/profile", companyController.getProfile);
+router.put("/profile", upload.any(), companyController.updateProfile);
 
-router
-  .route("/media-links")
-  .get(companyController.fetchMediaLinks)
-  .put(companyController.updateMediaLinks);
-
-
+router.get("/media-links", companyController.fetchMediaLinks);
+router.put("/media-links", companyController.updateMediaLinks);
 
 export default router;

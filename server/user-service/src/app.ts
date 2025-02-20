@@ -51,11 +51,19 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:4000"],
+    origin: [`http://${process.env.CLIENT_URL}:3000`, `http://${process.env.GATEWAY_URL}:4000`],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
+// app.use(
+//   cors({
+//     origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   })
+// );
 
 app.use(helmet());
 app.use(morgan("dev"));

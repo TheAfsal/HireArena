@@ -1,6 +1,6 @@
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import React from "react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface Category {
   name: string;
@@ -11,40 +11,61 @@ interface Category {
 
 const categories: Category[] = [
   {
-    name: 'Design', jobs: 235, icon: '✕', href: '/jobs/design',
+    name: "Design",
+    jobs: 235,
+    icon: "✕",
+    href: "/jobs/design",
   },
   {
-    name: 'Sales', jobs: 756, icon: '◷', href: '/jobs/sales',
+    name: "Sales",
+    jobs: 756,
+    icon: "◷",
+    href: "/jobs/sales",
   },
   {
-    name: 'Marketing', jobs: 140, icon: '📢', href: '/jobs/marketing',
+    name: "Marketing",
+    jobs: 140,
+    icon: "📢",
+    href: "/jobs/marketing",
   },
   {
-    name: 'Finance', jobs: 326, icon: '💰', href: '/jobs/finance',
+    name: "Finance",
+    jobs: 326,
+    icon: "💰",
+    href: "/jobs/finance",
   },
   {
-    name: 'Technology', jobs: 436, icon: '💻', href: '/jobs/technology',
+    name: "Technology",
+    jobs: 436,
+    icon: "💻",
+    href: "/jobs/technology",
   },
   {
-    name: 'Engineering', jobs: 542, icon: '</>', href: '/jobs/engineering',
+    name: "Engineering",
+    jobs: 542,
+    icon: "</>",
+    href: "/jobs/engineering",
   },
   {
-    name: 'Business', jobs: 211, icon: '💼', href: '/jobs/business',
+    name: "Business",
+    jobs: 211,
+    icon: "💼",
+    href: "/jobs/business",
   },
   {
-    name: 'Human Resource', jobs: 346, icon: '👥', href: '/jobs/hr',
+    name: "Human Resource",
+    jobs: 346,
+    icon: "👥",
+    href: "/jobs/hr",
   },
 ];
 
 function JobCategories() {
   return (
-
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">
-          Explore by
-          {' '}
-          <span className="text-blue-600">category</span>
+          Explore by <span className="text-blue-600">category</span>
         </h2>
         <Link
           href="/jobs"
@@ -60,22 +81,12 @@ function JobCategories() {
           <Link
             key={category.name}
             href={category.href}
-            className="p-6 border rounded-lg hover:border-blue-600 transition-colors group"
+            className="p-6 border border-gray-500 rounded-sm hover:bg-primary hover:text-[#F8F8FF] bg-[#F8F8FF] transition-colors group text-gray-600"
           >
             <div className="text-2xl mb-3">{category.icon}</div>
             <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
-            <p className="text-gray-600 flex items-center gap-1">
-              {category.jobs}
-              {' '}
-              jobs available
-
-              {category.jobs}
-              {' '}
-              jobs available
-
-              {category.jobs}
-              {' '}
-              jobs available
+            <p className="flex items-center gap-1">
+              {category.jobs} jobs available
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </p>
           </Link>
@@ -90,7 +101,10 @@ function JobCategories() {
             jobs today
           </h2>
           <p className="mb-6">Start posting jobs for only $10.</p>
-          <button type="button" className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          <button
+            type="button"
+            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
             Sign Up For Free
           </button>
         </div>

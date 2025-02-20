@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import server from "./config/grpcServer";
 import s3 from './config/awsConfig';
 
-const PORT = 50051;
+const PORT = process.env.PORT;
 
 s3.listBuckets((err, data) => {
     if (err) {
