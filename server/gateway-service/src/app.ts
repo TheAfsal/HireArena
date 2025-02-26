@@ -69,7 +69,7 @@ app.use(
   "/admin-service/",
   // validateAccessToken,
   createProxyMiddleware({
-    target: "http://localhost:5003",
+    target: `http://${process.env.ADMIN_SERVER_URL}:5003`,
     changeOrigin: true,
     on: {
       // proxyReq: (proxyReq, req, res) => {

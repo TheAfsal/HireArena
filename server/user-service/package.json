@@ -1,5 +1,5 @@
 {
-  "name": "gateway-service",
+  "name": "user-service",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts --legacy-watch"
+    "dev": "npx prisma generate && nodemon src/server.ts --legacy-watch"
   },
   "keywords": [],
   "author": "",

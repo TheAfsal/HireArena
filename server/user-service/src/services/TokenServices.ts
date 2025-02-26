@@ -19,7 +19,7 @@ class TokenService implements ITokenService {
 
   generateAccessToken(userId: string): string {
     return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET || "", {
-      expiresIn: "1m", // 1 minutes
+      expiresIn: "15m", // 1 minutes
     });
   }
 

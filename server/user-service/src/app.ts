@@ -10,6 +10,7 @@ import jobSeekerRoutes from "./routes/jobSeekerRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
 import jwt from "jsonwebtoken";
+
 //
 import session from "express-session";
 import cookieParser from "cookie-parser";
@@ -51,7 +52,10 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: [`http://${process.env.CLIENT_URL}:3000`, `http://${process.env.GATEWAY_URL}:4000`],
+    origin: [
+      `http://${process.env.CLIENT_URL}:3000`,
+      `http://${process.env.GATEWAY_URL}:4000`,
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -125,18 +129,26 @@ app.get(
 
     const user = req.user as { id: string; email: string };
 
-    const accessToken =  jwt.sign({ userId:"asdasd" }, process.env.ACCESS_TOKEN_SECRET || "", {
-      expiresIn: "1m", 
-    });
-    const refreshToken =  jwt.sign({ userId:"asdasd",role:"HR" }, process.env.REFRESH_TOKEN_SECRET || "", {
-      expiresIn: "7d", 
-    });
+    const accessToken = jwt.sign(
+      { userId: "asdasd" },
+      process.env.ACCESS_TOKEN_SECRET || "",
+      {
+        expiresIn: "1m",
+      }
+    );
+    const refreshToken = jwt.sign(
+      { userId: "asdasd", role: "HR" },
+      process.env.REFRESH_TOKEN_SECRET || "",
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.redirect(`http://localhost:3000/job-seeker?token=${accessToken}`);

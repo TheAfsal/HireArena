@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts --legacy-watch"
+    "dev": "npx prisma generate && nodemon src/server.ts --legacy-watch"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.12.6",
     "@grpc/proto-loader": "^0.7.13",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "6.2.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -36,6 +36,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.13.5",
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.11.10",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
@@ -44,8 +45,18 @@
     "eslint": "^9.18.0",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9",
-    "prisma": "^6.2.1",
+    "prisma": "6.2.1",
     "ts-node": "^10.9.2",
     "typescript-eslint": "^8.20.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "esbuild",
+      "prisma",
+      "protobufjs"
+    ]
   }
 }

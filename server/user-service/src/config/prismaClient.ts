@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 prisma
   .$connect()
   .then(() => console.log("Postgres connected successfully!"))
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   .catch((error: any) => {
     console.error("Failed to connect to the database:", error.message);
     process.exit(1);

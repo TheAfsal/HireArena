@@ -5,6 +5,7 @@ import { ReduxProvider } from "@/redux/ReduxProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { McLaren } from "next/font/google";
+import ReactQueryWrapper from "../components/ReactQueryWrapper";
 
 // Yatra_One
 // Sriracha
@@ -36,7 +37,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <ReactQueryWrapper>
+              {children}
+            </ReactQueryWrapper>
           </ThemeProvider>
           <Toaster />
         </ReduxProvider>

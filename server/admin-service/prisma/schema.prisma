@@ -1,8 +1,20 @@
 datasource db {
-  provider = "postgresql" // Use your database provider (e.g., mysql, sqlite, etc.)
-  url      = env("DATABASE_URL") // The connection string from your .env
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+
+model SubscriptionPlan {
+  id        String   @id @default(uuid()) 
+  name      String   @unique
+  price     Float
+  duration  Int      
+  features  Json     
+  status    String   @default("active") 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
