@@ -1,6 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import server from "./config/grpcServer";
 import s3 from './config/awsConfig';
+import "dotenv"
 
 const PORT = process.env.PORT;
 
@@ -12,7 +13,6 @@ s3.listBuckets((err, data) => {
     }
   });
 
-server.bindAsync(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure(), () => {
+server.bindAsync(`0.0.0.0:${5004}`, grpc.ServerCredentials.createInsecure(), () => {
   console.log(`🚀 File Service running on port ${PORT}`);
-  server.start();
 });

@@ -16,34 +16,15 @@ services:
       - CLIENT_URL=localhost
       - USER_SERVER_URL=user-service
       - JOB_SERVER_URL=job-service
+      - ADMIN_SERVER_URL=admin-service
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
     networks:
       - app-network
     depends_on:
       - user-service
       - job-service
       - redis
-  # gateway-service_two:
-  #   build:
-  #     context: ./server/gateway-service
-  #   container_name: gateway-service-two
-  #   ports:
-  #     - "4001:4000"
-  #   volumes:
-  #     - ./server/gateway-service:/app
-  #     - /app/node_modules
-  #   command: npm run dev
-  #   environment:
-  #     - NODE_ENV=development 
-  #     - REDIS_HOST=redis
-  #     - CLIENT_URL=localhost
-  #     - USER_SERVER_URL=user-service
-  #     - JOB_SERVER_URL=job-service
-  #   networks:
-  #     - app-network
-  #   # depends_on:
-  #   #   - user-service
-  #   #   - job-service
-  #   #   - redis
 
   # User service
   user-service:
@@ -52,14 +33,14 @@ services:
     container_name: user-service
     ports:
       - "5000:5000"
+      - "5051:5051"
     volumes:
       - ./server/user-service:/app
       - /app/node_modules  
     depends_on:
       - db-postgres
       - redis  
-    # command: npx prisma migrate dev && npx prisma generate && npm run dev  
-    command: npm run dev  
+    command: npm run dev 
     environment:
       - PORT=5000
       - NODE_ENV=development
@@ -100,8 +81,7 @@ services:
     depends_on:
       - db-postgres
       - redis 
-    # command: npx prisma migrate dev && npx prisma generate && npm run dev  
-    command: npm run dev  
+    command: npm run dev 
     environment:
       - NODE_ENV=development
       - FRONT_END_URL=http://localhost:3000
@@ -134,8 +114,8 @@ services:
     environment:
       - NODE_ENV=development
       - PORT = 5004
-      - AWS_ACCESS_KEY=AKIAUW4RBCVVVKCHLO4Y
-      - AWS_SECRET_KEY=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
+      - AWS_ACCESS_KEY=AKIAUW4RBCVV5FWOVC4E
+      - AWS_SECRET_KEY=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
       - AWS_REGION=eu-north-1
       - AWS_BUCKET_NAME=hirearena-user-images
     networks:
@@ -150,15 +130,17 @@ services:
       - "5003:5003"
     volumes:
       - ./server/admin-service:/app
-      - /app/node_modules    
-    command: npm run dev  
+      - /app/node_modules   
+    depends_on:
+      - db-postgres 
+    command: npm run dev
     environment:
       - PORT=5003
       - NODE_ENV=development
       - FRONT_END_URL=http://localhost:3000
       - DB_USER=postgres
       - DB_PASSWORD="root"
-      - DB_NAME=hirearena
+      - DB_NAME=admin
       - DB_HOST=localhost  
       - DB_PORT=5432
       - VERIFICATION_TOKEN_SECRET=d13d23qwe341r342e23eqe32
@@ -167,6 +149,7 @@ services:
       - REDIS_HOST=localhost
       - REDIS_PORT=6379
       - REDIS_PASSWORD=your-redis-password
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/admin
     networks:
       - app-network    
 
@@ -179,6 +162,10 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_GATEWAY_URL=localhost
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next  
     networks:
       - app-network
 
@@ -201,9 +188,14 @@ services:
       - POSTGRES_DB=hirearena 
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
