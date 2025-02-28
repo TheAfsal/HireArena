@@ -47,6 +47,7 @@ export interface JobFormData {
     description: string;
     icon: string;
   }[];
+  selectedTests: string[];
 }
 
 const INITIAL_FORM_DATA: JobFormData = {
@@ -63,6 +64,7 @@ const INITIAL_FORM_DATA: JobFormData = {
   qualifications: "",
   niceToHave: "",
   benefits: [],
+  selectedTests: []
 };
 
 export default function JobPostingForm() {

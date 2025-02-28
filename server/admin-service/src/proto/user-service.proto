@@ -4,6 +4,7 @@ package user;
 
 service UserService {
   rpc GetAllJobSeekers (Empty) returns (JobSeekerList);
+  rpc GetSubscriptionPlanById(GetPlanRequest) returns (PlanResponse);
 }
 
 message Empty {}
@@ -19,4 +20,16 @@ message JobSeeker {
 
 message JobSeekerList {
   repeated JobSeeker jobSeekers = 1;
+}
+
+message GetPlanRequest {
+  string planId = 1;
+}
+
+message PlanResponse {
+  string id = 1;
+  string name = 2;
+  float price = 3;
+  int32 duration = 4;
+  string features = 5;
 }

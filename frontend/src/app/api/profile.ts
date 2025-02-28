@@ -5,7 +5,7 @@ import { CompanySocialLinks } from "../panel/settings/components/social-links-se
 export async function updateJobSeekerProfile(formData: FormData): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/user-service/api/job-seeker/profile`,
+      `/user-service/api/job-seeker/profile`,
       formData,
       {
         headers: {
@@ -29,7 +29,7 @@ export async function updateJobSeekerProfile(formData: FormData): Promise<any> {
 export async function fetchJobSeekerProfile(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/api/job-seeker/profile`
+      `/user-service/api/job-seeker/profile`
     );
 
     return response.data;
@@ -47,7 +47,7 @@ export async function fetchJobSeekerProfile(): Promise<any> {
 export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/api/job-seeker/profile/minimal`
+      `/user-service/api/job-seeker/profile/minimal`
     );
 
     return response.data;
@@ -65,7 +65,7 @@ export async function fetchJobSeekerMinimalProfile(): Promise<any> {
 export async function updateCompanyProfile(formData: FormData): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/user-service/api/company/profile`,
+      `/user-service/api/company/profile`,
       formData,
       {
         headers: {
@@ -89,7 +89,7 @@ export async function updateCompanyProfile(formData: FormData): Promise<any> {
 export async function fetchCompanyProfile(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/api/company/profile`
+      `/user-service/api/company/profile`
     );
 
     return response.data;
@@ -107,7 +107,7 @@ export async function fetchCompanyProfile(): Promise<any> {
 export async function fetchMediaLinks(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/api/company/media-links`
+      `/user-service/api/company/media-links`
     );
 
     return response.data;
@@ -125,7 +125,7 @@ export async function fetchMediaLinks(): Promise<any> {
 export async function updateMediaLinks(formData: CompanySocialLinks): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/user-service/api/company/media-links`,
+      `/user-service/api/company/media-links`,
       formData,
     );
 
@@ -147,7 +147,7 @@ export async function changeJobSeekerPassword(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/user-service/api/job-seeker/change-password`,
+      `/user-service/api/job-seeker/change-password`,
       { oldPassword, newPassword }
     );
 

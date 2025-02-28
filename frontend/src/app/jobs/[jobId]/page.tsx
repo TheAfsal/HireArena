@@ -108,7 +108,19 @@ function Page() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={async () => {
+                if (navigator.share) {
+                  await navigator.share({
+                    title: "jobTitle",
+                    text: `Check out this job: ${"jobTitle"}`,
+                    url: "jobLink",
+                  });
+                }
+              }}
+            >
               <Share2 className="h-4 w-4" />
             </Button>
             {jobDetails.isApplied ? (

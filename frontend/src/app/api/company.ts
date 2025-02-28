@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 export async function fetchCompanies(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/user-service/api/admin/companies`
+      `/user-service/api/admin/companies`
     );
 
     return response.data;

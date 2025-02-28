@@ -8,9 +8,6 @@ export const validateJob = (
 ) => {
   const result = jobValidationSchema.safeParse(req.body);
 
-  //@ts-ignore
-  
-  
   if (!result.success) {
     console.log(result.error.format());
     res.status(400).json({

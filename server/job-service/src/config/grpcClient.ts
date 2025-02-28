@@ -9,7 +9,7 @@ const userProto = grpc.loadPackageDefinition(packageDefinition).user;
 
 //@ts-ignore
 const userServiceClient = new userProto.UserService(
-  "localhost:5051",
+  `${process.env.USER_SERVER_URL}:5051`,
   grpc.credentials.createInsecure()
 );
 

@@ -9,16 +9,13 @@ const userProto = grpc.loadPackageDefinition(packageDefinition).user;
 
 //@ts-ignore
 const userServiceClient = new userProto.UserService(
-  "localhost:5051",
+  `${process.env.USER_SERVER_URL}:5051`,
   grpc.credentials.createInsecure()
 );
 
 const GetAllJobSeekers = () => {
-  
   return new Promise<any>((resolve, reject) => {
-    userServiceClient.GetAllJobSeekers({ }, (error: any, response: any) => {
-      console.log(response);
-      
+    userServiceClient.GetAllJobSeekers({}, (error: any, response: any) => {
       if (error) {
         reject(error);
       } else {
@@ -29,6 +26,3 @@ const GetAllJobSeekers = () => {
 };
 
 export { GetAllJobSeekers };
-
-
-

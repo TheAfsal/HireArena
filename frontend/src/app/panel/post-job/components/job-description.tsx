@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { JobFormData } from "./job-posting-form";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Category } from "@/app/admin/manage/components/job-category";
 import { Skill } from "@/app/admin/manage/page";
 
@@ -21,11 +22,18 @@ interface Props {
   onNext: () => void;
 }
 
+const testOptions = [
+  "Aptitude Test",
+  "Machine Task",
+  "Technical Interview",
+  "Behavioral Interview",
+  "Coding Challenge",
+];
+
 export default function JobDescription({
   formData,
   updateFormData,
   onNext,
-
 }: Props) {
   return (
     <div className="space-y-8">
@@ -41,11 +49,12 @@ export default function JobDescription({
         <CardContent className="space-y-6">
           <Separator />
 
+          {/* Job Description Section */}
           <div className="flex my-10">
             <div className="w-4/12">
               <Label>Job Description</Label>
               <p className="text-sm text-gray-500 mt-1">
-                You can select multiple type of employment
+                You can select multiple types of employment
               </p>
             </div>
             <div className="w-full">
@@ -65,6 +74,7 @@ export default function JobDescription({
 
           <Separator />
 
+          {/* Responsibilities Section */}
           <div className="flex my-10">
             <div className="w-4/12">
               <Label>Responsibilities</Label>
@@ -89,6 +99,7 @@ export default function JobDescription({
 
           <Separator />
 
+          {/* Qualifications Section */}
           <div className="flex my-10">
             <div className="w-4/12">
               <Label>Who You Are</Label>
@@ -113,6 +124,7 @@ export default function JobDescription({
 
           <Separator />
 
+          {/* Nice-To-Haves Section */}
           <div className="flex my-10">
             <div className="w-4/12">
               <Label>Nice-To-Haves</Label>
@@ -133,9 +145,40 @@ export default function JobDescription({
               </p>
             </div>
           </div>
+
+          <Separator />
+
+          {/* Test Selection Section */}
+          <div className="flex my-10">
+            <div className="w-4/12">
+              <Label>Select Tests</Label>
+              <p className="text-sm text-gray-500 mt-1">
+                Choose the tests you want to administer to candidates
+              </p>
+            </div>
+            <div className="w-full">
+              <div className="space-y-2">
+                {testOptions.map((test) => (
+                  <div key={test} className="flex items-center">
+                    <Checkbox
+                      checked={formData.selectedTests.includes(test)}
+                      onCheckedChange={(checked) => {
+                        const updatedTests = checked
+                          ? [...formData.selectedTests, test]
+                          : formData.selectedTests.filter((t) => t !== test);
+                        updateFormData({ selectedTests: updatedTests });
+                      }}
+                    />
+                    <Label className="ml-2">{test}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Next Step Button */}
       <div className="flex justify-end">
         <Button onClick={onNext}>Next Step</Button>
       </div>

@@ -9,6 +9,7 @@ import companyRoutes from "./routes/companyRoutes";
 import jobSeekerRoutes from "./routes/jobSeekerRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import subscriptionRoutes from "./routes/subscriptionRoutes";
+import webhookRoutes from "./routes/webhookRoutes";
 import jwt from "jsonwebtoken";
 
 //
@@ -77,34 +78,36 @@ app.use((req, res, next) => {
   next();
 });
 
-// const YOUR_DOMAIN = 'http://localhost:3000';
+// const YOUR_DOMAIN = "http://localhost:3000";
 
 // // Create Checkout Session endpoint
-// app.post('/create-checkout-session', async (req, res) => {
+// app.post("/create-checkout-session", async (req, res) => {
 //   try {
 //     const session = await stripe.checkout.sessions.create({
 //       line_items: [
 //         {
 //           price_data: {
-//             currency: 'usd', // Currency
+//             currency: "usd",
 //             product_data: {
-//               name: 'T-shirt', // Product name
+//               name: "T-shirt",
 //             },
-//             unit_amount: 2000, // Price in cents (this is $20.00)
+//             unit_amount: 2000,
 //           },
-//           quantity: 1, // Quantity
+//           quantity: 1,
 //         },
 //       ],
-//       mode: 'payment',  // Indicating this is for a payment
-//       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,  // Redirect after successful payment
-//       cancel_url: `${YOUR_DOMAIN}/cancel`,  // Redirect if the user cancels the payment
+//       mode: "payment",
+//       success_url: `${YOUR_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
+//       cancel_url: `${YOUR_DOMAIN}/cancel`,
 //     });
 
-//     // Redirect the user to the Stripe Checkout page
-//     res.redirect(303, session.url||"");
+//     console.log("session.url--->", session);
+
+//     // res.redirect(303, session.url || "");
+//     res.json({ sessionUrl:session.url });
 //   } catch (error) {
-//     console.error('Error creating checkout session:', error);
-//     res.status(500).send('Server error');
+//     console.error("Error creating checkout session:", error);
+//     res.status(500).send("Server error");
 //   }
 // });
 
@@ -167,6 +170,7 @@ app.use("/api/company", companyRoutes);
 app.use("/api/job-seeker", jobSeekerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/subscription", subscriptionRoutes);
+app.use("/webhooks", webhookRoutes);
 
 // app.get(
 //   "/auth/google",

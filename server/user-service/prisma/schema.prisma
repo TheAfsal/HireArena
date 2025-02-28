@@ -28,29 +28,8 @@ model JobSeeker {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  subscription Subscription?
+  serSubscriptions UserSubscription[] 
 }
-
-enum SubscriptionPlan {
-  BASIC
-  PRO
-  ENTERPRISE
-}
-
-model Subscription {
-  id                   String   @id @default(uuid())
-  jobSeekerId          String   @unique  // Linked to JobSeeker
-  stripeCustomerId     String   // Stripe Customer ID
-  stripeSubscriptionId String?  // Active Subscription ID (if any)
-  plan                 SubscriptionPlan  // BASIC, PRO, ENTERPRISE
-  status               String   @default("ACTIVE") 
-  expiresAt            DateTime? // Subscription Expiry Date
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  jobSeeker            JobSeeker @relation(fields: [jobSeekerId], references: [id])
-}
-
 
 model Company {
   id            String   @id @default(uuid())
@@ -125,39 +104,31 @@ model Invitation {
   company Company @relation(fields: [companyId], references: [id])
 }
 
-// generator client {
-//   provider = "prisma-client-js"
-// }
+model UserSubscription {
+  id            String   @id @default(uuid())
+  userId        String
+  planId        String
+  features      Json
+  startDate     DateTime @default(now())
+  expiryDate    DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transactionId String?
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
+  @@index([userId])
+  jobSeeker     JobSeeker @relation(fields: [userId], references: [id])
+}
 
-// model JobSeeker {
-//   id        String   @id @default(uuid())
-//   name      String
-//   email     String   @unique
-//   password  String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   role      String   @default("job-seeker") 
-// }
+model Transaction {
+  id             String   @id @default(uuid())
+  userId         String
+  amount         Float
+  status         String // "pending", "completed", "failed"
+  paymentMethod  String // "credit_card", "paypal", "stripe"
+  paymentId      String?   
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-// model Company {
-//   id        String   @id @default(uuid())
-//   name      String
-//   email     String   @unique
-//   password  String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   role      String   @default("company") 
-// }
-
-// model Admin {
-//   id        String   @id @default(uuid())
-//   name      String
-//   email     String   @unique
-//   password  String
-//   role      String   @default("admin") 
-// }
+  @@index([userId])
+}
