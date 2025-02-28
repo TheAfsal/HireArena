@@ -64,8 +64,6 @@ const companyController = new CompanyController(
 
 const jobSeekerController = new JobSeekerController(profileService);
 
-console.log(userProto);
-
 //@ts-ignore
 server.addService(userProto.UserService.service, {
   GetCompanyIdByUserId: companyController.getCompanyIdByUserId,

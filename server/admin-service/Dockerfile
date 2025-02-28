@@ -1,4 +1,4 @@
-FROM node:20.11.0
+FROM node:22
 
 RUN npm install -g pnpm
 
@@ -11,5 +11,7 @@ RUN pnpm install
 COPY . .
 
 EXPOSE 5003
+
+EXPOSE 5005
 
 CMD ["npm", "run","dev"]

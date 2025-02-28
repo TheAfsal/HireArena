@@ -27,7 +27,7 @@ class ProfileService {
       console.log(data);
       
       fileUrl = await new Promise((resolve, reject) => {
-        grpcClient.uploadFile(
+        grpcClient.fileServiceClient.uploadFile(
           {
             fileName: data.profileImage.originalname,
             fileData: data.profileImage.buffer,
@@ -100,7 +100,7 @@ class ProfileService {
 
     if (data.logo && data.logo.mimetype) {
       logoUrl = await new Promise<string>((resolve, reject) => {
-        grpcClient.uploadFile(
+        grpcClient.fileServiceClient.uploadFile(
           {
             fileName: data.logo.originalname,
             fileData: data.logo.buffer,

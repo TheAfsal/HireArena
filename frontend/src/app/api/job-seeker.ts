@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 export async function fetchCandidates(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/admin-service/api/admin/candidates`
+      `/admin-service/api/admin/candidates`
     );
 
     return response.data;
@@ -22,7 +22,7 @@ export async function fetchCandidates(): Promise<any> {
 export async function updateJobSeekerStatus(id: string): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/user-service/api/admin/candidates`,
+      `/user-service/api/admin/candidates`,
       { userId: id }
     );
 

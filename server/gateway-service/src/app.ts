@@ -118,7 +118,7 @@ app.use(
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
+  console.log("Error from gateway service --> ",err);
 
   console.error("Error:", err.message);
   res

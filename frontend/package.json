@@ -47,10 +47,10 @@
     "sonner": "^1.7.4",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.7.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "typescript": "^5.7.3",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20.17.12",
     "@types/react": "^19.0.7",

@@ -28,7 +28,6 @@ class JobService {
     }
 
     console.log(data);
-    console.log(userId);
 
     if (!data.jobTitle || !userId) {
       throw new Error("Job title and company ID are required.");
@@ -49,12 +48,12 @@ class JobService {
       },
       categories: {
         connect: data.categories.map((categoryId: string) => ({
-          id: categoryId, // Connect categories via their IDs
+          id: categoryId, 
         })),
       },
       requiredSkills: {
         connect: data.requiredSkills.map((skillId: string) => ({
-          id: skillId, // Connect skills via their IDs
+          id: skillId, 
         })),
       },
     });

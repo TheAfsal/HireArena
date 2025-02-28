@@ -8,7 +8,7 @@ export async function AddCategoryType(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/job-service/api/categories/create`,
+      `/job-service/api/categories/create`,
       { name, description }
     );
 
@@ -32,7 +32,7 @@ export async function EditCategoryType(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/job-service/api/categories/update`,
+      `/job-service/api/categories/update`,
       { name, description, id, status }
     );
 
@@ -51,7 +51,7 @@ export async function EditCategoryType(
 export async function fetchCategoryType(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/job-service/api/categories/`
+      `/job-service/api/categories/`
     );
 
     return response.data;
@@ -74,7 +74,7 @@ export async function AddJobCategory(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/job-service/api/job-categories/create`,
+      `/job-service/api/job-categories/create`,
       { name, description, categoryTypeId: categoryType }
     );
 
@@ -99,7 +99,7 @@ export async function EditJobCategory(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/job-service/api/job-categories/update`,
+      `/job-service/api/job-categories/update`,
       { name, description, id, status, categoryTypeId: categoryType }
     );
 
@@ -118,7 +118,7 @@ export async function EditJobCategory(
 export async function fetchJobCategory(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/job-service/api/job-categories/`
+      `/job-service/api/job-categories/`
     );
 
     return response.data;
@@ -137,7 +137,7 @@ export async function fetchJobCategory(): Promise<any> {
 export async function AddTechStack(name: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/job-service/api/tech-stacks/create`,
+      `/job-service/api/tech-stacks/create`,
       { name }
     );
 
@@ -156,7 +156,7 @@ export async function AddTechStack(name: string): Promise<any> {
 export async function EditTechStack(id: string, name: string): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/job-service/api/tech-stacks/update`,
+      `/job-service/api/tech-stacks/update`,
       { name, id }
     );
 
@@ -175,7 +175,7 @@ export async function EditTechStack(id: string, name: string): Promise<any> {
 export async function fetchTechStack(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/job-service/api/tech-stacks/`
+      `/job-service/api/tech-stacks/`
     );
 
     return response.data;
@@ -197,7 +197,7 @@ export async function AddSkills(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `http://localhost:4000/job-service/api/skills/create`,
+      `/job-service/api/skills/create`,
       { name, jobCategoryId }
     );
 
@@ -216,7 +216,7 @@ export async function AddSkills(
 export async function EditSkills(id: string, name: string): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `http://localhost:4000/job-service/api/skills/update`,
+      `/job-service/api/skills/update`,
       { name, id }
     );
 
@@ -235,7 +235,7 @@ export async function EditSkills(id: string, name: string): Promise<any> {
 export async function fetchSkills(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:4000/job-service/api/skills/`
+      `/job-service/api/skills/`
     );
 
     return response.data;
