@@ -16,6 +16,7 @@ class JobRepository {
         jobDescription: jobData.jobDescription,
         responsibilities: jobData.responsibilities,
         qualifications: jobData.qualifications,
+        testOptions: jobData.testOptions,
         niceToHave: jobData.niceToHave,
         benefits: jobData.benefits,
         companyId: jobData.companyId,

@@ -132,7 +132,32 @@ class JobController {
     }
   };
 
-  getFilteredJobs = async(req: Request, res: Response) =>{
+  getApplicationStatus = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const jobId = req.params.id;
+
+      console.log();
+      
+
+      const applications = await this.jobService.getApplicationsStatus(
+        userId,
+        jobId
+      );
+
+      res.status(200).json(applications);
+      return;
+    } catch (error) {
+      console.log("Error fetching job applications:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+      return;
+    }
+  };
+
+  getFilteredJobs = async (req: Request, res: Response) => {
     try {
       const filters = {
         type: req.query.type as string | undefined,
@@ -142,20 +167,20 @@ class JobController {
       };
 
       const { userId } = req.headers["x-user"]
-      ? JSON.parse(req.headers["x-user"] as string)
-      : null;
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
 
-      const jobs = await this.jobService.getFilteredJobs(filters,userId);
+      const jobs = await this.jobService.getFilteredJobs(filters, userId);
       // console.log(jobs);
-      
+
       res.json(jobs);
-      return 
+      return;
     } catch (error) {
       console.error("Error fetching jobs:", error);
       res.status(500).json({ message: "Internal Server Error" });
-      return
+      return;
     }
-  }
+  };
 }
 
 export default JobController;

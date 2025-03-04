@@ -21,6 +21,7 @@ router.get("/", jobController.getFilteredJobs);
 router.post("/", validateJob, jobController.createJob);
 
 router.post("/apply", jobController.applyJob);
+router.get("/apply/:id", jobController.getApplicationStatus);
 router.get("/my-applications", jobController.getAllApplications);
 router.get("/:id", jobController.getJob);
 

@@ -14,7 +14,7 @@ export interface MyApplications {
   id: string;
   jobId: string;
   jobTitle: string;
-  status: boolean;
+  status: string;
 }
 
 function JobList() {

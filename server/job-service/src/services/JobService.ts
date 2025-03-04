@@ -12,6 +12,14 @@ interface CompanyProfile {
   logo: string;
 }
 
+const allowedTests: string[] = [
+  "Aptitude Test",
+  "Machine Task",
+  "Technical Interview",
+  "Behavioral Interview",
+  "Coding Challenge",
+];
+
 class JobService {
   private jobRepository: JobRepository;
   private jobApplicationRepository: JobApplicationRepository;
@@ -33,6 +41,16 @@ class JobService {
       throw new Error("Job title and company ID are required.");
     }
 
+    const testOptions: { [key: string]: boolean } = {
+      "Aptitude Test": false,
+      "Machine Task": false,
+      "Technical Interview": false,
+      "Behavioral Interview": false,
+      "Coding Challenge": false,
+    };
+
+    data.selectedTests.forEach((test: string) => (testOptions[test] = true));
+
     const job = await this.jobRepository.createJob({
       jobTitle: data.jobTitle,
       salaryMin: data.salaryRange?.min || 0,
@@ -42,18 +60,19 @@ class JobService {
       qualifications: data.qualifications,
       niceToHave: data.niceToHave || "",
       benefits: data.benefits || [],
+      testOptions,
       companyId,
       employmentTypes: {
         create: data.employmentTypes.map((type: string) => ({ type })),
       },
       categories: {
         connect: data.categories.map((categoryId: string) => ({
-          id: categoryId, 
+          id: categoryId,
         })),
       },
       requiredSkills: {
         connect: data.requiredSkills.map((skillId: string) => ({
-          id: skillId, 
+          id: skillId,
         })),
       },
     });
@@ -144,6 +163,17 @@ class JobService {
         appliedAt: app.appliedAt,
       };
     });
+  }
+
+  async getApplicationsStatus(jobSeekerId: string, jobId: string) {
+    const applicationsDetails =
+      await this.jobApplicationRepository.findApplication(jobId, jobSeekerId);
+
+    if (!applicationsDetails) {
+      throw new Error("Application not found");
+    }
+
+    return applicationsDetails;
   }
 
   async applyForJob(jobId: string, jobSeekerId: string) {

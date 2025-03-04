@@ -114,6 +114,7 @@ class AuthService implements IAuthService {
 
       const savedCompany = await this.companyRepository.create({
         companyName: userData.name,
+        status: "Pending",
       });
 
       const savedEmployee = await this.employeeRepository.create({

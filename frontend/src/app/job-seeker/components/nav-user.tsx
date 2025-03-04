@@ -30,6 +30,8 @@ import type { AppDispatch } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 import { useState, useEffect } from "react";
 import { fetchJobSeekerMinimalProfile } from "@/app/api/profile";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface User {
   fullName: string;
@@ -40,6 +42,7 @@ interface User {
 export function NavUser() {
   const { isMobile } = useSidebar();
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -109,9 +112,9 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem onClick={()=>router.push("/job-seeker/account")}>
+                  <BadgeCheck />
+                  Account
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />

@@ -2,7 +2,11 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { applyJob, fetchJobDetails } from "@/app/api/job";
+import {
+  applyJob,
+  fetchAppliedJobStatus,
+  fetchJobDetails,
+} from "@/app/api/job";
 import {
   MapPin,
   Share2,
@@ -14,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
 
 interface JobDetails {
   id: string;
@@ -33,10 +38,17 @@ interface JobDetails {
   requiredSkills: Array<{ name: string }>;
   createdAt: string;
   isApplied: boolean;
+  testOptions: {
+    "Aptitude Test": boolean;
+    "Behavioral Interview": boolean;
+    "Coding Challenge": boolean;
+    "Machine Task": boolean;
+    "Technical Interview": boolean;
+  };
 }
 
 function Page() {
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
   const params = useParams();
@@ -49,7 +61,7 @@ function Page() {
 
         setJobDetails(response);
       } catch (error: unknown) {
-        setError("Failed to load job details");
+        // setError("Failed to load job details");
       } finally {
         setLoading(false);
       }
@@ -57,6 +69,11 @@ function Page() {
 
     fetchDetails();
   }, [params.jobId]);
+
+  const { data: statusDetails } = useQuery({
+    queryKey: ["jobStatus"],
+    queryFn: () => fetchAppliedJobStatus(params.jobId as string),
+  });
 
   const handleJobApply = async () => {
     let response = await applyJob(params.jobId as string);
@@ -71,10 +88,10 @@ function Page() {
     );
   }
 
-  if (error || !jobDetails) {
+  if (!jobDetails) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <p className="text-red-500">{error || "Job not found"}</p>
+        <p className="text-red-500">{"Job not found"}</p>
       </div>
     );
   }
@@ -92,13 +109,13 @@ function Page() {
             <div className="">
               <Avatar className="h-20 w-20">
                 <AvatarImage src={jobDetails?.logo} />
-                <AvatarFallback>{jobDetails.companyName[0]}</AvatarFallback>
+                <AvatarFallback>{jobDetails?.companyName[0]}</AvatarFallback>
               </Avatar>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{jobDetails.jobTitle}</h1>
+              <h1 className="text-2xl font-bold">{jobDetails?.jobTitle}</h1>
               <div className="flex items-center gap-2 text-muted-foreground">
-                <span>{jobDetails.companyName}</span>
+                <span>{jobDetails?.companyName}</span>
                 <span>•</span>
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
@@ -123,8 +140,18 @@ function Page() {
             >
               <Share2 className="h-4 w-4" />
             </Button>
-            {jobDetails.isApplied ? (
-              <Button disabled>Applied</Button>
+            {jobDetails?.isApplied ? (
+              <>
+                <Button disabled>Applied</Button>
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={getBadgeClass(statusDetails?.status)}
+                  >
+                    {statusDetails?.status}
+                  </Badge>
+                </div>
+              </>
             ) : (
               <Button onClick={handleJobApply}>Apply Now</Button>
             )}
@@ -137,7 +164,10 @@ function Page() {
             <div>
               <p className="text-sm text-muted-foreground">Job Type</p>
               <p className="font-medium">
-                {jobDetails.employmentTypes[0]?.type.replace("_", " ")}
+                {jobDetails?.employmentTypes
+                  ?.map((typeItem) => typeItem.type.replace("_", " "))
+                  .reverse()
+                  .join(", ")}
               </p>
             </div>
           </div>
@@ -243,10 +273,45 @@ function Page() {
               </ul>
             </div>
           )}
+
+          {/* Test Options */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <h3 className="font-semibold mb-4">Test Options</h3>
+            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+              {jobDetails.testOptions["Aptitude Test"] && (
+                <li>Aptitude Test</li>
+              )}
+              {jobDetails.testOptions["Machine Task"] && <li>Machine Task</li>}
+              {jobDetails.testOptions["Coding Challenge"] && (
+                <li>Coding Challenge</li>
+              )}
+              {jobDetails.testOptions["Technical Interview"] && (
+                <li>Technical Interview</li>
+              )}
+              {jobDetails.testOptions["Behavioral Interview"] && (
+                <li>Behavioral Interview</li>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+export const getBadgeClass = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "bg-yellow-200 text-yellow-800";
+    case "INTERVIEW":
+      return "bg-blue-200 text-blue-800";
+    case "HIRED":
+      return "bg-green-200 text-green-800";
+    case "REJECTED":
+      return "bg-red-200 text-red-800";
+    default:
+      return "bg-gray-200 text-gray-800";
+  }
+};
 
 export default Page;

@@ -32,37 +32,37 @@ enum Skills {
 }
 
 model Job {
-  id               String   @id @default(uuid())   // Unique identifier for the job
-  jobTitle         String  // Title of the job
-  salaryMin        Int     // Minimum salary
-  salaryMax        Int     // Maximum salary
-  jobDescription   String  // Description of the job
-  responsibilities String   // Responsibilities associated with the job
-  qualifications   String  // Qualifications required for the job
-  niceToHave       String? // Optional "nice-to-have" qualifications
-  benefits         Json    // JSON object for benefits
-  companyId        String  // Foreign key reference to the company that owns the job
-  createdAt        DateTime @default(now()) // Created date with auto-set default
-  updatedAt        DateTime @updatedAt       // Updated date which auto-updates
+  id               String   @id @default(uuid())   
+  jobTitle         String  
+  salaryMin        Int     
+  salaryMax        Int     
+  jobDescription   String  
+  responsibilities String   
+  qualifications   String
+  testOptions      Json  
+  niceToHave       String? 
+  benefits         Json    
+  companyId        String  
+  createdAt        DateTime @default(now()) 
+  updatedAt        DateTime @updatedAt       
 
   // Relations
-  employmentTypes  JobEmploymentType[] // Relation to employment types
-  categories       JobCategory[]       @relation("JobCategories") // Many-to-many relation with JobCategory
+  employmentTypes  JobEmploymentType[] 
+  categories       JobCategory[]       @relation("JobCategories") 
   requiredSkills   Skill[]             @relation("JobRequiredSkills") 
   applications     JobApplication[] 
 }
 
 model JobApplication {
   id            String   @id @default(uuid())  
-  jobId         String   // Foreign key to Job (Job Service)
-  jobSeekerId   String   // Foreign key (but reference exists in User Service)
+  jobId         String  
+  jobSeekerId   String   
   status        String   @default("PENDING") // Status (APPLIED, INTERVIEW, HIRED, REJECTED)
-  resumeUrl     String?  // Resume file URL (optional)
-  appliedAt     DateTime @default(now()) // Timestamp of application
+  resumeUrl     String?  
+  appliedAt     DateTime @default(now())
 
   job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }
-
 
 model JobEmploymentType {
   id    String         @id @default(uuid())
