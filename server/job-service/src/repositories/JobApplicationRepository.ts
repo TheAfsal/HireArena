@@ -10,7 +10,7 @@ class JobApplicationRepository {
     return await this.prisma.jobApplication.findFirst({
       where: { jobId, jobSeekerId },
     });
-  }
+  } 
 
   async createApplication(jobId: string, jobSeekerId: string, resumeUrl?: string): Promise<JobApplication> {
     return await this.prisma.jobApplication.create({

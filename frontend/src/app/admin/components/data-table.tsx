@@ -13,7 +13,7 @@ interface DataTableProps {
   data: any[];
   columns: Column[];
   searchPlaceholder?: string;
-  onBlockUnblock: (companyName: string) => void; 
+  onBlockUnblock: (companyName: string) => void;
 }
 
 export function DataTable({
@@ -61,10 +61,12 @@ export function DataTable({
                     >
                       {column.key === "status" ? (
                         <Badge
-                          variant={item[column.key] ? "destructive" : "secondary"}
+                          variant={
+                            item[column.key] ? "destructive" : "secondary"
+                          }
                           className="bg-gray-100 hover:bg-gray-100"
                         >
-                          {!item[column.key]?"Active":"destructive"}
+                          {!item[column.key] ? "Active" : "destructive"}
                         </Badge>
                       ) : column.key === "actions" ? (
                         <div className="flex space-x-2">
@@ -72,14 +74,35 @@ export function DataTable({
                             variant="ghost"
                             className="text-gray-500 hover:text-gray-700"
                             onClick={() => onBlockUnblock(item.name)}
-                          >{}
-                            {item.status === "Active" ? "Block" : "Unblock"}
+                          >
+                            {}
+                            {/* {item.status === "Active" ? "Block" : "Unblock"} */}
                           </Button>
+                          {item.status === "Pending" && (
+                            <div className="flex items-center gap-3">
+                              Waiting for verfication
+                              <Button
+                                variant="normal"
+                                className="text-green-500 hover:text-green-800"
+                                // onClick={() => onBlockUnblock(item.name)}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                variant="normal"
+                                className="text-red-500 hover:text-red-700"
+                                // onClick={() => onBlockUnblock(item.name)}
+                              >
+                                Reject
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <span
                           className={
-                            column.key === "dateAdded" || column.key === "location"
+                            column.key === "dateAdded" ||
+                            column.key === "location"
                               ? "text-gray-500"
                               : ""
                           }

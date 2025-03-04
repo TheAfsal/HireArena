@@ -106,6 +106,22 @@ export async function applyJob(jobId: string): Promise<any> {
   }
 }
 
+export async function fetchAppliedJobStatus(jobId: string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(`/job-service/api/jobs/apply/${jobId}`);
+    
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
 // Chelpo waste
 
 export async function fetchFilteredJobs(filters: any) {

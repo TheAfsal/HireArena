@@ -1,9 +1,6 @@
-import nodemailer from "nodemailer";
-import { IEmailService } from "../interfaces/IEmailService";
 import "colors";
 import Stripe from "stripe";
 import SubscriptionRepository from "../repositories/SubscriptionRepository";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
 import { fetchSubscriptionPlan } from "../config/grpcClient";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);

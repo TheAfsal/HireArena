@@ -31,7 +31,7 @@ class CompanyRepository {
     return this.prisma.company.findUnique({ where: { companyName } });
   }
 
-  async create(companyData: { companyName: string }) {
+  async create(companyData: { companyName: string; status: string }) {
     return this.prisma.company.create({ data: companyData });
   }
 
@@ -61,6 +61,7 @@ class CompanyRepository {
         jobCategories: data.jobCategories,
         logo: data.logo,
         updatedAt: new Date(),
+        status:"Pending"
       },
     });
   }
@@ -93,7 +94,7 @@ class CompanyRepository {
       return companies;
     } catch (error) {
       console.error("Error fetching companies:", error);
-      throw error; 
+      throw error;
     }
   }
 }

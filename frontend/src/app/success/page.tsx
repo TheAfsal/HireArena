@@ -21,7 +21,7 @@ const SuccessPage = () => {
     verifySubscription(sessionId)
       .then((res:any) => {
         setMessage("Subscription activated successfully! Redirecting...");
-        setTimeout(() => router.push("/dashboard"), 3000);
+        setTimeout(() => router.push("/job-seeker"), 3000);
       })
       .catch((err:any) => {
         console.error(err);
