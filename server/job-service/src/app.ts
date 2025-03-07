@@ -14,6 +14,7 @@ dotenv.config();
 const app: Application = express();
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
@@ -28,12 +29,8 @@ app.use(
 );
 
 app.use(helmet());
-app.use(morgan("dev"));
 
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
+app.use(morgan("dev"));
 
 app.use("/api/jobs", jobRoutes);
 app.use("/api/categories", categoryRoutes);

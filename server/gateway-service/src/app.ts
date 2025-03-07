@@ -81,6 +81,22 @@ app.use(
   })
 );
 
+app.use(
+  "/interview-mgmt-service/",
+  validateAccessToken,
+  createProxyMiddleware({
+    target: `http://${process.env.INTERVIEW_SERVER_URL}:5006`,
+    changeOrigin: true,
+    on: {
+      proxyReq: (proxyReq, req: Request, res: Response) => {
+        if (req.user) {
+          proxyReq.setHeader("x-user", JSON.stringify(req.user));
+        }
+      },
+    },
+  })
+);
+
 // app.use(
 //   '/user-service',
 //   validateAccessToken,
@@ -116,9 +132,8 @@ app.use(
 //   })
 // );
 
-// Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log("Error from gateway service --> ",err);
+  console.log("Error from gateway service --> ", err);
 
   console.error("Error:", err.message);
   res

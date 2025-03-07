@@ -46,7 +46,6 @@ model Job {
   createdAt        DateTime @default(now()) 
   updatedAt        DateTime @updatedAt       
 
-  // Relations
   employmentTypes  JobEmploymentType[] 
   categories       JobCategory[]       @relation("JobCategories") 
   requiredSkills   Skill[]             @relation("JobRequiredSkills") 

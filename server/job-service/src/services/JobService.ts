@@ -1,4 +1,5 @@
 import {
+  createAptitudeTest,
   getCompaniesDetails,
   getCompanyIdByUserId,
 } from "../config/grpcClient";
@@ -12,13 +13,13 @@ interface CompanyProfile {
   logo: string;
 }
 
-const allowedTests: string[] = [
-  "Aptitude Test",
-  "Machine Task",
-  "Technical Interview",
-  "Behavioral Interview",
-  "Coding Challenge",
-];
+// const allowedTests: string[] = [
+//   "Aptitude Test",
+//   "Machine Task",
+//   "Technical Interview",
+//   "Behavioral Interview",
+//   "Coding Challenge",
+// ];
 
 class JobService {
   private jobRepository: JobRepository;
@@ -76,6 +77,26 @@ class JobService {
         })),
       },
     });
+
+
+    if (testOptions["Aptitude Test"]) {
+      try {
+        console.log("1\n\n\n\n\n");
+
+        let interviewServerResponse = await createAptitudeTest(
+          job.id,
+          companyId
+        );
+        console.log("2\n\n\n\n\n");
+
+        console.log(
+          "Aptitude Test Created in Interview Service:",
+          interviewServerResponse
+        );
+      } catch (error) {
+        console.error("Failed to create aptitude test:", error);
+      }
+    }
 
     return job;
   }
@@ -180,30 +201,29 @@ class JobService {
     console.log(jobId);
 
     const jobExists = await this.jobRepository.getJobById(jobId);
-    console.log(jobExists);
 
     if (!jobExists) {
       throw new Error("Job not found");
     }
 
-    // Check if the user has already applied
     const existingApplication =
       await this.jobApplicationRepository.findApplication(jobId, jobSeekerId);
     if (existingApplication) {
       throw new Error("You have already applied for this job");
     }
 
-    // Create the application
-    return await this.jobApplicationRepository.createApplication(
+    const response = await this.jobApplicationRepository.createApplication(
       jobId,
       jobSeekerId
     );
+
+    return jobExists?.testOptions?.["Aptitude Test"] === true
+      ? { ...response, "Aptitude Test": true }
+      : response;
   }
 
   async getFilteredJobs(filters: any, jobSeekerId: string) {
     const jobs = await this.jobRepository.getJobs(filters);
-
-    console.log(jobs);
 
     const companyIds = [...new Set(jobs.map((job) => job.companyId))];
 
@@ -212,6 +232,7 @@ class JobService {
     const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(
       jobSeekerId
     );
+
     const appliedJobIds = new Set(appliedJobs.map((job) => job.jobId));
 
     const jobsWithCompanyDetails = jobs.map((job) => {

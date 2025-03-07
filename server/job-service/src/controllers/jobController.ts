@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IUser } from "../types/IUser";
+import { createInterview } from "../config/grpcClient";
 
 declare global {
   namespace Express {
@@ -86,7 +87,6 @@ class JobController {
   applyJob = async (req: Request, res: Response) => {
     try {
       const { jobId } = req.body;
-      // const file = req.file;
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
@@ -96,16 +96,32 @@ class JobController {
         return;
       }
 
-      // const resumeUrl = file ? `/uploads/${file.filename}` : undefined;
-
-      console.log(jobId, userId);
-
       const application = await this.jobService.applyForJob(jobId, userId);
 
-      res.status(201).json({
-        message: "Job application submitted successfully",
-        application,
-      });
+      if (application?.["Aptitude Test"]) {
+        // Call gRPC to create Interview
+        const interviewResponse: any = await createInterview(
+          application.id,
+          jobId,
+          userId
+        );
+
+        if (
+          !interviewResponse.interviewId ||
+          interviewResponse.status !== "pending"
+        ) {
+          res.status(400).json({ message: "Unable to Attend Aptitude Test" });
+          return;
+        }
+
+        res.status(201).json({
+          message: "Job application submitted, aptitude test scheduled",
+          interviewId: interviewResponse.interviewId,
+        });
+        return;
+      }
+
+      res.status(201).json(application);
       return;
     } catch (error: any) {
       console.log(error);
@@ -141,7 +157,6 @@ class JobController {
       const jobId = req.params.id;
 
       console.log();
-      
 
       const applications = await this.jobService.getApplicationsStatus(
         userId,

@@ -89,6 +89,7 @@ export async function fetchMyApplications(): Promise<any> {
 }
 
 export async function applyJob(jobId: string): Promise<any> {
+  
   try {
     const response = await axiosInstance.post(`/job-service/api/jobs/apply`, {
       jobId,

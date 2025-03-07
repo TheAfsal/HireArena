@@ -193,6 +193,32 @@ export async function fetchInvitationDetails(token: string): Promise<any> {
   }
 }
 
+export async function googleToken(token: string): Promise<any> {
+  try {
+    const response = await axiosInstance.post(
+      `/user-service/api/auth/refresh-token-google`,
+      { token },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log(response.data.data.tokens);
+
+    return response.data.data.tokens;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
 export async function AcceptInvitation(
   token: string,
   name: string,

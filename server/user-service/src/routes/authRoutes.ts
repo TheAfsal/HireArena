@@ -86,6 +86,8 @@ router.post("/company/accept-invite", companyController.acceptInvitation);
 
 router.post("/refresh-token", authController.refresh);
 
+router.post("/refresh-token-google", authController.setRefreshForGoogle);
+
 router.post("/who-am-i", authController.whoAmI);
 
 export default router;

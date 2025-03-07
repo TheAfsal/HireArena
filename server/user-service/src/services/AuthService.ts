@@ -320,6 +320,16 @@ class AuthService implements IAuthService {
     return { tokens: { accessToken } };
   }
 
+  async setRefreshForGoogle(accessToken: string): Promise<any> {
+    const decoded = this.tokenService.verifyAccessToken(accessToken);
+
+    const refreshToken = this.tokenService.generateRefreshToken(
+      decoded,
+      "job-seeker"
+    );
+    return refreshToken;
+  }
+
   async whoAmI(token: string): Promise<{ role: string }> {
     const decoded = this.tokenService.verifyRefreshToken(token);
 

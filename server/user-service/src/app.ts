@@ -62,13 +62,6 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
 
 app.use(helmet());
 app.use(morgan("dev"));
@@ -154,7 +147,7 @@ app.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`http://localhost:3000/job-seeker?token=${accessToken}`);
+    res.redirect(`http://localhost:3000/google-login?token=${accessToken}`);
   }
 );
 

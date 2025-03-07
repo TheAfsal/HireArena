@@ -4,6 +4,7 @@ export interface ITokenService {
   generateAccessToken(userId: string): string;
   generateRefreshToken(userId: string, role: string): string;
   verifyRefreshToken(token: string): string;
+  verifyAccessToken(token: string): string;
   generate(): string;
   encrypt(text: string, secretKey: string): string;
   decrypt(encryptedText: string, secretKey: string): string;

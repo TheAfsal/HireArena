@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Interview {
+  id            String          @id @default(uuid())
+  applicationId String
+  jobId         String
+  candidateId   String
+  status        InterviewStatus
+  scheduledAt   DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  InterviewRounds   InterviewRound[]
+  CandidateResponse CandidateResponse[]
+
+  @@index([applicationId])
+  @@index([candidateId])
+}
+
+model InterviewRound {
+  id          String      @id @default(uuid())
+  interviewId String
+  roundType   RoundType
+  status      RoundStatus
+  scheduledAt DateTime
+  completedAt DateTime?
+  remarks     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  Interview Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+}
+
+model AptitudeTestTemplate {
+  id        String   @id @default(uuid())
+  jobId     String
+  name      String
+  createdAt DateTime @default(now())
+
+  questions AptitudeTestQuestion[]
+}
+
+model AptitudeTestQuestion {
+  id            String   @id @default(uuid())
+  templateId    String
+  category      String?
+  difficulty    String?
+  questionText  String
+  options       String[] 
+  correctAnswer String
+
+  AptitudeTestTemplate AptitudeTestTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  CandidateResponse    CandidateResponse[]
+}
+
+model CandidateResponse {
+  id             String   @id @default(uuid())
+  interviewId    String
+  questionId     String
+  selectedAnswer String
+  isCorrect      Boolean?
+  submittedAt    DateTime @default(now())
+
+  Interview            Interview            @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  AptitudeTestQuestion AptitudeTestQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+enum InterviewStatus {
+  scheduled
+  completed
+  canceled
+  pending
+  failed
+}
+
+enum RoundType {
+  aptitude
+  machine_task
+  technical
+  HR
+  final
+}
+
+enum RoundStatus {
+  pending
+  ongoing
+  completed
+  failed
+}

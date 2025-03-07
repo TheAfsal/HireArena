@@ -20,3 +20,4 @@ router.get("/", categoryController.getAll);
 router.delete("/:id", categoryController.delete);
 
 export default router;
+

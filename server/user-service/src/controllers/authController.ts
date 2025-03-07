@@ -373,6 +373,44 @@ class AuthController {
     }
   };
 
+  setRefreshForGoogle = async (
+    req: Request,
+    res: Response<IGenericResponse<IAuthResponse | IError>>
+  ) => {
+    try {
+      console.log("-----", req.body);
+      const { token } = req.body;
+
+      const authResponse = await this.authService.setRefreshForGoogle(token);
+
+      console.log("authResponse");
+      
+      console.log(authResponse);
+
+      res.cookie("refreshToken", authResponse, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "development",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "Tokens refreshed successfully",
+        data: { tokens: token },
+      });
+      console.log("@@@@@@@@");
+      
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during token refresh",
+        error: (error as Error).message,
+      });
+    }
+  };
+
   whoAmI = async (
     req: Request,
     res: Response<IGenericResponse<{ role: string } | IError>>

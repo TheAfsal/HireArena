@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   applyJob,
@@ -18,9 +18,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import MainContent from "./components/mainContent";
 
-interface JobDetails {
+export interface JobDetails {
   id: string;
   jobTitle: string;
   salaryMin: number;
@@ -31,7 +33,6 @@ interface JobDetails {
   niceToHave: string;
   benefits: Array<{ title: string }>;
   companyName: string;
-  // location?: string;
   logo?: string;
   employmentTypes: Array<{ type: string }>;
   categories: Array<{ name: string }>;
@@ -48,39 +49,62 @@ interface JobDetails {
 }
 
 function Page() {
-  // const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
-  const params = useParams();
+  const { jobId } = useParams<{ jobId: string }>();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const response = await fetchJobDetails(params.jobId as string);
-        console.log(response);
-
-        setJobDetails(response);
-      } catch (error: unknown) {
-        // setError("Failed to load job details");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDetails();
-  }, [params.jobId]);
+  const {
+    data: jobDetails,
+    error,
+    isLoading,
+  } = useQuery<JobDetails>({
+    queryKey: ["jobDetails", jobId],
+    queryFn: () => fetchJobDetails(jobId),
+    enabled: !!jobId,
+  });
 
   const { data: statusDetails } = useQuery({
     queryKey: ["jobStatus"],
-    queryFn: () => fetchAppliedJobStatus(params.jobId as string),
+    queryFn: () => fetchAppliedJobStatus(jobId as string),
   });
 
   const handleJobApply = async () => {
-    let response = await applyJob(params.jobId as string);
-    console.log(response);
+    try {
+      const response = await applyJob(jobId as string);
+
+      console.log(response);
+
+      if(response.interviewId){
+        router.push(`/job-seeker/aptitude/${response.interviewId}`)
+        return
+      }
+
+      toast({
+        variant: "default",
+        title: "Application Submitted",
+        description: `You have successfully applied to ${
+          jobDetails?.jobTitle || "this job"
+        }`,
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["jobDetails", jobId],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["jobStatus"],
+      });
+
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Application Error",
+        description: "An unexpected error occurred. Please try again later.",
+      });
+    }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -88,7 +112,7 @@ function Page() {
     );
   }
 
-  if (!jobDetails) {
+  if (!jobDetails && error) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <p className="text-red-500">{"Job not found"}</p>
@@ -119,7 +143,6 @@ function Page() {
                 <span>•</span>
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  {/* <span>{jobDetails.location}</span> */}
                 </div>
               </div>
             </div>
@@ -176,7 +199,7 @@ function Page() {
             <div>
               <p className="text-sm text-muted-foreground">Salary Range</p>
               <p className="font-medium">
-                {formatSalary(jobDetails.salaryMin, jobDetails.salaryMax)}
+                {formatSalary(jobDetails!.salaryMin, jobDetails!.salaryMax)}
               </p>
             </div>
           </div>
@@ -185,7 +208,7 @@ function Page() {
             <div>
               <p className="text-sm text-muted-foreground">Posted On</p>
               <p className="font-medium">
-                {new Date(jobDetails.createdAt).toLocaleDateString()}
+                {new Date(jobDetails!.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -193,108 +216,7 @@ function Page() {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          {/* Description */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Description</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {jobDetails.jobDescription}
-            </p>
-          </section>
-
-          <Separator />
-
-          {/* Responsibilities */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Responsibilities</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {jobDetails.responsibilities}
-            </p>
-          </section>
-
-          <Separator />
-
-          {/* Qualifications */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Qualifications</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {jobDetails.qualifications}
-            </p>
-          </section>
-
-          {jobDetails.niceToHave && (
-            <>
-              <Separator />
-              <section>
-                <h2 className="text-xl font-semibold mb-4">Nice to Have</h2>
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {jobDetails.niceToHave}
-                </p>
-              </section>
-            </>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Categories */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-semibold mb-4">Categories</h3>
-            <div className="flex flex-wrap gap-2">
-              {jobDetails.categories.map((category) => (
-                <Badge key={category.name} variant="secondary">
-                  {category.name}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* Required Skills */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-semibold mb-4">Required Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {jobDetails.requiredSkills.map((skill) => (
-                <Badge key={skill.name} variant="outline">
-                  {skill.name}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* Benefits */}
-          {jobDetails?.benefits.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h3 className="font-semibold mb-4">Benefits</h3>
-              <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                {jobDetails.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit.title}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Test Options */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-semibold mb-4">Test Options</h3>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              {jobDetails.testOptions["Aptitude Test"] && (
-                <li>Aptitude Test</li>
-              )}
-              {jobDetails.testOptions["Machine Task"] && <li>Machine Task</li>}
-              {jobDetails.testOptions["Coding Challenge"] && (
-                <li>Coding Challenge</li>
-              )}
-              {jobDetails.testOptions["Technical Interview"] && (
-                <li>Technical Interview</li>
-              )}
-              {jobDetails.testOptions["Behavioral Interview"] && (
-                <li>Behavioral Interview</li>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>
+      {jobDetails && <MainContent jobDetails={jobDetails} />}
     </div>
   );
 }

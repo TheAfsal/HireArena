@@ -15,5 +15,8 @@
 /admin-service/node_modules
 /admin-service/.env
 
+/interview-mgmt-service/node_modules
+/interview-mgmt-service/.env
+
 /a.rest
 

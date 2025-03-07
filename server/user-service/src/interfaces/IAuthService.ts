@@ -5,9 +5,7 @@ import { IJobSeeker } from "./IJobSeeker";
 
 export interface IAuthService {
   signup: (userData: IUserCreateRequest) => Promise<{ message: string }>;
-  verifyToken: (
-    token: string
-  ) => Promise<{
+  verifyToken: (token: string) => Promise<{
     user: IJobSeeker;
     accessToken: string;
     refreshToken?: string;
@@ -18,4 +16,5 @@ export interface IAuthService {
   loginCompany: (email: string, password: string) => Promise<IAuthResponse>;
   loginAdmin: (email: string, password: string) => Promise<IAuthResponse>;
   refresh: (refreshToken: string) => Promise<IAuthResponse>;
+  setRefreshForGoogle: (accessToken: string) => Promise<IAuthResponse>;
 }
