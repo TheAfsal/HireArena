@@ -15,7 +15,8 @@
       "@controllers/*": ["controllers/*"],
       "@config/*": ["config/*"],
       "@models/*": ["models/*"],
-      "@routes/*": ["routes/*"]
+      "@routes/*": ["routes/*"],
+      "@shared/*": ["../../../shared/types/*"]
     },
     "skipDefaultLibCheck": true,
     "noImplicitAny": false,
