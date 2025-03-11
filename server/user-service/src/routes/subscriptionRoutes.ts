@@ -1,17 +1,10 @@
 import { Router } from "express";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import prisma from "../config/prismaClient";
-import AdminController from "../controllers/adminController";
-import JobSeekerService from "../services/JobSeekerService";
-import CompanyService from "../services/CompanyServices";
-import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
-import RedisService from "../services/RedisServices";
-import CompanyRepository from "../repositories/CompanyRepository";
-import SubscriptionController from "../controllers/subscriptionController";
-import SubscriptionService from "../services/SubscriptionService";
-import SubscriptionRepository from "../repositories/SubscriptionRepository";
-import TransactionService from "../services/TransactionService";
-import TransactionRepository from "../repositories/TransactionRepository";
+import prisma from "@config/prismaClient";
+import SubscriptionController from "@controllers/subscriptionController";
+import SubscriptionService from "@services/SubscriptionService";
+import SubscriptionRepository from "@repositories/SubscriptionRepository";
+import TransactionService from "@services/TransactionService";
+import TransactionRepository from "@repositories/TransactionRepository";
 
 // const jobSeekerRepository = new JobSeekerRepository(prisma);
 // const companyRepository = new CompanyRepository(prisma);
@@ -32,9 +25,7 @@ import TransactionRepository from "../repositories/TransactionRepository";
 const subscriptionRepository = new SubscriptionRepository(prisma);
 const transactionRepository = new TransactionRepository(prisma);
 
-const subscriptionService = new SubscriptionService(
-  subscriptionRepository,
-);
+const subscriptionService = new SubscriptionService(subscriptionRepository);
 const transactionService = new TransactionService(transactionRepository);
 
 const subscriptionController = new SubscriptionController(
@@ -45,11 +36,14 @@ const subscriptionController = new SubscriptionController(
 const router = Router();
 
 // router.post("/", subscriptionController.subscribe);
-router.get("/",subscriptionController.subscriptionDetails);
-router.post("/create-checkout-session",subscriptionController.createCheckoutSession);
+router.get("/", subscriptionController.subscriptionDetails);
+router.post(
+  "/create-checkout-session",
+  subscriptionController.createCheckoutSession
+);
 
 router.post("/verify", subscriptionController.verifySubscription);
 
-router.get('/user', subscriptionController.getSubscriptionHistory);
+router.get("/user", subscriptionController.getSubscriptionHistory);
 
 export default router;

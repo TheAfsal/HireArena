@@ -1,4 +1,4 @@
-import { GetAllJobSeekers } from "../config/grpcClient";
+import { GetAllJobSeekers } from "@config/grpcClient";
 
 class JobSeekerService {
   // private adminRepository: AdminRepository;

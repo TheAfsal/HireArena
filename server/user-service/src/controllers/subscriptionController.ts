@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import SubscriptionService from "../services/SubscriptionService";
+import SubscriptionService from "@services/SubscriptionService";
 import stripeLib from "stripe";
-import { fetchSubscriptionPlan } from "../config/grpcClient";
+import { fetchSubscriptionPlan } from "@config/grpcClient";
 import { UserSubscription } from "@prisma/client";
 const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 

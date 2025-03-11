@@ -3,9 +3,9 @@ import {
   createMachineTask,
   getCompaniesDetails,
   getCompanyIdByUserId,
-} from "../config/grpcClient";
-import JobApplicationRepository from "../repositories/JobApplicationRepository";
-import JobRepository from "../repositories/JobRepository";
+} from "@config/grpcClient";
+import JobApplicationRepository from "@repositories/JobApplicationRepository";
+import JobRepository from "@repositories/JobRepository";
 
 interface CompanyProfile {
   id: string;

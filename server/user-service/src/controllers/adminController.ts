@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import CompanyService from "../services/CompanyServices";
-import JobSeekerService from "../services/JobSeekerService";
-import SubscriptionService from "../services/SubscriptionService";
+import CompanyService from "@services/CompanyServices";
+import JobSeekerService from "@services/JobSeekerService";
+import SubscriptionService from "@services/SubscriptionService";
 
 class AdminController {
   private companyService: any;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import MachineTaskService from "../services/machineTask.service";
+import MachineTaskService from "@services/machineTask.service";
 
 class MachineTaskController {
   constructor(private machineTaskService: MachineTaskService) {}

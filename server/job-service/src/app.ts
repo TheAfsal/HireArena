@@ -3,11 +3,11 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import "./config/prismaClient";
-import jobRoutes from "./routes/jobRoutes";
-import categoryRoutes from "./routes/categoryRoutes";
-import jobCategoryRoutes from "./routes/jobCategoryRoutes";
-import skillRoutes from "./routes/skillRoutes";
+import "@config/prismaClient";
+import jobRoutes from "@routes/jobRoutes";
+import categoryRoutes from "@routes/categoryRoutes";
+import jobCategoryRoutes from "@routes/jobCategoryRoutes";
+import skillRoutes from "@routes/skillRoutes";
 
 dotenv.config();
 

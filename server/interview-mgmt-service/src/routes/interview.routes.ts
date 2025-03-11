@@ -1,13 +1,13 @@
 import express from "express";
-import InterviewController from "../controllers/interview.controller";
-import { InterviewService } from "../services/interview.service";
-import InterviewRepository from "../repositories/interview.repository";
-import prisma from "../config/prismaClient";
-import { AptitudeTestController } from "../controllers/aptitudeTest.controller";
-import AptitudeTestService from "../services/aptitudeTest.service";
+import InterviewController from "@controllers/interview.controller";
+import { InterviewService } from "@services/interview.service";
+import InterviewRepository from "@repositories/interview.repository";
+import prisma from "@config/prismaClient";
+import { AptitudeTestController } from "@controllers/aptitudeTest.controller";
+import AptitudeTestService from "@services/aptitudeTest.service";
 import { SubmitAptitudeTest } from "../usecase/submitAptitudeTest";
-import CandidateResponseRepository from "../repositories/candidateResponse.repository";
-import { InterviewRoundRepository } from "../repositories/interviewRound.repository";
+import CandidateResponseRepository from "@repositories/candidateResponse.repository";
+import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
 
 const router = express.Router();
 

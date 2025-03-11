@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { InterviewService } from "../services/interview.service";
+import { InterviewService } from "@services/interview.service";
 
 class InterviewController {
   private interviewService: InterviewService;

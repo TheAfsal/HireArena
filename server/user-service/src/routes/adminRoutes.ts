@@ -1,14 +1,14 @@
 import { Router } from "express";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import prisma from "../config/prismaClient";
-import AdminController from "../controllers/adminController";
-import JobSeekerService from "../services/JobSeekerService";
-import CompanyService from "../services/CompanyServices";
-import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
-import RedisService from "../services/RedisServices";
-import CompanyRepository from "../repositories/CompanyRepository";
-import SubscriptionService from "../services/SubscriptionService";
-import SubscriptionRepository from "../repositories/SubscriptionRepository";
+import JobSeekerRepository from "@repositories/JobSeekerRepository";
+import prisma from "@config/prismaClient";
+import AdminController from "@controllers/adminController";
+import JobSeekerService from "@services/JobSeekerService";
+import CompanyService from "@services/CompanyServices";
+import CompanyEmployeeRoleRepository from "@repositories/CompanyEmployeeRepository";
+import RedisService from "@services/RedisServices";
+import CompanyRepository from "@repositories/CompanyRepository";
+import SubscriptionService from "@services/SubscriptionService";
+import SubscriptionRepository from "@repositories/SubscriptionRepository";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const companyRepository = new CompanyRepository(prisma);

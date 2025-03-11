@@ -1,9 +1,9 @@
 // src/routes/CategoryRoutes.ts
 import { Router } from "express";
-import prisma from "../config/prismaClient";
-import { CategoryService } from "../services/CategoryService";
-import CategoryRepository from "../repositories/CategoryRepository";
-import { CategoryController } from "../controllers/categoryController";
+import prisma from "@config/prismaClient";
+import { CategoryService } from "@services/CategoryService";
+import CategoryRepository from "@repositories/CategoryRepository";
+import { CategoryController } from "@controllers/categoryController";
 
 const router = Router();
 

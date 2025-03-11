@@ -1,9 +1,9 @@
 // src/routes/JobCategoryRoutes.ts
 import { Router } from "express";
-import JobCategoryRepository from "../repositories/JobCategoryRepository";
-import prisma from "../config/prismaClient";
-import { JobCategoryService } from "../services/JobCategoryService";
-import { JobCategoryController } from "../controllers/jobCategoryController";
+import JobCategoryRepository from "@repositories/JobCategoryRepository";
+import prisma from "@config/prismaClient";
+import { JobCategoryService } from "@services/JobCategoryService";
+import { JobCategoryController } from "@controllers/jobCategoryController";
 
 const router = Router();
 const jobCategoryRepository = new JobCategoryRepository(prisma);

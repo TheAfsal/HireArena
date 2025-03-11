@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
-import JobService from "../services/JobService";
-import prisma from "../config/prismaClient";
-import JobRepository from "../repositories/JobRepository";
-import JobController from "../controllers/jobController";
+import JobService from "@services/JobService";
+import prisma from "@config/prismaClient";
+import JobRepository from "@repositories/JobRepository";
+import JobController from "@controllers/jobController";
 import { validateJob } from "../middlewares/validateRequest";
-import JobApplicationRepository from "../repositories/JobApplicationRepository";
+import JobApplicationRepository from "@repositories/JobApplicationRepository";
 
 const router = express.Router();
 

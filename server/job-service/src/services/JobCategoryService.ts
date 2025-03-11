@@ -1,6 +1,6 @@
 // src/services/JobCategoryService.ts
 
-import JobCategoryRepository from "../repositories/JobCategoryRepository";
+import JobCategoryRepository from "@repositories/JobCategoryRepository";
 
 export class JobCategoryService {
   private jobCategoryRepository: JobCategoryRepository;

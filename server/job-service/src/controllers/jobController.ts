@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUser } from "../types/IUser";
-import { createInterview, getCompanyIdByUserId } from "../config/grpcClient";
+import { createInterview, getCompanyIdByUserId } from "@config/grpcClient";
 
 declare global {
   namespace Express {

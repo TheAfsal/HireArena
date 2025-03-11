@@ -1,5 +1,5 @@
 import { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
-import FileService from "../services/fileService";
+import FileService from "@services/fileService";
 import { randomBytes } from "crypto";
 
 class FileController {

@@ -3,13 +3,13 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import "./config/prismaClient";
-import authRoutes from "./routes/authRoutes";
-import companyRoutes from "./routes/companyRoutes";
-import jobSeekerRoutes from "./routes/jobSeekerRoutes";
-import adminRoutes from "./routes/adminRoutes";
-import subscriptionRoutes from "./routes/subscriptionRoutes";
-import webhookRoutes from "./routes/webhookRoutes";
+import "@config/prismaClient";
+import authRoutes from "@routes/authRoutes";
+import companyRoutes from "@routes/companyRoutes";
+import jobSeekerRoutes from "@routes/jobSeekerRoutes";
+import adminRoutes from "@routes/adminRoutes";
+import subscriptionRoutes from "@routes/subscriptionRoutes";
+import webhookRoutes from "@routes/webhookRoutes";
 import jwt from "jsonwebtoken";
 
 //
@@ -17,20 +17,21 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import "../src/utils/passport";
-import JobSeekerRepository from "./repositories/JobSeekerRepository";
-import AdminRepository from "./repositories/AdminRepository";
-import CompanyRepository from "./repositories/CompanyRepository";
-import CompanyEmployeeRoleRepository from "./repositories/CompanyEmployeeRepository";
-import prisma from "./config/prismaClient";
-import EmployeeRepository from "./repositories/EmployeeRepository";
-import RedisService from "./services/RedisServices";
-import PasswordService from "./services/PasswordServices";
-import TokenService from "./services/TokenServices";
-import EmailService from "./services/EmailServices";
-import InvitationRepository from "./repositories/InvitationRepository";
-import AuthService from "./services/AuthService";
-// import stripeLib from "stripe";
+import JobSeekerRepository from "@repositories/JobSeekerRepository";
+import AdminRepository from "@repositories/AdminRepository";
+import CompanyRepository from "@repositories/CompanyRepository";
+import CompanyEmployeeRoleRepository from "@repositories/CompanyEmployeeRepository";
+import prisma from "@config/prismaClient";
+import EmployeeRepository from "@repositories/EmployeeRepository";
+import RedisService from "@services/RedisServices";
+import PasswordService from "@services/PasswordServices";
+import TokenService from "@services/TokenServices";
+import EmailService from "@services/EmailServices";
+import InvitationRepository from "@repositories/InvitationRepository";
+import AuthService from "@services/AuthService";
 dotenv.config();
+
+// import stripeLib from "stripe";
 // const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 
 const app: Application = express();
@@ -39,15 +40,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// app.use(
-//   cookieSession({
-//     name: "session",
-//     keys: [process.env.COOKIE_SECRET || "default_secret"],
-//     maxAge: 24 * 60 * 60 * 1000, // 1 day
-//     secure: false, // Set true in production with HTTPS
-//     httpOnly: true, // Prevent XSS attacks
-//   })
-// );
 app.use(
   session({
     secret: "your_random_secret",
@@ -58,9 +50,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 app.use(
   cors({
@@ -201,9 +190,9 @@ app.get(
   }
 );
 
-// Logout Route
 app.get("/auth/logout", (req, res) => {
   req.logout(() => {
+    res.clearCookie("refreshToken");
     res.redirect("/");
   });
 });
@@ -214,29 +203,6 @@ app.use("/api/job-seeker", jobSeekerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/subscription", subscriptionRoutes);
 app.use("/webhooks", webhookRoutes);
-
-// app.get(
-//   "/auth/google",
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
-
-// app.get(
-//   "/auth/google/callback",
-//   passport.authenticate("google", {
-//     successRedirect: process.env.CLIENT_URL || "sad",
-//     failureRedirect: "/auth/login/failed",
-//   })
-//   // (req, res) => {
-//   // res.redirect(process.env.CLIENT_URL || "http://localhost:3000");
-//   // }
-// );
-
-// app.get("/auth/logout", (req, res) => {
-//   req.logout(() => {
-//     res.clearCookie("session");
-//     res.redirect(process.env.CLIENT_URL || "sad");
-//   });
-// });
 
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ status: "User Service is running!" });

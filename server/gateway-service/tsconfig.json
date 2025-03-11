@@ -1,30 +1,35 @@
 {
   "compilerOptions": {
-    "target": "ES2021",                           // ES target version (can be ES2020 or ESNext)
-    "module": "CommonJS",                         // CommonJS module system (default for Node.js)
-    "moduleResolution": "node",                   // Use Node module resolution strategy
-    "esModuleInterop": true,                      // Enables esModuleInterop for compatibility with CommonJS modules
-    "skipLibCheck": true,                         // Skip type checking of declaration files
-    "strict": true,                               // Enable all strict type-checking options
-    "forceConsistentCasingInFileNames": true,     // Ensure consistent file casing
-    "outDir": "./dist",                           // Output directory for compiled files
-    "baseUrl": ".",                               // Base directory to resolve non-relative module imports
+    "target": "ES2021",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "baseUrl": "./src",
     "paths": {
-         "*": ["node_modules/*"]        
+      "@repositories/*": ["repositories/*"],
+      "@services/*": ["services/*"],
+      "@controllers/*": ["controllers/*"],
+      "@config/*": ["config/*"],
+      "@models/*": ["models/*"],
+      "@routes/*": ["routes/*"]
     },
-    "skipDefaultLibCheck": true,                  // Skip checking default lib files (node_modules)
-    "noImplicitAny": false,                       // Allow implicit 'any' type in variables
-    "resolveJsonModule": true,                    // Enable importing .json files
+    "skipDefaultLibCheck": true,
+    "noImplicitAny": false,
+    "resolveJsonModule": true
   },
   "include": [
-    "src/**/*.ts",                                // Include all TypeScript files in the src folder
-    "src/app.ts",                                 // Include main entry file
-    "src/server.ts"                               // Include server.ts if it's your entry point
+    "src/**/*.ts",
+    "src/app.ts",
+    "src/server.ts"
   ],
   "exclude": [
-    "node_modules",                               // Exclude node_modules folder
-    "dist",                                       // Exclude dist folder (compiled code)
-    "test",                                       // Exclude test folder (if exists)
-    "**/*.test.ts"                                // Exclude test files (if exists)
+    "node_modules",
+    "dist",
+    "test",
+    "**/*.test.ts"
   ]
 }

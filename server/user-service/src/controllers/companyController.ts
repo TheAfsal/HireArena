@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as grpc from "@grpc/grpc-js";
-import InvitationService from "../services/InvitationService";
-import ProfileService from "../services/ProfileService";
-import CompanyService from "../services/CompanyServices";
+import InvitationService from "@services/InvitationService";
+import ProfileService from "@services/ProfileService";
+import CompanyService from "@services/CompanyServices";
 
 class CompanyController {
   private invitationService: any;

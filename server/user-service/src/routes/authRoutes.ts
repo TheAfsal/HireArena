@@ -1,23 +1,23 @@
 // user-service/routes/authRoutes.ts
 
 import { Router } from "express";
-import AuthService from "../services/AuthService";
-import AuthController from "../controllers/authController";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import prisma from "../config/prismaClient";
-import RedisService from "../services/RedisServices";
-import PasswordService from "../services/PasswordServices";
-import TokenService from "../services/TokenServices";
-import EmailService from "../services/EmailServices";
-import CompanyRepository from "../repositories/CompanyRepository";
-import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
-import EmployeeRepository from "../repositories/EmployeeRepository";
-import InvitationService from "../services/InvitationService";
-import CompanyController from "../controllers/companyController";
-import InvitationRepository from "../repositories/InvitationRepository";
-import AdminRepository from "../repositories/AdminRepository";
-import ProfileService from "../services/ProfileService";
-import CompanyService from "../services/CompanyServices";
+import AuthService from "@services/AuthService";
+import AuthController from "@controllers/authController";
+import JobSeekerRepository from "@repositories/JobSeekerRepository";
+import prisma from "@config/prismaClient";
+import RedisService from "@services/RedisServices";
+import PasswordService from "@services/PasswordServices";
+import TokenService from "@services/TokenServices";
+import EmailService from "@services/EmailServices";
+import CompanyRepository from "@repositories/CompanyRepository";
+import CompanyEmployeeRoleRepository from "@repositories/CompanyEmployeeRepository";
+import EmployeeRepository from "@repositories/EmployeeRepository";
+import InvitationService from "@services/InvitationService";
+import CompanyController from "@controllers/companyController";
+import InvitationRepository from "@repositories/InvitationRepository";
+import AdminRepository from "@repositories/AdminRepository";
+import ProfileService from "@services/ProfileService";
+import CompanyService from "@services/CompanyServices";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const adminRepository = new AdminRepository(prisma);

@@ -3,8 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import adminRoutes from "./routes/admin.routes";
-import subscriptionRoutes from "./routes/subscription.routes";
+import adminRoutes from "@routes/admin.routes";
+import subscriptionRoutes from "@routes/subscription.routes";
 
 dotenv.config();
 

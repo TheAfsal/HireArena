@@ -15,7 +15,6 @@ class AuthService implements IAuthService {
   private adminRepository: any;
   private companyRepository: any;
   private employeeRepository: any;
-  private companyEmployeeRoleRepository: any;
   private redisService: IRedisService;
   private emailService: IEmailService;
   private passwordService: IPasswordService;
@@ -36,7 +35,6 @@ class AuthService implements IAuthService {
     this.adminRepository = adminRepository;
     this.companyRepository = companyRepository;
     this.employeeRepository = employeeRepository;
-    this.companyEmployeeRoleRepository = companyEmployeeRoleRepository;
     this.redisService = redisService;
     this.emailService = emailService;
     this.passwordService = passwordService;

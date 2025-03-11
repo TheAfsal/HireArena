@@ -1,9 +1,9 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
-import FileRepository from "../repositories/FileRepository";
-import FileService from "../services/fileService";
-import FileController from "../controllers/fileController";
+import FileRepository from "@repositories/FileRepository";
+import FileService from "@services/fileService";
+import FileController from "@controllers/fileController";
 
 const PROTO_PATH = path.resolve(__dirname, "../grpc/file.proto");
 

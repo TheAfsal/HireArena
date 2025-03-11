@@ -1,9 +1,9 @@
 // src/routes/SkillRoutes.ts
 import { Router } from "express";
-import SkillRepository from "../repositories/SkillRepository";
-import prisma from "../config/prismaClient";
-import { SkillService } from "../services/SkillService";
-import { SkillController } from "../controllers/skillController";
+import SkillRepository from "@repositories/SkillRepository";
+import prisma from "@config/prismaClient";
+import { SkillService } from "@services/SkillService";
+import { SkillController } from "@controllers/skillController";
 
 const router = Router();
 

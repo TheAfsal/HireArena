@@ -1,4 +1,4 @@
-import FileRepository from "../repositories/FileRepository";
+import FileRepository from "@repositories/FileRepository";
 
 class FileService {
   private fileRepository: FileRepository;

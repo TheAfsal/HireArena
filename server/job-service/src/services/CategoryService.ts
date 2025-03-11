@@ -1,4 +1,4 @@
-import CategoryRepository from "../repositories/CategoryRepository";
+import CategoryRepository from "@repositories/CategoryRepository";
 
 export class CategoryService {
   private categoryRepository: CategoryRepository;

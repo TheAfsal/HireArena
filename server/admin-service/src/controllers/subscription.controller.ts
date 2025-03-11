@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { SubscriptionService } from "../services/subscription.service";
-import { SubscriptionRepository } from "../repositories/subscription.repository";
+import { SubscriptionService } from "@services/subscription.service";
+import { SubscriptionRepository } from "@repositories/subscription.repository";
 
 const repository = new SubscriptionRepository();
 const subscriptionService = new SubscriptionService(repository);

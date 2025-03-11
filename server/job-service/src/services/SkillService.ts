@@ -1,6 +1,6 @@
 // src/services/SkillService.ts
 
-import SkillRepository from "../repositories/SkillRepository";
+import SkillRepository from "@repositories/SkillRepository";
 
 export class SkillService {
   private skillRepository: SkillRepository;

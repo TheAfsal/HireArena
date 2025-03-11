@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import AptitudeTestService from "../services/aptitudeTest.service";
+import AptitudeTestService from "@services/aptitudeTest.service";
 
 export class AptitudeTestController {
   private aptitudeTestService: AptitudeTestService;

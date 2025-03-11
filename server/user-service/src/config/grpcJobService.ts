@@ -1,21 +1,21 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import prisma from "./prismaClient";
-import CompanyRepository from "../repositories/CompanyRepository";
-import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
-import EmployeeRepository from "../repositories/EmployeeRepository";
-import InvitationRepository from "../repositories/InvitationRepository";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import PasswordService from "../services/PasswordServices";
-import TokenService from "../services/TokenServices";
-import EmailService from "../services/EmailServices";
-import RedisService from "../services/RedisServices";
-import ProfileService from "../services/ProfileService";
-import InvitationService from "../services/InvitationService";
-import CompanyController from "../controllers/companyController";
-import CompanyService from "../services/CompanyServices";
+import CompanyRepository from "@repositories/CompanyRepository";
+import CompanyEmployeeRoleRepository from "@repositories/CompanyEmployeeRepository";
+import EmployeeRepository from "@repositories/EmployeeRepository";
+import InvitationRepository from "@repositories/InvitationRepository";
+import JobSeekerRepository from "@repositories/JobSeekerRepository";
+import PasswordService from "@services/PasswordServices";
+import TokenService from "@services/TokenServices";
+import EmailService from "@services/EmailServices";
+import RedisService from "@services/RedisServices";
+import ProfileService from "@services/ProfileService";
+import InvitationService from "@services/InvitationService";
+import CompanyController from "@controllers/companyController";
+import CompanyService from "@services/CompanyServices";
 import path from "path";
-import JobSeekerController from "../controllers/jobSeekerController";
+import JobSeekerController from "@controllers/jobSeekerController";
 
 const PROTO_PATH = path.join(__dirname, "../proto/user-service.proto");
 

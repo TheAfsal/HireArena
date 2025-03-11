@@ -1,7 +1,7 @@
-import InterviewRepository from "../repositories/interview.repository";
-import CandidateResponseRepository from "../repositories/candidateResponse.repository";
+import InterviewRepository from "@repositories/interview.repository";
+import CandidateResponseRepository from "@repositories/candidateResponse.repository";
 import { SubmitAptitudeTest } from "../usecase/submitAptitudeTest";
-import { InterviewRoundRepository } from "../repositories/interviewRound.repository";
+import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
 
 class AptitudeTestService {
   private submitAptitudeTest: SubmitAptitudeTest;

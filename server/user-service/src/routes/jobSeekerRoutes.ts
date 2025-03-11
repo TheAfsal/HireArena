@@ -1,12 +1,12 @@
 import { Router } from "express";
-import jobSeekerController from "../controllers/jobSeekerController";
+import jobSeekerController from "@controllers/jobSeekerController";
 import upload from "../middlewares/userProfileConfig";
-import ProfileService from "../services/ProfileService";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import prisma from "../config/prismaClient";
-import PasswordService from "../services/PasswordServices";
-import CompanyRepository from "../repositories/CompanyRepository";
-import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
+import ProfileService from "@services/ProfileService";
+import JobSeekerRepository from "@repositories/JobSeekerRepository";
+import prisma from "@config/prismaClient";
+import PasswordService from "@services/PasswordServices";
+import CompanyRepository from "@repositories/CompanyRepository";
+import CompanyEmployeeRoleRepository from "@repositories/CompanyEmployeeRepository";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const companyRepository = new CompanyRepository(prisma);

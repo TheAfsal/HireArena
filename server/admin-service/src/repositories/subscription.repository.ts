@@ -1,4 +1,4 @@
-import prisma from "../config/prismaClient";
+import prisma from "@config/prismaClient";
 import { ISubscriptionRepository } from "../interfaces/ISubscriptionRepository";
 
 export class SubscriptionRepository implements ISubscriptionRepository {

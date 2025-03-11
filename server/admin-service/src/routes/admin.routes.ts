@@ -1,10 +1,6 @@
 import express, { Request, Response } from "express";
-import JobService from "../services/jobSeeker.service";
-import JobController from "../controllers/admin.controller";
-import AdminRepository from "../repositories/admin.repository";
-import AdminService from "../services/jobSeeker.service";
-import AdminController from "../controllers/admin.controller";
-import JobSeekerService from "../services/jobSeeker.service";
+import AdminController from "@controllers/admin.controller";
+import JobSeekerService from "@services/jobSeeker.service";
 
 const router = express.Router();
 
