@@ -61,7 +61,8 @@ class CompanyRepository {
         jobCategories: data.jobCategories,
         logo: data.logo,
         updatedAt: new Date(),
-        status:"Pending"
+        status: "Pending",
+        reject_reason: "",
       },
     });
   }

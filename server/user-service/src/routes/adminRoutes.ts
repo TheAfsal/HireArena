@@ -7,6 +7,8 @@ import CompanyService from "../services/CompanyServices";
 import CompanyEmployeeRoleRepository from "../repositories/CompanyEmployeeRepository";
 import RedisService from "../services/RedisServices";
 import CompanyRepository from "../repositories/CompanyRepository";
+import SubscriptionService from "../services/SubscriptionService";
+import SubscriptionRepository from "../repositories/SubscriptionRepository";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const companyRepository = new CompanyRepository(prisma);
@@ -22,16 +24,24 @@ const companyService = new CompanyService(
   companyRepository
 );
 
-const adminController = new AdminController(companyService, jobSeekerService);
+const subscriptionRepository = new SubscriptionRepository(prisma);
+
+const subscriptionService = new SubscriptionService(subscriptionRepository);
+
+const adminController = new AdminController(
+  companyService,
+  jobSeekerService,
+  subscriptionService
+);
 
 const router = Router();
 
-router
-  .route("/candidates")
-  // .get(adminController.getAllCandidateProfile)
-  .put(adminController.toggleCandidateStatus);
+router.route("/candidates").put(adminController.toggleCandidateStatus);
 
-  router.route("/companies").get(adminController.getAllCompanies);
-// .put(companyController.toggleStatus);
+router.route("/companies").get(adminController.getAllCompanies);
+
+router.put("/verify/:companyId", adminController.verifyCompanyProfile);
+
+router.get("/subscriptions", adminController.getAllSubscriptions);
 
 export default router;

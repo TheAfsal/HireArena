@@ -16,9 +16,13 @@ const jobService = new JobService(jobRepository, jobApplicationRepository);
 const jobController = new JobController(jobService);
 
 router.get("/brief", jobController.getAllJobsBrief);
-router.get("/", jobController.getFilteredJobs);
+// router.get("/", jobController.getFilteredJobs);
 // router.get("/", jobController.getAllJobs);
 router.post("/", validateJob, jobController.createJob);
+router.get("/company", jobController.getCompanyJobs);
+
+router.get("/filter", jobController.getFilteredJobs);
+
 
 router.post("/apply", jobController.applyJob);
 router.get("/apply/:id", jobController.getApplicationStatus);

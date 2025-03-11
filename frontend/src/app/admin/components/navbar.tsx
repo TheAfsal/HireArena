@@ -17,7 +17,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setLoadingState(false);
-    if(!auth.token){
+    if (!auth.token) {
       router.push("/admin/login");
     }
   }, [auth]);
@@ -76,6 +76,14 @@ const Navbar = () => {
             </li>
             <li>
               <Link
+                href="/admin/subscription"
+                className="text-sm font-medium text-muted-foreground"
+              >
+                Subscription
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/admin/reports"
                 className="text-sm font-medium text-muted-foreground"
               >
@@ -85,7 +93,6 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        {/* Notification Bell Button */}
         <div className="flex gap-3">
           <div className="flex items-center gap-4">
             {loadingState ? (

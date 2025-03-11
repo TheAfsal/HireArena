@@ -11,24 +11,73 @@ class InterviewController {
   getAptitudeQuestions = async (req: Request, res: Response) => {
     try {
       const { interviewId } = req.params;
-
+  
       if (!interviewId) {
-        res
-          .status(400)
-          .json({ success: false, message: "Interview ID is required" });
+        res.status(400).json({ success: false, message: "Interview ID is required" });
+        return;
+      }
+  
+      const questions = await this.interviewService.fetchAptitudeQuestions(interviewId);
+  
+      if (typeof questions === "string") {
+        res.status(403).json({ success: false, message: questions }); 
+        return;
+      }
+  
+      res.json({ success: true, questions });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: (error as Error).message });
+    }
+  };
+  
+
+  // getAptitudeQuestions = async (req: Request, res: Response) => {
+  //   try {
+  //     const { interviewId } = req.params;
+
+  //     if (!interviewId) {
+  //       res
+  //         .status(400)
+  //         .json({ success: false, message: "Interview ID is required" });
+  //       return;
+  //     }
+
+  //     const questions = await this.interviewService.fetchAptitudeQuestions(
+  //       interviewId
+  //     );
+  //     res.json(questions);
+  //   } catch (error) {
+  //     console.log(error);
+
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: (error as Error).message });
+  //   }
+  // };
+
+  fetchAppliedJobStatus = async (req: Request, res: Response) => {
+    try {
+      const { jobId } = req.params;
+
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      if (!jobId) {
+        res.status(400).json({ error: "Application is missing" });
         return;
       }
 
-      const questions = await this.interviewService.fetchAptitudeQuestions(
-        interviewId
+      const status = await this.interviewService.fetchAppliedJobStatus(
+        jobId,
+        userId
       );
-      res.json(questions);
-    } catch (error) {
-      console.log(error);
-
-      res
-        .status(500)
-        .json({ success: false, message: (error as Error).message });
+      res.json({ status });
+      return;
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+      return;
     }
   };
 

@@ -101,7 +101,6 @@ class AuthService implements IAuthService {
         throw new Error("Company with this name already exists");
       }
 
-      // Check if the email is already verified
       const existingUser = await this.employeeRepository.findByEmail(
         userData.email
       );
@@ -347,6 +346,30 @@ class AuthService implements IAuthService {
     //@ts-ignore
     return "{ tokens: { accessToken } }";
   }
+
+  googleLogin = async (userData: {
+    email: string;
+    name: string;
+    password: string;
+  }): Promise<any> => {
+    try {
+      const existingData = await this.jobSeekerRepository.findByEmail(
+        userData.email
+      );
+
+      if (existingData) {
+        return existingData;
+      }
+
+      const savedUser = await this.jobSeekerRepository.create({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+      });
+
+      return savedUser;
+    } catch (error) {}
+  };
 }
 
 export default AuthService;

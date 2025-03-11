@@ -22,12 +22,11 @@ export default function GoogleLoginPage() {
 
           console.log("response", accessToken);
 
-
           if (accessToken) {
             localStorage.setItem("authToken", accessToken);
             dispatch(
               loginSuccess({
-                user:"user",
+                user: "user",
                 token: accessToken,
                 role: "job-seeker",
               })
@@ -49,9 +48,8 @@ export default function GoogleLoginPage() {
   }, [token, router]);
 
   return (
-    <div>
-      <h1>Google Login</h1>
-      <p>Received Token: {token}</p>
+    <div className="w-full h-screen flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
     </div>
   );
 }

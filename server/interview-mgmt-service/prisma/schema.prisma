@@ -95,3 +95,33 @@ enum RoundStatus {
   completed
   failed
 }
+
+model MachineTask {
+  id               String   @id @default(uuid())
+  jobId            String
+  companyId        String
+  title            String
+  description      String
+  hoursToComplete  Int
+  createdAt        DateTime @default(now())
+  startTime        DateTime? 
+
+  requirements        MachineTaskRequirement[]
+  evaluationCriteria  MachineTaskEvaluation[]
+}
+
+model MachineTaskRequirement {
+  id           String   @id @default(uuid())
+  machineTaskId String
+  requirement  String
+
+  MachineTask MachineTask @relation(fields: [machineTaskId], references: [id], onDelete: Cascade)
+}
+
+model MachineTaskEvaluation {
+  id           String   @id @default(uuid())
+  machineTaskId String
+  criteria     String
+
+  MachineTask MachineTask @relation(fields: [machineTaskId], references: [id], onDelete: Cascade)
+}

@@ -1,4 +1,9 @@
-import { AptitudeTestQuestion, InterviewStatus, PrismaClient, RoundType } from "@prisma/client";
+import {
+  AptitudeTestQuestion,
+  InterviewStatus,
+  PrismaClient,
+  RoundType,
+} from "@prisma/client";
 
 class InterviewRepository {
   private prisma: PrismaClient;
@@ -7,36 +12,68 @@ class InterviewRepository {
     this.prisma = prisma;
   }
 
-  async getAptitudeQuestions(
-    interviewId: string
-  ): Promise<AptitudeTestQuestion[]> {
+  async getAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string> {
     const interview = await this.prisma.interview.findUnique({
       where: { id: interviewId },
       select: { jobId: true },
     });
-
+  
     if (!interview) throw new Error("Interview not found");
-
+  
     const aptitudeTemplate = await this.prisma.aptitudeTestTemplate.findFirst({
       where: { jobId: interview.jobId },
       select: { id: true },
     });
-
+  
     if (!aptitudeTemplate)
       throw new Error("Aptitude test not found for this job");
-
+  
+    const attemptedQuestions = await this.prisma.candidateResponse.findFirst({
+      where: { interviewId },
+    });
+  
+    if (attemptedQuestions) {
+      return "Aptitude test already attempted.";
+    }
+  
     return this.prisma.aptitudeTestQuestion.findMany({
       where: { templateId: aptitudeTemplate.id },
     });
   }
+  
+
+  // async getAptitudeQuestions(
+  //   interviewId: string
+  // ): Promise<AptitudeTestQuestion[]> {
+  //   const interview = await this.prisma.interview.findUnique({
+  //     where: { id: interviewId },
+  //     select: { jobId: true },
+  //   });
+
+  //   if (!interview) throw new Error("Interview not found");
+
+  //   const aptitudeTemplate = await this.prisma.aptitudeTestTemplate.findFirst({
+  //     where: { jobId: interview.jobId },
+  //     select: { id: true },
+  //   });
+
+  //   if (!aptitudeTemplate)
+  //     throw new Error("Aptitude test not found for this job");
+
+  //   return this.prisma.aptitudeTestQuestion.findMany({
+  //     where: { templateId: aptitudeTemplate.id },
+  //   });
+  // }
 
   async getQuestionsByInterviewId(interviewId: string) {
     return this.prisma.aptitudeTestQuestion.findMany({
       where: {
         AptitudeTestTemplate: {
-          jobId: (await this.prisma.interview.findUnique({
-            where: { id: interviewId },
-          }))?.jobId,
+          jobId: (
+            await this.prisma.interview.findUnique({
+              where: { id: interviewId },
+            })
+          )?.jobId,
         },
       },
     });
@@ -66,6 +103,24 @@ class InterviewRepository {
     });
 
     return questions.length;
+  }
+
+  async getInterviewStatusByApplication(jobId: string, userId: string) {
+    return this.prisma.interview.findFirst({
+      where: { jobId, candidateId: userId },
+      select: { id:true, status: true },
+    });
+  }
+
+  async getInterviewRounds(applicationId: string) {
+    return this.prisma.interview.findFirst({
+      where: { applicationId },
+      select: {
+        InterviewRounds: {
+          select: { status: true },
+        },
+      },
+    });
   }
 
   // getInterview = async (interviewId) => {
@@ -105,5 +160,4 @@ class InterviewRepository {
   // }
 }
 
-
-export  default InterviewRepository
+export default InterviewRepository;

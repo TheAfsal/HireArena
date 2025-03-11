@@ -5,6 +5,7 @@ package interview;
 service InterviewService {
   rpc CreateInterview (InterviewRequest) returns (InterviewResponse);
   rpc CreateAptitudeTest (AptitudeTestRequest) returns (AptitudeTestResponse);
+  rpc CreateMachineTask (MachineTaskRequest) returns (MachineTaskResponse);
 }
 
 message InterviewRequest {
@@ -24,6 +25,16 @@ message AptitudeTestRequest {
 }
 
 message AptitudeTestResponse {
+  bool success = 1;
+  string testId = 2;
+}
+
+message MachineTaskRequest {
+  string jobId = 1;
+  string companyId = 2;
+}
+
+message MachineTaskResponse {
   bool success = 1;
   string testId = 2;
 }

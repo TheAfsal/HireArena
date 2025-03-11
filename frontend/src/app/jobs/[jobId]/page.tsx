@@ -75,9 +75,9 @@ function Page() {
 
       console.log(response);
 
-      if(response.interviewId){
-        router.push(`/job-seeker/aptitude/${response.interviewId}`)
-        return
+      if (response.interviewId) {
+        router.push(`/job-seeker/aptitude/${response.interviewId}`);
+        return;
       }
 
       toast({
@@ -94,7 +94,6 @@ function Page() {
       await queryClient.invalidateQueries({
         queryKey: ["jobStatus"],
       });
-
     } catch (error) {
       toast({
         variant: "destructive",
@@ -167,12 +166,20 @@ function Page() {
               <>
                 <Button disabled>Applied</Button>
                 <div className="flex flex-wrap gap-2">
-                  <Badge
-                    variant="secondary"
-                    className={getBadgeClass(statusDetails?.status)}
-                  >
-                    {statusDetails?.status}
-                  </Badge>
+                  {statusDetails?.status === "scheduled" ? (
+                    <Button
+                      onClick={() => router.push(`/job-seeker/machine-task/${jobId}`)}
+                    >
+                      Next Test Assigned ( Appear for Machine Task )
+                    </Button>
+                  ) : (
+                    <Badge
+                      variant="secondary"
+                      className={getBadgeClass(statusDetails?.status)}
+                    >
+                      {statusDetails?.status}
+                    </Badge>
+                  )}
                 </div>
               </>
             ) : (

@@ -1,7 +1,9 @@
-import { Search } from "lucide-react";
+
+import { Expand, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 interface Column {
   key: string;
@@ -14,6 +16,8 @@ interface DataTableProps {
   columns: Column[];
   searchPlaceholder?: string;
   onBlockUnblock: (companyName: string) => void;
+  onApproveVerification: (companyId: string) => void;
+  onRejectVerification: (companyId: string, reason: string) => void;
 }
 
 export function DataTable({
@@ -22,7 +26,28 @@ export function DataTable({
   columns,
   searchPlaceholder,
   onBlockUnblock,
+  onApproveVerification,
+  onRejectVerification,
 }: DataTableProps) {
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+
+  const handleRejectClick = (companyId: string) => {
+    setSelectedCompanyId(companyId);
+    setRejectReason("");
+    setShowRejectModal(true);
+  };
+
+  const handleRejectSubmit = () => {
+    if (selectedCompanyId && rejectReason.trim()) {
+      onRejectVerification(selectedCompanyId, rejectReason);
+      setShowRejectModal(false);
+      setSelectedCompanyId(null);
+      setRejectReason("");
+    }
+  };
+
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
@@ -62,38 +87,47 @@ export function DataTable({
                       {column.key === "status" ? (
                         <Badge
                           variant={
-                            item[column.key] ? "destructive" : "secondary"
+                            item[column.key] === "Blocked" ? "destructive" : 
+                            item[column.key] === "Pending" ? "outline" : "secondary"
                           }
-                          className="bg-gray-100 hover:bg-gray-100"
+                          className={item[column.key] !== "Blocked" ? "bg-gray-100 hover:bg-gray-100" : ""}
                         >
-                          {!item[column.key] ? "Active" : "destructive"}
+                          {item[column.key] || "Active"}
                         </Badge>
                       ) : column.key === "actions" ? (
                         <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            className="text-gray-500 hover:text-gray-700"
-                            onClick={() => onBlockUnblock(item.name)}
-                          >
-                            {}
-                            {/* {item.status === "Active" ? "Block" : "Unblock"} */}
-                          </Button>
+                          {item.status !== "Pending" && (
+                            <Button
+                              variant="ghost"
+                              className="text-gray-500 hover:text-gray-700"
+                              onClick={() => onBlockUnblock(item.companyName)}
+                            >
+                              {item.status === "Blocked" ? "Unblock" : "Block"}
+                            </Button>
+                          )}
+                          
                           {item.status === "Pending" && (
-                            <div className="flex items-center gap-3">
-                              Waiting for verfication
+                            <div className="flex items-center gap-3 border p-2 rounded-lg">
+                              <span className="text-sm">Waiting for verification</span>
                               <Button
-                                variant="normal"
-                                className="text-green-500 hover:text-green-800"
-                                // onClick={() => onBlockUnblock(item.name)}
+                                variant="outline"
+                                className="text-green-500 hover:text-green-800 border"
+                                onClick={() => onApproveVerification(item.id)}
                               >
                                 Accept
                               </Button>
                               <Button
-                                variant="normal"
-                                className="text-red-500 hover:text-red-700"
-                                // onClick={() => onBlockUnblock(item.name)}
+                                variant="outline"
+                                className="text-red-500 hover:text-red-700 border"
+                                onClick={() => handleRejectClick(item.id)}
                               >
                                 Reject
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="hover:text-gray-700 hover:scale-105 transition-transform border"
+                              >
+                                <Expand />
                               </Button>
                             </div>
                           )}
@@ -118,6 +152,52 @@ export function DataTable({
           </table>
         </div>
       </div>
+
+      {/* Rejection Modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium">Rejection Reason</h3>
+              <Button 
+                variant="ghost" 
+                className="p-1 h-auto" 
+                onClick={() => setShowRejectModal(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Please provide a reason for rejection:
+              </label>
+              <textarea
+                className="w-full border rounded-md p-2 h-32 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Enter rejection reason..."
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowRejectModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="default"
+                onClick={handleRejectSubmit}
+                disabled={!rejectReason.trim()}
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

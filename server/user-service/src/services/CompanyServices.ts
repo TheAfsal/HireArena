@@ -77,6 +77,14 @@ class CompanyService {
       });
   }
 
+  async verifyCompanyProfile(companyId: string, status: "Approved" | "Rejected", rejectReason?: string) {
+    if (status === "Rejected" && !rejectReason) {
+      throw new Error("Rejection reason is required when rejecting.");
+    }
+
+    return this.companyRepository.update(companyId, { status, reject_reason: rejectReason || null });
+  }
+
   // getCompanyIdByUserId = (
   //   userId: string,
   //   callback: grpc.sendUnaryData<any>

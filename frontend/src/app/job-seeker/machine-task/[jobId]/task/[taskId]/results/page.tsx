@@ -24,22 +24,18 @@ export default function ResultsPage() {
   const [evaluationResults, setEvaluationResults] = useState<any>(null)
 
   useEffect(() => {
-    // In a real app, this would be an API call
     const foundTask = tasks.find((t) => t.id === taskId)
     if (foundTask) {
       setTask(foundTask)
     } else {
-      // Handle task not found
-      router.push("/")
+      router.push("/job-seeker")
       return
     }
 
-    // Get submission from localStorage
     const storedSubmission = localStorage.getItem(`task_${taskId}_submission`)
     const storedSubmittedAt = localStorage.getItem(`task_${taskId}_submitted_at`)
 
     if (!storedSubmission || !storedSubmittedAt) {
-      // No submission found, redirect to task page
       router.push(`/tasks/${taskId}`)
       return
     }
@@ -48,10 +44,8 @@ export default function ResultsPage() {
     setSubmittedAt(Number.parseInt(storedSubmittedAt))
     setLoading(false)
 
-    // Simulate evaluation process
     setEvaluationStatus("evaluating")
 
-    // Simulate progress updates
     const progressInterval = setInterval(() => {
       setEvaluationProgress((prev) => {
         if (prev >= 100) {
@@ -62,25 +56,22 @@ export default function ResultsPage() {
       })
     }, 500)
 
-    // Simulate evaluation completion
     setTimeout(() => {
       clearInterval(progressInterval)
       setEvaluationProgress(100)
 
-      // Randomly determine pass/fail for demo purposes
-      // In a real app, this would be based on actual evaluation
-      const passed = Math.random() > 0.3 // 70% pass rate
+      const passed = Math.random() > 0.3 
 
       setEvaluationStatus(passed ? "passed" : "failed")
       setEvaluationResults({
         passed,
-        score: passed ? Math.floor(Math.random() * 20) + 80 : Math.floor(Math.random() * 30) + 40, // 80-100 for pass, 40-70 for fail
+        score: passed ? Math.floor(Math.random() * 20) + 80 : Math.floor(Math.random() * 30) + 40, 
         feedback: passed
           ? "Your solution meets all the requirements and demonstrates good coding practices."
           : "Your solution does not meet all the requirements. Please review the feedback below.",
         criteriaResults: foundTask.evaluationCriteria.map((criteria: string) => ({
           criteria,
-          passed: passed ? true : Math.random() > 0.4, // Most criteria pass for passing submissions
+          passed: passed ? true : Math.random() > 0.4, 
           feedback: passed
             ? "Excellent implementation."
             : "Needs improvement. Consider refactoring this part of your solution.",

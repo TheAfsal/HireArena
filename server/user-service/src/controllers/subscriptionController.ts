@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import SubscriptionService from "../services/SubscriptionService";
 import stripeLib from "stripe";
 import { fetchSubscriptionPlan } from "../config/grpcClient";
+import { UserSubscription } from "@prisma/client";
 const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 
 class SubscriptionController {
@@ -27,7 +28,10 @@ class SubscriptionController {
       const plan = await fetchSubscriptionPlan(planId);
       console.log(plan);
 
-      if (!plan) return res.status(404).json({ message: "Plan not found" });
+      if (!plan) {
+        res.status(404).json({ message: "Plan not found" });
+        return;
+      }
 
       const transaction = await this.transactionService.createTransaction({
         userId,
@@ -75,14 +79,16 @@ class SubscriptionController {
     try {
       const { session_id } = req.query;
       if (!session_id) {
-        return res.status(400).json({ message: "Session ID is required" });
+        res.status(400).json({ message: "Session ID is required" });
+        return;
       }
 
       const session = await stripe.checkout.sessions.retrieve(
         session_id as string
       );
       if (!session || session.payment_status !== "paid") {
-        return res.status(400).json({ message: "Payment verification failed" });
+        res.status(400).json({ message: "Payment verification failed" });
+        return;
       }
 
       const userId = session.metadata?.userId;
@@ -90,7 +96,8 @@ class SubscriptionController {
       const transactionId = session.metadata?.transactionId;
 
       if (!userId || !planId) {
-        return res.status(400).json({ message: "Invalid session metadata" });
+        res.status(400).json({ message: "Invalid session metadata" });
+        return;
       }
 
       const transaction = await this.transactionService.updateTransactionStatus(
@@ -105,12 +112,12 @@ class SubscriptionController {
         transaction.id
       );
 
-      return res
-        .status(200)
-        .json({ message: "Subscription activated", subscription });
+      res.status(200).json({ message: "Subscription activated", subscription });
+      return;
     } catch (error) {
       console.log("Subscription Verification Error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
+      return;
     }
   };
 
@@ -120,16 +127,41 @@ class SubscriptionController {
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      const subscription =await this.subscriptionService.fetchPlanDetails(userId);
+      const subscription = await this.subscriptionService.fetchPlanDetails(
+        userId
+      );
       console.log(subscription);
-      
+
       res
         .status(200)
         .json({ message: "Subscription fetching successful", ...subscription });
       return;
     } catch (error) {
       console.log("Fetching Subscription Error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  };
+
+  getSubscriptionHistory = async (
+    req: Request,
+    res: Response
+  ): Promise<any> => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const subscriptions: UserSubscription[] =
+        await this.subscriptionService.getSubscriptionHistory(userId);
+      res.status(200).json({
+        message: "Subscription history fetched successfully",
+        subscriptions,
+      });
+      return;
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+      return;
     }
   };
 

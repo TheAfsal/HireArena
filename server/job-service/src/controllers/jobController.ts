@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUser } from "../types/IUser";
-import { createInterview } from "../config/grpcClient";
+import { createInterview, getCompanyIdByUserId } from "../config/grpcClient";
 
 declare global {
   namespace Express {
@@ -172,28 +172,63 @@ class JobController {
     }
   };
 
+  // getFilteredJobs = async (req: Request, res: Response) => {
+  //   try {
+  //     const filters = {
+  //       type: req.query.type as string | undefined,
+  //       category: req.query.category as string | undefined,
+  //       level: req.query.level as string | undefined,
+  //       companyId: req.query.companyId as string | undefined,
+  //     };
+
+  //     const { userId } = req.headers["x-user"]
+  //       ? JSON.parse(req.headers["x-user"] as string)
+  //       : null;
+
+  //     const jobs = await this.jobService.getFilteredJobs(filters, userId);
+
+  //     console.log('====================================');
+  //     console.log(jobs);
+  //     console.log('====================================');
+
+  //     res.json(jobs);
+  //     return;
+  //   } catch (error) {
+  //     console.error("Error fetching jobs:", error);
+  //     res.status(500).json({ message: "Internal Server Error" });
+  //     return;
+  //   }
+  // };
+
   getFilteredJobs = async (req: Request, res: Response) => {
     try {
-      const filters = {
-        type: req.query.type as string | undefined,
-        category: req.query.category as string | undefined,
-        level: req.query.level as string | undefined,
-        companyId: req.query.companyId as string | undefined,
-      };
+      const filters = req.query;
+      const jobs = await this.jobService.fetchFilteredJobs(filters);
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  };
 
+  getCompanyJobs = async (req: Request, res: Response) => {
+    try {
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      const jobs = await this.jobService.getFilteredJobs(filters, userId);
-      // console.log(jobs);
+      const companyId = getCompanyIdByUserId(userId);
 
-      res.json(jobs);
-      return;
+      if (!companyId) {
+        res.status(400).json({ error: "Company ID is required" });
+        return;
+      }
+
+      const jobs = await this.jobService.getCompanyJobs(companyId);
+      res.json({ success: true, data: jobs });
     } catch (error) {
-      console.error("Error fetching jobs:", error);
-      res.status(500).json({ message: "Internal Server Error" });
-      return;
+      console.error("Error fetching company jobs:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   };
 }

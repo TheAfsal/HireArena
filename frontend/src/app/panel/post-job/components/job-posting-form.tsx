@@ -64,11 +64,12 @@ const INITIAL_FORM_DATA: JobFormData = {
   qualifications: "",
   niceToHave: "",
   benefits: [],
-  selectedTests: []
+  selectedTests: [],
 };
 
 export default function JobPostingForm() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(INITIAL_FORM_DATA);
   const [jobCategories, setJobCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -85,6 +86,7 @@ export default function JobPostingForm() {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (!formData.jobTitle.trim()) {
       toast.error("Job title is required");
       return;
@@ -125,11 +127,12 @@ export default function JobPostingForm() {
 
     try {
       await createJob(formData);
-      router.push("/panel");
+      router.push("/panel/jobs-list");
       toast("Job posted successfully!");
     } catch (error) {
       console.error("Error creating job:", error);
       toast("Failed to create job.");
+      setLoading(false);
     }
   };
 
@@ -165,6 +168,14 @@ export default function JobPostingForm() {
 
     getSkills();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container p-8">

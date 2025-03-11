@@ -76,6 +76,8 @@ export default function TestPage() {
     );
   }
 
+  console.log(questions);
+
   const answeredCount = answers.filter((answer) => answer !== null).length;
   const progressPercentage = (answeredCount / questions.length) * 100;
 
@@ -122,7 +124,7 @@ export default function TestPage() {
         interviewId,
         answers.map((answer, i) => ({
           questionId: questions[i].id,
-          selectedAnswer: answer === null ? null : answer.toString()
+          selectedAnswer: answer === null ? null : answer.toString(),
         }))
       );
       console.log(response);

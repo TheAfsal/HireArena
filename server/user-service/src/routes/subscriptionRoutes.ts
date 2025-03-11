@@ -50,4 +50,6 @@ router.post("/create-checkout-session",subscriptionController.createCheckoutSess
 
 router.post("/verify", subscriptionController.verifySubscription);
 
+router.get('/user', subscriptionController.getSubscriptionHistory);
+
 export default router;

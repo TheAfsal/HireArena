@@ -67,7 +67,7 @@ export class SubmitAptitudeTest {
     const totalQuestions = questions.length;
     const scorePercentage = (correctCount / totalQuestions) * 100;
     //@ts-ignore
-    const passed = scorePercentage >= this.passingPercentage;
+    const passed = scorePercentage >= 70;
     
     const interviewRound = await this.roundRepo.getInterviewRound(
       interviewId,

@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, Home } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -14,7 +20,11 @@ export default function ResultsPage() {
   const router = useRouter();
   const { interviewId } = useParams<{ interviewId: string }>();
 
-  const { data: result, isLoading, error } = useQuery({
+  const {
+    data: result,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["aptitude_test_results", interviewId],
     queryFn: () => fetchAptitudeResult(interviewId),
   });
@@ -25,7 +35,9 @@ export default function ResultsPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Loading Results...</CardTitle>
-            <CardDescription>Please wait while we fetch your results.</CardDescription>
+            <CardDescription>
+              Please wait while we fetch your results.
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>
@@ -38,7 +50,9 @@ export default function ResultsPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Error Loading Results</CardTitle>
-            <CardDescription>Something went wrong. Please try again later.</CardDescription>
+            <CardDescription>
+              Something went wrong. Please try again later.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/">
@@ -50,14 +64,20 @@ export default function ResultsPage() {
     );
   }
 
-  const { correctCount, incorrectCount, unansweredCount, scorePercentage, roundStatus } = result;
+  const {
+    correctCount,
+    incorrectCount,
+    unansweredCount,
+    scorePercentage,
+    roundStatus,
+  } = result;
 
-  const totalQuestions =25
+  const totalQuestions = 25;
 
   // Handle cases where no questions were answered
   const calculatedScorePercentage =
     totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-  
+
   const isPassed = roundStatus === "passed" || calculatedScorePercentage >= 70;
   const displayPercentage = scorePercentage ?? calculatedScorePercentage;
   const displayUnanswered = Math.max(unansweredCount, 0); // Avoid negative values
@@ -83,12 +103,16 @@ export default function ResultsPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col items-center justify-center space-y-8 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Test Results</h1>
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          Test Results
+        </h1>
 
         <Card className="w-full max-w-2xl">
           <CardHeader className="pb-2">
             <CardTitle className="text-2xl">Your Aptitude Test Score</CardTitle>
-            <CardDescription>Completed on {new Date().toLocaleDateString()}</CardDescription>
+            <CardDescription>
+              Completed on {new Date().toLocaleDateString()}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex flex-col items-center justify-center space-y-2">
@@ -107,7 +131,8 @@ export default function ResultsPage() {
                 )}
               </div>
               <div className="text-muted-foreground">
-                You scored {correctCount} out of {totalQuestions} questions correctly
+                You scored {correctCount} out of {totalQuestions} questions
+                correctly
               </div>
             </div>
 
@@ -130,16 +155,20 @@ export default function ResultsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-lg bg-muted p-3">
                     <div className="text-sm font-medium">Correct Answers</div>
-                    <div className="text-2xl font-bold text-green-600">{correctCount}</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {correctCount}
+                    </div>
                   </div>
                   <div className="rounded-lg bg-muted p-3">
                     <div className="text-sm font-medium">Incorrect Answers</div>
-                    <div className="text-2xl font-bold text-red-600">{incorrectCount}</div>
+                    <div className="text-2xl font-bold text-red-600">
+                      {incorrectCount}
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-muted p-3 col-span-2">
+                  {/* <div className="rounded-lg bg-muted p-3 col-span-2">
                     <div className="text-sm font-medium">Unanswered Questions</div>
                     <div className="text-2xl font-bold text-gray-600">{displayUnanswered}</div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="text-sm text-muted-foreground">
@@ -150,7 +179,7 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            <Link href="/">
+            <Link href="/job-seeker">
               <Button className="w-full flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 Return to Home

@@ -19,3 +19,4 @@ export async function fetchCompanies(): Promise<any> {
   }
 }
 
+

@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import interviewRoutes from "./routes/interview.routes";
+import machineTaskRoutes from "./routes/machineTask.routes";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/api/interviews", interviewRoutes);
+app.use("/api/machine-task", machineTaskRoutes);
 
 app.get("/health", (_, res: Response) => {
   res.status(200).json({ status: "User Service is running!" });

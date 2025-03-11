@@ -21,6 +21,7 @@ import type { Category } from "@/app/admin/manage/components/job-category";
 import { fetchJobCategory } from "@/app/api/skills";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { fetchCompanyProfile, updateCompanyProfile } from "@/app/api/profile";
+import { toast } from "@/hooks/use-toast";
 
 const OverviewSection = () => {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -41,6 +42,8 @@ const OverviewSection = () => {
     aboutCompany: "",
     jobCategories: [],
     file: null,
+    status: null,
+    reject_reason: null,
   });
 
   const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -115,7 +118,7 @@ const OverviewSection = () => {
     }));
   };
 
-  const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form Data:", {
       ...formData,
@@ -128,15 +131,24 @@ const OverviewSection = () => {
         ...formData,
         //@ts-ignore
         jobCategories: selectedJobCategories.map((selectedCategory) => {
-          const match = jobCategories.find((job) => job.name === selectedCategory);
+          const match = jobCategories.find(
+            (job) => job.name === selectedCategory
+          );
           return match ? match.id : null;
         }),
         file: file,
-      })
-      console.log(response);
-      
+      });
+
+      toast({
+        title: "Success",
+        description: "Profile send for verification",
+      });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: "Error",
+        description: "Failed to update company profile",
+        variant: "destructive",
+      });
     }
   };
 
@@ -144,13 +156,30 @@ const OverviewSection = () => {
     <TabsContent value="overview">
       <div className="mx-auto p-6">
         <div className="space-y-8">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Basic Information
-            </h2>
-            <p className="text-sm text-gray-500">
-              This is company information that you can update anytime.
-            </p>
+          <div className="flex justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Basic Information
+              </h2>
+              <p className="text-sm text-gray-500">
+                This is company information that you can update anytime.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 rounded border p-3">
+              Verification Status:
+              <span style={{ marginLeft: "10px" }}>
+                {formData.status === "Approved" ? (
+                  <span style={{ color: "green", fontSize: "20px" }}>✔️</span>
+                ) : formData.status === "Rejected" ? (
+                  <span style={{ color: "red", fontSize: "20px" }}>
+                    ❌ ({formData.reject_reason})
+                  </span>
+                ) : formData.status === "Pending" ? (
+                  <span style={{ color: "orange", fontSize: "20px" }}>⏳</span>
+                ) : null}
+              </span>
+              <span>{formData.status}</span>
+            </div>
           </div>
 
           <Separator />

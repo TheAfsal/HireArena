@@ -103,5 +103,24 @@ const createAptitudeTest = (
   });
 };
 
-export { getCompanyIdByUserId, getCompaniesDetails, createInterview, createAptitudeTest };
+const createMachineTask = (
+  jobId: string,
+  companyId: string,
+) => {
+  return new Promise((resolve, reject) => {
+    interviewServerClient.CreateMachineTask(
+      { jobId, companyId},
+      (err: any, response: any) => {
+        if (err) {
+          console.error("Error calling Interview Service:", err);
+          reject(err);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
+};
+
+export { getCompanyIdByUserId, getCompaniesDetails, createInterview, createAptitudeTest,createMachineTask };
 

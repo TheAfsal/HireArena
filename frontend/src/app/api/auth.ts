@@ -205,8 +205,6 @@ export async function googleToken(token: string): Promise<any> {
       }
     );
 
-    console.log(response.data.data.tokens);
-
     return response.data.data.tokens;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

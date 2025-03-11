@@ -9,7 +9,7 @@ export async function fetchAptitudeQuestions(
       `/interview-mgmt-service/api/interviews/questions/${interviewId}`
     );
 
-    return response.data;
+    return response.data.questions;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -50,6 +50,83 @@ export async function fetchAptitudeResult(interviewId: string): Promise<any> {
     );
 
     return response.data.result;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function fetchMachineTaskByJobId(jobId: string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(
+      `/interview-mgmt-service/api/machine-task/job/${jobId}`
+    );
+
+    return response.data.task;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function fetchMachineTaskDetails(taskId: string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(
+      `/interview-mgmt-service/api/machine-task/${taskId}`
+    );
+
+    return response.data.task;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function startMachineTask(taskId: string): Promise<any> {
+  try {
+    const response = await axiosInstance.post(
+      `/interview-mgmt-service/api/machine-task/start-task`,
+      { taskId }
+    );
+
+    return response.data.task;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function submitMachineTask(
+  taskId: string,
+  repoUrl: string
+): Promise<any> {
+  try {
+    const response = await axiosInstance.post(
+      `/interview-mgmt-service/api/machine-task/submit`,
+      { taskId, repoUrl }
+    );
+
+    return response.data.task;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(

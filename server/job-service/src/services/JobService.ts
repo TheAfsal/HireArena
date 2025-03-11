@@ -1,5 +1,6 @@
 import {
   createAptitudeTest,
+  createMachineTask,
   getCompaniesDetails,
   getCompanyIdByUserId,
 } from "../config/grpcClient";
@@ -78,7 +79,6 @@ class JobService {
       },
     });
 
-
     if (testOptions["Aptitude Test"]) {
       try {
         console.log("1\n\n\n\n\n");
@@ -91,6 +91,25 @@ class JobService {
 
         console.log(
           "Aptitude Test Created in Interview Service:",
+          interviewServerResponse
+        );
+      } catch (error) {
+        console.error("Failed to create aptitude test:", error);
+      }
+    }
+
+    if (testOptions["Machine Task"]) {
+      try {
+        console.log("2\n\n\n\n\n");
+
+        let interviewServerResponse = await createMachineTask(
+          job.id,
+          companyId
+        );
+        console.log("2\n\n\n\n\n");
+
+        console.log(
+          "Machine Task Created in Interview Service:",
           interviewServerResponse
         );
       } catch (error) {
@@ -233,6 +252,7 @@ class JobService {
       jobSeekerId
     );
 
+
     const appliedJobIds = new Set(appliedJobs.map((job) => job.jobId));
 
     const jobsWithCompanyDetails = jobs.map((job) => {
@@ -269,6 +289,28 @@ class JobService {
     //     companyLogo: company?.logo || null,
     //   };
     // });
+  }
+  
+  async getCompanyJobs(companyId: string) {
+    const jobs = await this.jobRepository.getJobsByCompany(companyId);
+    
+    // Format data if needed
+    return jobs.map(job => ({
+      id: job.id,
+      title: job.jobTitle,
+      salaryRange: `$${job.salaryMin} - $${job.salaryMax}`,
+      description: job.jobDescription,
+      responsibilities: job.responsibilities,
+      qualifications: job.qualifications,
+      employmentTypes: job.employmentTypes.map(type => type.type),
+      categories: job.categories.map(cat => cat.name),
+      skills: job.requiredSkills.map(skill => skill.name),
+      createdAt: job.createdAt,
+    }));
+  }
+
+  async fetchFilteredJobs(filters: any) {
+    return await this.jobRepository.getFilteredJobs(filters);
   }
 }
 

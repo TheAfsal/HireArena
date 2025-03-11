@@ -5,7 +5,8 @@ import {
   createSubscription,
   fetchPlans,
   subscribe,
-  fetchMySubscription, // Import fetchMySubscription
+  fetchMySubscription,
+  fetchSubscriptionHistory, // Add this function
 } from "@/app/api/subscription";
 import { toast } from "sonner";
 import {
@@ -34,6 +35,15 @@ const SubscriptionPlans: React.FC = () => {
   const { data: userSubscription, isLoading: subscriptionLoading } = useQuery({
     queryKey: ["userSubscription"],
     queryFn: fetchMySubscription,
+  });
+
+  const {
+    data: subscriptionHistory,
+    isLoading: historyLoading,
+    error: historyError,
+  } = useQuery({
+    queryKey: ["subscriptionHistory"],
+    queryFn: fetchSubscriptionHistory,
   });
 
   const handleSubscription = async (planId: string) => {
@@ -150,6 +160,73 @@ const SubscriptionPlans: React.FC = () => {
               })}
             </div>
           )}
+
+          {/* Subscription History Section */}
+          <div className="mt-16">
+            <div className="text-center">
+              <h2 className="text-2xl font-extrabold sm:text-3xl">
+                Your Subscription History
+              </h2>
+            </div>
+
+            {historyLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6">
+                      <Skeleton className="h-6 w-2/3 mb-4" />
+                      <Skeleton className="h-4 w-1/2 mb-2" />
+                      <Skeleton className="h-4 w-1/3 mb-4" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-6">
+                {subscriptionHistory?.map((historyItem: any) => (
+                  <div key={historyItem.id} className="flex flex-col h-full">
+                    <Card className="flex flex-col h-full">
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-grow">
+                        <p className="text-2xl font-bold">
+                          ${historyItem.price}
+                        </p>
+                        <p className="text-muted-foreground">
+                          Expiry:{" "}
+                          {new Date(
+                            historyItem.expiryDate
+                          ).toLocaleDateString()}
+                        </p>
+                        <div className="mt-4">
+                          <p className="font-medium mb-2">Features:</p>
+                          <ul className="space-y-1">
+                            {Object.entries(historyItem.features)
+                              .filter(([_, enabled]) => enabled)
+                              .map(([feature]) => (
+                                <li
+                                  key={feature}
+                                  className="text-sm text-muted-foreground"
+                                >
+                                  • {feature.replace(/([A-Z])/g, " $1").trim()}
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            )}
+            {historyError && (
+              <div className="text-center text-destructive mt-4">
+                Failed to load subscription history
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

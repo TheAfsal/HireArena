@@ -25,9 +25,9 @@ function JobCard({ job }: { job: MyApplications }) {
         <div className="flex gap-2">
           <Button disabled>Applied</Button>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className={getBadgeClass(job?.status)}>
+            {/* <Badge variant="secondary" className={getBadgeClass(job?.status)}>
               {job?.status}
-            </Badge>
+            </Badge> */}
           </div>
         </div>
       </div>

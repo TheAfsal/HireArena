@@ -2,60 +2,32 @@
 
 import { useEffect, useState } from "react";
 import JobCard from "./JobCard";
-import { fetchFilteredJobs } from "@/app/api/job";
-
-export interface JobsList {
-  id: number;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  category: string;
-  level: string;
-  tags: string[];
-  applied: number;
-  capacity: number;
-  jobDescription: string;
-  requiredSkills: { name: string; id: string }[];
-  companyLogo: string;
-  companyName: string;
-  companyLocation?: string;
-  companyId?: string;
-  isApplied: boolean;  
-}
+import { fetchJobsFiltered } from "@/app/api/job";
 
 function JobList({ filters }: { filters: any }) {
-  const [jobs, setJobs] = useState<JobsList[]>([]);
+  const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    console.log("123");
-
     fetchJobs();
+    console.log("filters", filters);
   }, [filters]);
 
   const fetchJobs = async () => {
     try {
-      const response = await fetchFilteredJobs(filters);
-      console.log(response);
+      const response = await fetchJobsFiltered(filters);
       setJobs(response);
     } catch (err) {
       console.error("Error fetching jobs:", err);
     }
   };
 
-  useEffect(() => {
-    console.log(jobs);
-    jobs.forEach((job) => console.log(job));
-  }, [jobs]);
-
-  if(!jobs.length ) 
-    return <p>No jobs found.</p>;
+  if (!jobs.length) return <p>No jobs found.</p>;
 
   return (
     <div className="flex-1">
       <h2 className="text-xl font-semibold">All Jobs</h2>
       <div className="space-y-4">
-        {jobs.map((job) => (
+        {jobs.map((job: any) => (
           <JobCard key={job.id} job={job} />
         ))}
       </div>

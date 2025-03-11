@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown } from "lucide-react";
-import { fetchCategoryType } from "@/app/api/skills";
+import { fetchJobCategory } from "@/app/api/skills";
 import { CategoryType } from "@/app/admin/manage/components/category-type";
 
 function Filters({
@@ -30,7 +30,7 @@ function Filters({
   useEffect(() => {
     const getCategoryType = async () => {
       try {
-        const response = await fetchCategoryType();
+        const response = await fetchJobCategory();
         console.log(response);
         
         setCategories(response);
@@ -52,9 +52,11 @@ function Filters({
           className="w-full border rounded-md p-2"
         >
           <option value="">All</option>
-          <option value="full-time">Full-time</option>
-          <option value="part-time">Part-Time</option>
-          <option value="remote">Remote</option>
+          <option value="FULL_TIME">Full-time</option>
+          <option value="PART_TIME">Part-Time</option>
+          <option value="REMOTE">Remote</option>
+          <option value="CONTRACT">Contract</option>
+          <option value="INTERNSHIP">Internship</option>
         </select>
       </FilterSection>
 
@@ -73,7 +75,7 @@ function Filters({
         </select>
       </FilterSection>
 
-      <FilterSection title="Job Level">
+      {/* <FilterSection title="Job Level">
         <select
           name="level"
           onChange={handleFilterChange}
@@ -84,7 +86,7 @@ function Filters({
           <option value="mid">Mid Level</option>
           <option value="senior">Senior Level</option>
         </select>
-      </FilterSection>
+      </FilterSection> */}
 
       <Button onClick={applyFilters} className="bg-blue-500 text-white w-full">
         Apply Filters

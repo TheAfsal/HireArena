@@ -46,11 +46,11 @@ export async function fetchJobSeekerProfile(): Promise<any> {
 
 export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   try {
-    // const response = await axiosInstance.get(
-    //   `/user-service/api/job-seeker/profile/minimal`
-    // );
+    const response = await axiosInstance.get(
+      `/user-service/api/job-seeker/profile/minimal`
+    );
 
-    // return response.data;
+    return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(

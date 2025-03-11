@@ -2,6 +2,7 @@ import "colors";
 import Stripe from "stripe";
 import SubscriptionRepository from "../repositories/SubscriptionRepository";
 import { fetchSubscriptionPlan } from "../config/grpcClient";
+import { UserSubscription } from "@prisma/client";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -39,6 +40,18 @@ class SubscriptionService {
 
   async fetchPlanDetails(userId: string) {
     return await this.subscriptionRepository.findActiveSubscription(userId);
+  }
+
+  async getSubscriptionHistory(userId: string): Promise<UserSubscription[]> {
+    const subscriptions = await this.subscriptionRepository.getSubscriptionHistory(userId);
+    console.log('====================================');
+    console.log(subscriptions);
+    console.log('====================================');
+    return subscriptions;
+  }
+
+  async getAllSubscriptions() {
+    return await this.subscriptionRepository.getAllSubscriptions();
   }
 
   // async createSubscription(

@@ -15,7 +15,8 @@ passport.use(
       try {
         // Check if user exists in database (implement your own logic)
         // const user = await findOrCreateUser(profile);
-        return done(null, { id:"qwe", name: "AFSAL", age: 12, token: "accessToken" });
+        // return done(null, { id:"qwe", name: "AFSAL", age: 12, token: "accessToken" });
+        return done(null, profile);
         // return done(null, user);
       } catch (error) {
         //@ts-ignore

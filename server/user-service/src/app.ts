@@ -17,7 +17,18 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import "../src/utils/passport";
-import cookieSession from "cookie-session";
+import JobSeekerRepository from "./repositories/JobSeekerRepository";
+import AdminRepository from "./repositories/AdminRepository";
+import CompanyRepository from "./repositories/CompanyRepository";
+import CompanyEmployeeRoleRepository from "./repositories/CompanyEmployeeRepository";
+import prisma from "./config/prismaClient";
+import EmployeeRepository from "./repositories/EmployeeRepository";
+import RedisService from "./services/RedisServices";
+import PasswordService from "./services/PasswordServices";
+import TokenService from "./services/TokenServices";
+import EmailService from "./services/EmailServices";
+import InvitationRepository from "./repositories/InvitationRepository";
+import AuthService from "./services/AuthService";
 // import stripeLib from "stripe";
 dotenv.config();
 // const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
@@ -61,7 +72,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 app.use(helmet());
 app.use(morgan("dev"));
@@ -109,31 +119,71 @@ app.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Google Callback Route
+interface GoogleUser {
+  displayName: string;
+  emails: { value: string }[];
+  photos: { value: string }[];
+}
+
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "http://localhost:3000/login",
   }),
-  // (req, res) => {
-  //   res.redirect("http://localhost:3000/job-seeker");
-  // }
+
   async (req, res) => {
     if (!req.user) {
       return res.redirect("http://localhost:3000/login");
     }
 
-    const user = req.user as { id: string; email: string };
+    //@ts-ignore
+    const userProfile = req.user as GoogleUser | null;
+
+    if (!userProfile) {
+      return res.redirect("http://localhost:3000/login");
+    }
+
+    const email = userProfile.emails[0].value;
+    const name = userProfile.displayName;
+
+    const jobSeekerRepository = new JobSeekerRepository(prisma);
+    const adminRepository = new AdminRepository(prisma);
+    const companyRepository = new CompanyRepository(prisma);
+    const companyEmployeeRoleRepository = new CompanyEmployeeRoleRepository(
+      prisma
+    );
+    const employeeRepository = new EmployeeRepository(prisma);
+    const redisService = new RedisService();
+    const passwordService = new PasswordService();
+    const tokenService = new TokenService();
+    const emailService = new EmailService();
+    const invitationRepository = new InvitationRepository(prisma);
+
+    const authService = new AuthService(
+      jobSeekerRepository,
+      adminRepository,
+      companyRepository,
+      employeeRepository,
+      companyEmployeeRoleRepository,
+      redisService,
+      emailService,
+      passwordService,
+      tokenService
+    );
+
+    const user = await authService.googleLogin({ email, name, password: "123123" });
 
     const accessToken = jwt.sign(
-      { userId: "asdasd" },
+      //@ts-ignore
+      { userId: user.id },
       process.env.ACCESS_TOKEN_SECRET || "",
       {
-        expiresIn: "1m",
+        expiresIn: "100m",
       }
     );
     const refreshToken = jwt.sign(
-      { userId: "asdasd", role: "HR" },
+      //@ts-ignore
+      { userId: user.id, role: "HR" },
       process.env.REFRESH_TOKEN_SECRET || "",
       {
         expiresIn: "7d",
