@@ -1,15 +1,31 @@
+import { CompanyRole } from "@prisma/client";
+import { ICompany, IEmployee } from "@shared/user.types";
+
+export interface IEmployeeCreateInput {
+  name: string;
+  email: string;
+  password: string;
+  companyAssociations?: {
+    create: {
+      companyId: string;
+      role: CompanyRole;
+    };
+  };
+}
+
 export interface IEmployeeRepository {
-  findByEmail(email: string): Promise<any | null>;
-  create(employeeData: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<any>;
-  findById(id: string): Promise<any | null>;
+  findByEmail(email: string): Promise<IEmployee | null>;
+  create(employeeData: IEmployeeCreateInput): Promise<IEmployee>;
+  findById(id: string): Promise<IEmployee | null>;
   update(
     id: string,
     updateData: Partial<{ name: string; email: string; password: string }>
-  ): Promise<any>;
-  delete(id: string): Promise<any>;
-  findEmployeeAndCompany(id: string): Promise<any | null>;
+  ): Promise<IEmployee>;
+  delete(id: string): Promise<IEmployee>;
+  findEmployeeAndCompany(
+    id: string
+  ): Promise<
+    (IEmployee & { companyAssociations: { company: ICompany }[] }) | null
+  >;
 }
+

@@ -4,37 +4,39 @@ import grpcClient from "../config/grpcClient";
 import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import JobSeekerRepository from "../repositories/JobSeekerRepository";
 import { IProfileService } from "@core/interfaces/services/IProfileService";
+import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
+import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
+import { ICompany, IJobSeeker } from "@shared/user.types";
+import { IJobSeekerUpdateInput } from "@core/types/services/IJobSeekerProfile";
 
 class ProfileService implements IProfileService {
-  private JobSeekerRepository: JobSeekerRepository;
-  private companyRepository: any;
-  private companyEmployeeRoleRepository: any;
+  private jobSeekerRepository: JobSeekerRepository;
+  private companyRepository: ICompanyRepository;
+  private companyEmployeeRoleRepository: ICompanyEmployeeRoleRepository;
   private passwordService: IPasswordService;
 
   constructor(
-    JobSeekerRepository: JobSeekerRepository,
-    companyRepository: any,
-    companyEmployeeRoleRepository: any,
+    jobSeekerRepository: JobSeekerRepository,
+    companyRepository: ICompanyRepository,
+    companyEmployeeRoleRepository: ICompanyEmployeeRoleRepository,
     passwordService: IPasswordService
   ) {
-    this.JobSeekerRepository = JobSeekerRepository;
+    this.jobSeekerRepository = jobSeekerRepository;
     this.companyRepository = companyRepository;
     this.companyEmployeeRoleRepository = companyEmployeeRoleRepository;
     this.passwordService = passwordService;
   }
-  async updateProfile(data: any) {
-    let fileUrl = "";
-    if (data.profileImage.mimetype) {
-      console.log(data);
 
-      fileUrl = await new Promise((resolve, reject) => {
+  async updateProfile(data: IJobSeekerUpdateInput): Promise<IJobSeeker> {
+    let fileUrl = "";
+    if (data.profileImage?.mimetype) {
+      fileUrl = await new Promise<string>((resolve, reject) => {
         grpcClient.fileServiceClient.uploadFile(
           {
-            fileName: data.profileImage.originalname,
-            fileData: data.profileImage.buffer,
-            mimeType: data.profileImage.mimetype,
+            fileName: data?.profileImage?.originalname,
+            fileData: data?.profileImage?.buffer,
+            mimeType: data?.profileImage?.mimetype,
           },
-          //@ts-ignore
           (err, response) => {
             if (err) reject(err);
             else resolve(response.fileUrl);
@@ -42,18 +44,22 @@ class ProfileService implements IProfileService {
         );
       });
     }
-    return await this.JobSeekerRepository.updateProfile({
+
+    return await this.jobSeekerRepository.updateProfile({
       ...data,
-      profileImage: data.profileImage.mimetype ? fileUrl : data.profileImage,
+      //@ts-ignore
+      profileImage: fileUrl || data.profileImage,
     });
   }
 
-  async getProfile(userId: string) {
+  async getProfile(
+    userId: string
+  ): Promise<Omit<IJobSeeker, "password" | "status" | "updatedAt"> | null> {
     if (!userId) {
       throw new Error("User ID is required.");
     }
 
-    const userProfile = await this.JobSeekerRepository.getProfile(userId);
+    const userProfile = await this.jobSeekerRepository.getProfile(userId);
     if (!userProfile) {
       throw new Error("User not found.");
     }
@@ -61,8 +67,19 @@ class ProfileService implements IProfileService {
     return userProfile;
   }
 
-  async getMinimalProfile(userId: string) {
-    const profile = await this.JobSeekerRepository.getMinimalProfile(userId);
+  async getMinimalProfile(
+    userId: string
+  ): Promise<Omit<
+    IJobSeeker,
+    | "password"
+    | "status"
+    | "updatedAt"
+    | "phone"
+    | "dob"
+    | "gender"
+    | "createdAt"
+  > | null> {
+    const profile = await this.jobSeekerRepository.getMinimalProfile(userId);
     if (!profile) {
       throw new Error("User not found");
     }
@@ -73,8 +90,8 @@ class ProfileService implements IProfileService {
     userId: string,
     oldPassword: string,
     newPassword: string
-  ) {
-    const user = await this.JobSeekerRepository.findById(userId);
+  ): Promise<IJobSeeker> {
+    const user = await this.jobSeekerRepository.findById(userId);
 
     if (!user) {
       throw new Error("User not found");
@@ -90,16 +107,16 @@ class ProfileService implements IProfileService {
 
     const hashedPassword = await this.passwordService.hash(newPassword);
 
-    return await this.JobSeekerRepository.updatePassword(
+    return await this.jobSeekerRepository.updatePassword(
       userId,
       hashedPassword
     );
   }
 
-  updateProfileCompany = async (data: any) => {
+  async updateProfileCompany(data: any) {
     let logoUrl = "";
 
-    if (data.logo && data.logo.mimetype) {
+    if (data.logo?.mimetype) {
       logoUrl = await new Promise<string>((resolve, reject) => {
         grpcClient.fileServiceClient.uploadFile(
           {
@@ -107,7 +124,6 @@ class ProfileService implements IProfileService {
             fileData: data.logo.buffer,
             mimeType: data.logo.mimetype,
           },
-          //@ts-ignore
           (err, response) => {
             if (err) reject(err);
             else resolve(response.fileUrl);
@@ -121,8 +137,12 @@ class ProfileService implements IProfileService {
         data.companyId
       );
 
+    if (!relationDetails) {
+      throw new Error("Profile updation failed");
+    }
+
     return await this.companyRepository.updateCompanyProfile({
-      companyId: relationDetails.companyId,
+      companyId: relationDetails?.companyId,
       companyName: data.companyName,
       website: data.website,
       location: data.location,
@@ -134,19 +154,23 @@ class ProfileService implements IProfileService {
       jobCategories: data.jobCategories,
       logo: logoUrl || data.logo,
     });
-  };
+  }
 
-  fetchCompanyProfile = async (userId: any) => {
+  async fetchCompanyProfile(userId: string): Promise<ICompany | null> {
     let relationDetails =
       await this.companyEmployeeRoleRepository.findCompanyByUserId(userId);
-    // relationDetails.companyId
     if (!relationDetails) {
       throw new Error("User not found in any company");
     }
     return await this.companyRepository.findById(relationDetails.companyId);
-  };
+  }
 
-  medialLinks = async (userId: any) => {
+  async medialLinks(
+    userId: string
+  ): Promise<Pick<
+    ICompany,
+    "Youtube" | "LinkedIn" | "Facebook" | "Twitter" | "Instagram"
+  > | null> {
     let relationDetails =
       await this.companyEmployeeRoleRepository.findCompanyByUserId(userId);
     if (!relationDetails) {
@@ -155,23 +179,26 @@ class ProfileService implements IProfileService {
     return await this.companyRepository.findMedialLinksById(
       relationDetails.companyId
     );
-  };
+  }
 
-  updateMediaLinks = async (userId: string, data: any) => {
+  async updateMediaLinks(userId: string, data: any) {
     let relationDetails =
       await this.companyEmployeeRoleRepository.findCompanyByUserId(userId);
+
+    if (!relationDetails) {
+      throw new Error("Media link updation failed");
+    }
 
     return await this.companyRepository.updateMediaLinks(
       relationDetails.companyId,
       data
     );
-  };
+  }
 
   async getAllProfiles(callback: grpc.sendUnaryData<any>) {
-    this.JobSeekerRepository.getAllProfiles()
-      .then((details: any) => {
-        console.log(details);
-
+    this.jobSeekerRepository
+      .getAllProfiles()
+      .then((details: Omit<IJobSeeker, "password" | "phone" | "dob" | "gender" | "updatedAt">[]) => {
         if (details) {
           callback(null, { jobSeekers: details });
         } else {
@@ -181,7 +208,7 @@ class ProfileService implements IProfileService {
           });
         }
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         callback({
           code: grpc.status.INTERNAL,
           details: err.message,

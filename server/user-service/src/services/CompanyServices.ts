@@ -1,31 +1,29 @@
 import * as grpc from "@grpc/grpc-js";
-import CompanyRepository from "../repositories/CompanyRepository";
 import { ICompanyService } from "@core/interfaces/services/ICompanyService";
+import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
+import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
+import { ICompany, ICompanyEmployeeRole } from "@shared/user.types";
 
 class CompanyService implements ICompanyService {
-  private companyEmployeeRoleRepository: any;
-  private redisService: any;
-  private companyRepository: any;
+  private companyEmployeeRoleRepository: ICompanyEmployeeRoleRepository;
+  private companyRepository: ICompanyRepository;
+
   constructor(
-    companyEmployeeRoleRepository: any,
-    redisService: any,
-    companyRepository: CompanyRepository
+    companyEmployeeRoleRepository: ICompanyEmployeeRoleRepository,
+    companyRepository: ICompanyRepository
   ) {
     this.companyEmployeeRoleRepository = companyEmployeeRoleRepository;
-    this.redisService = redisService;
     this.companyRepository = companyRepository;
   }
 
   getCompanyIdByUserId = (
     userId: string,
-    callback: grpc.sendUnaryData<any>
-  ) => {
+    callback: grpc.sendUnaryData<{ companyId: string }>
+  ): void => {
     this.companyEmployeeRoleRepository
       .findCompanyByUserId(userId)
-      .then((details: any) => {
-        console.log(details);
-
-        if (details.companyId) {
+      .then((details: ICompanyEmployeeRole | null) => {
+        if (details) {
           callback(null, { companyId: details.companyId });
         } else {
           callback({
@@ -34,7 +32,7 @@ class CompanyService implements ICompanyService {
           });
         }
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         callback({
           code: grpc.status.INTERNAL,
           details: err.message,
@@ -42,29 +40,28 @@ class CompanyService implements ICompanyService {
       });
   };
 
-  async getAllCompanies(): Promise<any> {
+  async getAllCompanies(): Promise<ICompany[]> {
     return await this.companyRepository.findMany();
   }
 
   async getCompanyDetailsById(
     companyIds: string[],
-    callback: grpc.sendUnaryData<any>
-  ): Promise<any> {
+    callback: grpc.sendUnaryData<{ companies: any[] }>
+  ): Promise<void> {
     this.companyRepository
       .findByIds(companyIds)
-      .then((details: any) => {
-        if (details) {
+      .then((details: ICompany[]) => {
+        if (details.length) {
           console.log(details);
-
           callback(null, { companies: details });
         } else {
           callback({
             code: grpc.status.NOT_FOUND,
-            details: "User not found",
+            details: "Companies not found",
           });
         }
       })
-      .catch((err: any) => {
+      .catch((err: Error) => {
         callback({
           code: grpc.status.INTERNAL,
           details: err.message,
@@ -76,7 +73,7 @@ class CompanyService implements ICompanyService {
     companyId: string,
     status: "Approved" | "Rejected",
     rejectReason?: string
-  ) {
+  ): Promise<ICompany> {
     if (status === "Rejected" && !rejectReason) {
       throw new Error("Rejection reason is required when rejecting.");
     }

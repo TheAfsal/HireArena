@@ -2,8 +2,6 @@ import "tsconfig-paths/register";
 import app from "./app";
 import * as grpc from "@grpc/grpc-js";
 import server from "@config/grpcJobService";
-import { IUser } from "@shared/IUser";
-let a: IUser;
 
 const PORT = process.env.PORT || 5001;
 

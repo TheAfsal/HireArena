@@ -12,8 +12,7 @@ class JobSeekerController implements IJobSeekerController{
 
   updateProfile = async (
     req: Request,
-    //@ts-ignore
-    res: Response<unknown | IError>
+    res: Response
   ): Promise<void> => {
     try {
       const { fullName, phone, email, dob, gender, image } = req.body;

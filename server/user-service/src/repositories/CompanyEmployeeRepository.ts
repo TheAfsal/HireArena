@@ -1,5 +1,6 @@
 import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
 import { PrismaClient, CompanyRole } from "@prisma/client";
+import { ICompany, ICompanyEmployeeRole, IEmployee } from "@shared/user.types";
 
 class CompanyEmployeeRoleRepository implements ICompanyEmployeeRoleRepository{
 
@@ -10,36 +11,36 @@ class CompanyEmployeeRoleRepository implements ICompanyEmployeeRoleRepository{
   }
 
 
-  async findByUserAndCompany(userId: string, companyId: string) {
-    return this.prisma.companyEmployeeRole.findUnique({
-      where: { userId_companyId: { userId, companyId } },
-    });
-  }
+  // async findByUserAndCompany(userId: string, companyId: string):Promise<ICompanyEmployeeRole | null> {
+  //   return this.prisma.companyEmployeeRole.findUnique({
+  //     where: { userId_companyId: { userId, companyId } },
+  //   });
+  // }
 
-  async findCompanyByUserId(userId: string) {
+  async findCompanyByUserId(userId: string):Promise<ICompanyEmployeeRole | null> {
     return this.prisma.companyEmployeeRole.findUnique({
       where: { userId },
     });
   }
 
-  async create(roleData: { userId: string; companyId: string; role: CompanyRole }) {
+  async create(roleData: { userId: string; companyId: string; role: CompanyRole }):Promise<ICompanyEmployeeRole> {
     return this.prisma.companyEmployeeRole.create({ data: roleData });
   }
 
-  async updateRole(userId: string, companyId: string, role: CompanyRole) {
+  async updateRole(userId: string, companyId: string, role: CompanyRole):Promise<ICompanyEmployeeRole> {
     return this.prisma.companyEmployeeRole.update({
       where: { userId_companyId: { userId, companyId } },
       data: { role },
     });
   }
 
-  async delete(userId: string, companyId: string) {
+  async delete(userId: string, companyId: string):Promise<ICompanyEmployeeRole> {
     return this.prisma.companyEmployeeRole.delete({
       where: { userId_companyId: { userId, companyId } },
     });
   }
 
-  async assignRole(employeeId: string, companyId: string, role: CompanyRole) {
+  async assignRole(employeeId: string, companyId: string, role: CompanyRole):Promise<ICompanyEmployeeRole> {
     return this.prisma.companyEmployeeRole.create({
       data: {
         userId: employeeId,

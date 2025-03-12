@@ -1,30 +1,26 @@
-import crypto from "crypto";
-import { IInvitationRepository } from "../interfaces/IInvitationRepository";
-import { ICompanyEmployeeRepository } from "../interfaces/ICompanyEmployeeRepository";
 import { ITokenService } from "../core/interfaces/services/ITokenService";
 import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import "colors";
-
-class InvitationService implements InvitationService {
+import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
+import { IInvitationRepository } from "@core/interfaces/repository/IInvitationRepository";
+import { IInvitationService } from "@core/interfaces/services/IInvitationService";
+import { IEmployeeRepository } from "@core/interfaces/repository/IEmployeeRepository";
+import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
+import { IEmailService } from "@core/interfaces/services/IEmailService";
+import { IRedisService } from "@core/interfaces/services/IRedisService";
+import { IInvitationDetails } from "@core/types/services/IInvitationDetails";
+import { CompanyRole } from "@prisma/client";
+class InvitationService implements IInvitationService {
   constructor(
-    private invitationRepository: any,
-    private companyRepository: any,
-    private employeeRepository: any,
-    private companyEmployeeRole: any,
+    private invitationRepository: IInvitationRepository,
+    private companyRepository: ICompanyRepository,
+    private employeeRepository: IEmployeeRepository,
+    private companyEmployeeRole: ICompanyEmployeeRoleRepository,
     private tokenService: ITokenService,
     private passwordService: IPasswordService,
-    private emailService: any,
-    private redisService: any
-  ) {
-    this.invitationRepository = invitationRepository;
-    this.companyRepository = companyRepository;
-    this.employeeRepository = employeeRepository;
-    this.companyEmployeeRole = companyEmployeeRole;
-    this.tokenService = tokenService;
-    this.passwordService = passwordService;
-    this.emailService = emailService;
-    this.redisService = redisService;
-  }
+    private emailService: IEmailService,
+    private redisService: IRedisService
+  ) {}
 
   async sendInvitation(
     email: string,
@@ -53,19 +49,17 @@ class InvitationService implements InvitationService {
       expiredAt: new Date(new Date().getTime() + 3600 * 1000),
     });
 
-    console.log(token.bgGreen);
-
     await this.emailService.sendInvitationEmail(
       email,
       token,
-      employee.companyAssociations[0].company.name,
+      employee.companyAssociations[0].company.companyName,
       role
     );
 
     return "Invitation sent successfully.";
   }
 
-  async invitationDetails(token: string): Promise<any> {
+  async invitationDetails(token: string): Promise<IInvitationDetails> {
     const invitation = await this.invitationRepository.findByToken(token);
 
     if (!invitation) {
@@ -80,6 +74,7 @@ class InvitationService implements InvitationService {
 
     const { email, message, role } = invitation;
     const { companyName } = company;
+
     return { email, message, role, name: companyName };
   }
 
@@ -106,7 +101,11 @@ class InvitationService implements InvitationService {
       name,
     });
 
-    await this.companyEmployeeRole.assignRole(employee.id, companyId, role);
+    await this.companyEmployeeRole.assignRole(
+      employee.id,
+      companyId,
+      CompanyRole[role]
+    );
 
     await this.invitationRepository.delete(token);
 
@@ -116,7 +115,7 @@ class InvitationService implements InvitationService {
       role
     );
 
-    await this.redisService.setWithTTL(email, refreshToken, 7 * 24 * 60 * 60);
+    await this.redisService.setWithTTL(email, refreshToken, 7 * 24 * 60 * 60); 
 
     return {
       employee,

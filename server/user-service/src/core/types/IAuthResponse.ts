@@ -1,10 +1,10 @@
-import { IUser } from './IUser';
+import { IAdmin, IEmployee } from "@shared/user.types";
+import { IUser } from "./IUser";
 
 export interface IAuthResponse {
-  tokens:{
+  tokens: {
     accessToken: string;
     refreshToken?: string;
-  }
-  user?: IUser;
-  }
-
+  };
+  user?: IUser | IAdmin | IEmployee;
+}

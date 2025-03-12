@@ -1,6 +1,6 @@
-export interface ICompanyCreateRequest {
-    name: string;
-    email: string;
-    password: string;
-  }
+// export interface ICompanyCreateRequest {
+//     name: string;
+//     email: string;
+//     password: string;
+//   }
   

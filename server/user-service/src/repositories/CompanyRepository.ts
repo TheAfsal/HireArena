@@ -1,5 +1,6 @@
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Company } from "@prisma/client";
+import { ICompany } from "@shared/user.types";
 
 class CompanyRepository implements ICompanyRepository {
   private prisma: PrismaClient;
@@ -8,14 +9,19 @@ class CompanyRepository implements ICompanyRepository {
     this.prisma = prisma;
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<ICompany | null> {
     return this.prisma.company.findUnique({
       where: { id },
       include: { employees: true },
     });
   }
 
-  async findMedialLinksById(id: string) {
+  async findMedialLinksById(
+    id: string
+  ): Promise<Pick<
+    ICompany,
+    "Youtube" | "LinkedIn" | "Facebook" | "Twitter" | "Instagram"
+  > | null> {
     return this.prisma.company.findUnique({
       where: { id },
       select: {
@@ -28,23 +34,33 @@ class CompanyRepository implements ICompanyRepository {
     });
   }
 
-  async findByName(companyName: string) {
+  async findByName(companyName: string): Promise<ICompany | null> {
     return this.prisma.company.findUnique({ where: { companyName } });
   }
 
-  async create(companyData: { companyName: string; status: string }) {
+  async create(companyData: {
+    companyName: string;
+    status: string;
+  }): Promise<ICompany> {
     return this.prisma.company.create({ data: companyData });
   }
 
-  async update(id: string, updateData: Partial<{ companyName: string }>) {
+  async update(
+    id: string,
+    updateData: Partial<
+      Pick<ICompany, "companyName" | "status" | "reject_reason">
+    >
+  ): Promise<ICompany> {
     return this.prisma.company.update({ where: { id }, data: updateData });
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<ICompany> {
     return this.prisma.company.delete({ where: { id } });
   }
 
-  async updateCompanyProfile(data: any) {
+  async updateCompanyProfile(
+    data: Partial<ICompany> & { companyId: string }
+  ): Promise<ICompany> {
     console.log(data);
 
     return await this.prisma.company.update({
@@ -68,32 +84,36 @@ class CompanyRepository implements ICompanyRepository {
     });
   }
 
-  async updateMediaLinks(companyId: string, data: any) {
+  async updateMediaLinks(
+    companyId: string,
+    data: Partial<
+      Pick<
+        ICompany,
+        "Youtube" | "LinkedIn" | "Facebook" | "Twitter" | "Instagram"
+      >
+    >
+  ): Promise<ICompany> {
     return await this.prisma.company.update({
       where: { id: companyId },
       data,
     });
   }
 
-  async findMany() {
+  async findMany(): Promise<ICompany[]> {
     return await this.prisma.company.findMany();
   }
 
-  async findByIds(companyIds: string[]) {
+  async findByIds(companyIds: string[]): Promise<ICompany[]> {
     try {
       if (!Array.isArray(companyIds) || companyIds.length === 0) {
         throw new Error("No company IDs provided");
       }
 
-      const companies = await this.prisma.company.findMany({
+      return await this.prisma.company.findMany({
         where: {
-          id: {
-            in: companyIds,
-          },
+          id: { in: companyIds },
         },
       });
-
-      return companies;
     } catch (error) {
       console.error("Error fetching companies:", error);
       throw error;

@@ -1,4 +1,4 @@
-import { IAdmin } from "@repositories/AdminRepository";
+import { IAdmin } from "@shared/user.types";
 
 export interface IAdminRepository {
     findByEmail(email: string): Promise<IAdmin | null>;

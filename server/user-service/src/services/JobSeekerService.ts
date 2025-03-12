@@ -1,32 +1,25 @@
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
-import grpcClient from "../config/grpcClient";
-import { IPasswordService } from "../core/interfaces/services/IPasswordService";
-import JobSeekerRepository from "../repositories/JobSeekerRepository";
-import RedisService from "./RedisServices";
+import { IRedisService } from "@core/interfaces/services/IRedisService";
+import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
+import { IJobSeeker } from "@shared/user.types";
 
 class JobSeekerService implements IJobSeekerService {
-  private jobSeekerRepository: JobSeekerRepository;
-  private redisService: any;
+  private jobSeekerRepository: IJobSeekerRepository;
+  private redisService: IRedisService;
 
   constructor(
-    jobSeekerRepository: JobSeekerRepository,
-    redisService: RedisService
+    jobSeekerRepository: IJobSeekerRepository,
+    redisService: IRedisService
   ) {
     this.jobSeekerRepository = jobSeekerRepository;
     this.redisService = redisService;
   }
 
-  getAllCandidateProfile = async (userId: any) => {
-    // let relationDetails =
-    //   await this.companyEmployeeRoleRepository.findCompanyByUserId(userId);
-    // // relationDetails.companyId
-    // if (!relationDetails) {
-    //   throw new Error("User not found in any company");
-    // }
-    // return await this.companyRepository.findById(relationDetails.companyId);
-  };
+  async getAllCandidateProfile(userId: string): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
 
-  async toggleStatus(userId: string): Promise<any> {
+  async toggleStatus(userId: string): Promise<IJobSeeker> {
     const updatedCandidate =
       await this.jobSeekerRepository.updateJobSeekerStatus(userId);
 

@@ -1,9 +1,9 @@
 import { ITransactionService } from "@core/interfaces/services/ITransactionService";
-import TransactionRepository from "../repositories/TransactionRepository";
+import { ITransactionRepository } from "@core/interfaces/repository/ITransactionRepository";
 
 class TransactionService implements ITransactionService {
-  private transactionRepository: TransactionRepository;
-  constructor(transactionRepository: TransactionRepository) {
+  private transactionRepository: ITransactionRepository;
+  constructor(transactionRepository: ITransactionRepository) {
     this.transactionRepository = transactionRepository;
   }
 

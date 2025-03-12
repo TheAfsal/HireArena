@@ -1,14 +1,16 @@
-import { CompanyRole } from "@prisma/client";
+import { IInvitation } from "@core/types/repository/schema.types";
 
 export interface IInvitationRepository {
   create(data: {
     email: string;
     companyId: string;
-    role: CompanyRole;
+    role: string;
     token: string;
     message: string;
     expiredAt: Date;
-  }): Promise<any>;
-  findByToken(token: string): Promise<any | null>;
-  delete(token: string): Promise<any>;
+  }): Promise<IInvitation>;
+
+  findByToken(token: string): Promise<IInvitation | null>;
+
+  delete(token: string): Promise<IInvitation>;
 }

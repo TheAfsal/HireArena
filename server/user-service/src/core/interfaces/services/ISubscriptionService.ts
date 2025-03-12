@@ -1,10 +1,9 @@
-import { UserSubscription } from "@prisma/client";
+import { IUserSubscription } from "@core/types/repository/schema.types";
 
-// Interfaces for SubscriptionService
 export interface ISubscriptionService {
-    subscribeUser(userId: string, planId: string, transactionId: string): Promise<any>;
-    fetchPlanDetails(userId: string): Promise<any>;
-    getSubscriptionHistory(userId: string): Promise<UserSubscription[]>;
-    getAllSubscriptions(): Promise<any>;
+    subscribeUser(userId: string, planId: string, transactionId: string): Promise<IUserSubscription>;
+    fetchPlanDetails(userId: string): Promise<IUserSubscription | null > ;
+    getSubscriptionHistory(userId: string): Promise<IUserSubscription[]>;
+    getAllSubscriptions(): Promise<IUserSubscription[]>;
   }
   

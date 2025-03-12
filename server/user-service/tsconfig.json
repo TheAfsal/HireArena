@@ -17,6 +17,7 @@
       "@models/*": ["models/*"],
       "@routes/*": ["routes/*"],
       "@core/*": ["core/*"],
+      "@types/*": ["core/types/*"],
       "@shared/*": ["../../../shared/types/*"]
     },
     "skipDefaultLibCheck": true,

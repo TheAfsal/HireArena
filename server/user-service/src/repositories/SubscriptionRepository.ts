@@ -1,20 +1,30 @@
 import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
-import { PrismaClient, UserSubscription } from "@prisma/client";
+import { IUserSubscription } from "@core/types/repository/schema.types";
+import { Prisma, PrismaClient } from "@prisma/client";
 
-export class SubscriptionRepository implements ISubscriptionRepository{
+export class SubscriptionRepository implements ISubscriptionRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  async createSubscription(data: any) {
-    return this.prisma.userSubscription.create({ data });
+  async createSubscription(
+    data: IUserSubscription
+  ): Promise<IUserSubscription> {
+    return await this.prisma.userSubscription.create({
+      data: {
+        ...data,
+        features: data.features ?? Prisma.JsonNull,
+      },
+    });
   }
 
-  async findActiveSubscription(userId: string) {
+  async findActiveSubscription(
+    userId: string
+  ): Promise<IUserSubscription | null> {
     const today = new Date();
-  
+
     const activeSubscriptions = await this.prisma.userSubscription.findMany({
       where: {
         userId,
@@ -24,81 +34,83 @@ export class SubscriptionRepository implements ISubscriptionRepository{
         },
       },
       orderBy: {
-        expiryDate: 'desc', 
+        expiryDate: "desc",
       },
       take: 1,
     });
-  
+
     return activeSubscriptions[0] || null;
   }
-  
 
-  async findSubscriptionByUserId(userId: string) {
-    // return this.prisma.userSubscription.findUnique({ where: { userId } });
-  }
+  // async findSubscriptionByUserId(userId: string): Promise<IUserSubscription | null> {
+  //   return await this.prisma.userSubscription.findFirst({
+  //     where: { userId },
+  //   });
+  // }
 
-  async updateSubscription(userId: string, data: any) {
-    // return this.prisma.userSubscription.update({ where: { userId }, data });
-  }
+  // async updateSubscription(userId: string, data: Partial<IUserSubscription>): Promise<IUserSubscription> {
+  //   return await this.prisma.userSubscription.update({
+  //     where: { userId },
+  //     data,
+  //   });
+  // }
 
-  async getSubscriptionHistory(userId: string): Promise<UserSubscription[]> {
+  async getSubscriptionHistory(userId: string): Promise<IUserSubscription[]> {
     const subscriptions = await this.prisma.userSubscription.findMany({
       where: { userId },
       include: {
-        jobSeeker: true,  
+        jobSeeker: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
-    // Fetch transactions for these subscriptions
-    const transactionIds = subscriptions.map(sub => sub.transactionId).filter(Boolean);
+    const transactionIds = subscriptions
+      .map((sub) => sub.transactionId)
+      .filter(Boolean);
 
     const transactions = await this.prisma.transaction.findMany({
-      //@ts-ignore
-      where: { id: { in: transactionIds } },
+      where: { id: { in: transactionIds as string[] } },
       select: { id: true, amount: true },
     });
 
-    // Map transactions to subscriptions
-    const transactionMap = new Map(transactions.map(t => [t.id, t.amount]));
+    const transactionMap = new Map(transactions.map((t) => [t.id, t.amount]));
 
-    // Append price to subscription history
-    return subscriptions.map(sub => ({
+    return subscriptions.map((sub) => ({
       ...sub,
-      price: sub.transactionId ? transactionMap.get(sub.transactionId) || null : null
+      price: sub.transactionId
+        ? transactionMap.get(sub.transactionId) || null
+        : null,
     }));
-
-    // console.log(subscriptions);
-
-    // return subscriptions;
   }
 
-  async getAllSubscriptions() {
+  async getAllSubscriptions(): Promise<IUserSubscription[]> {
     const subscriptions = await this.prisma.userSubscription.findMany({
       include: {
         jobSeeker: {
-          select: { fullName: true, email: true }
+          select: { fullName: true, email: true },
         },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
-    const transactionIds = subscriptions.map(sub => sub.transactionId).filter(Boolean);
+    const transactionIds = subscriptions
+      .map((sub) => sub.transactionId)
+      .filter(Boolean);
 
     const transactions = await this.prisma.transaction.findMany({
-      //@ts-ignore
-      where: { id: { in: transactionIds } },
+      where: { id: { in: transactionIds as string[] } },
       select: { id: true, amount: true },
     });
 
-    const transactionMap = new Map(transactions.map(t => [t.id, t.amount]));
+    const transactionMap = new Map(transactions.map((t) => [t.id, t.amount]));
 
-    return subscriptions.map(sub => ({
+    return subscriptions.map((sub) => ({
       ...sub,
-      price: sub.transactionId ? transactionMap.get(sub.transactionId) || null : null
+      price: sub.transactionId
+        ? transactionMap.get(sub.transactionId) || null
+        : null,
     }));
   }
 }
 
 export default SubscriptionRepository;
-

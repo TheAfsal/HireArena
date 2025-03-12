@@ -1,15 +1,16 @@
 import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
 import { PrismaClient } from "@prisma/client";
+import { IAdmin } from "@shared/index";
 
-export interface IAdmin {
-  id: string;
-  name: string;
-  email: string;
-  password?: string;
-  role: string;
-}
+// export interface IAdmin {
+//   id: string;
+//   name: string;
+//   email: string;
+//   password?: string;
+//   role: string;
+// }
 
-class AdminRepository implements IAdminRepository{
+class AdminRepository implements IAdminRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

@@ -20,7 +20,6 @@ const jobSeekerService = new JobSeekerService(
 );
 const companyService = new CompanyService(
   companyEmployeeRoleRepository,
-  redisService,
   companyRepository
 );
 

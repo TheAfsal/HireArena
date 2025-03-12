@@ -1,3 +1,4 @@
+import { ISubscriptionPlanGRPC } from "@core/types/repository/schema.types";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
@@ -41,14 +42,15 @@ const fileServiceClient = new fileServiceProto.FileService(
   grpc.credentials.createInsecure()
 );
 
-
 //@ts-ignore
 const adminServiceClient = new adminServiceProto.AdminService(
   `${process.env.ADMIN_SERVER_URL}:5005`,
   grpc.credentials.createInsecure()
 );
 
-export const fetchSubscriptionPlan = (planId: string) => {
+export const fetchSubscriptionPlan = (
+  planId: string
+): Promise<ISubscriptionPlanGRPC> => {
   return new Promise((resolve, reject) => {
     adminServiceClient.GetSubscriptionPlanById({ planId }, (err, response) => {
       if (err) {

@@ -138,9 +138,6 @@ app.get(
     const jobSeekerRepository = new JobSeekerRepository(prisma);
     const adminRepository = new AdminRepository(prisma);
     const companyRepository = new CompanyRepository(prisma);
-    const companyEmployeeRoleRepository = new CompanyEmployeeRoleRepository(
-      prisma
-    );
     const employeeRepository = new EmployeeRepository(prisma);
     const redisService = new RedisService();
     const passwordService = new PasswordService();
@@ -153,17 +150,23 @@ app.get(
       adminRepository,
       companyRepository,
       employeeRepository,
-      companyEmployeeRoleRepository,
       redisService,
       emailService,
       passwordService,
       tokenService
     );
 
-    const user = await authService.googleLogin({ email, name, password: "123123" });
+    const user = await authService.googleLogin({
+      email,
+      name,
+      password: "123123",
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     const accessToken = jwt.sign(
-      //@ts-ignore
       { userId: user.id },
       process.env.ACCESS_TOKEN_SECRET || "",
       {
@@ -171,7 +174,6 @@ app.get(
       }
     );
     const refreshToken = jwt.sign(
-      //@ts-ignore
       { userId: user.id, role: "HR" },
       process.env.REFRESH_TOKEN_SECRET || "",
       {

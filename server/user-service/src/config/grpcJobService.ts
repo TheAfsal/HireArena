@@ -35,7 +35,6 @@ const emailService = new EmailService();
 const redisService = new RedisService();
 const companyService = new CompanyService(
   companyEmployeeRoleRepository,
-  redisService,
   companyRepository
 );
 const profileService = new ProfileService(
@@ -72,3 +71,4 @@ server.addService(userProto.UserService.service, {
 });
 
 export default server;
+

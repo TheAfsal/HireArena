@@ -1,12 +1,11 @@
 import { IUserCreateRequest } from "../../types/IUserCreateRequest";
 import { IAuthResponse } from "../../types/IAuthResponse";
-import { IUser } from "../../types/IUser";
-import { IJobSeeker } from "../../../interfaces/IJobSeeker";
+import { IEmployee, IJobSeeker } from "@shared/user.types";
 
 export interface IAuthService {
   signup: (userData: IUserCreateRequest) => Promise<{ message: string }>;
   verifyToken: (token: string) => Promise<{
-    user: IJobSeeker;
+    user: IJobSeeker | IEmployee;
     accessToken: string;
     refreshToken?: string;
     role: string;
@@ -16,5 +15,11 @@ export interface IAuthService {
   loginCompany: (email: string, password: string) => Promise<IAuthResponse>;
   loginAdmin: (email: string, password: string) => Promise<IAuthResponse>;
   refresh: (refreshToken: string) => Promise<IAuthResponse>;
-  setRefreshForGoogle: (accessToken: string) => Promise<IAuthResponse>;
+  setRefreshForGoogle: (accessToken: string) => Promise<string>;
+  whoAmI: (token: string) => Promise<{ role: string }>;
+  googleLogin: (userData: {
+    email: string;
+    name: string;
+    password: string;
+  }) => Promise<Pick<IJobSeeker, "id" | "email" | "fullName"> | null>;
 }

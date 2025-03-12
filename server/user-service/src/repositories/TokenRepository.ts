@@ -4,7 +4,7 @@ import redisClient from "../config/redisClient";
 class TokenRepository implements ITokenRepository {
   async storeRefreshToken(email: string, refreshToken: string): Promise<void> {
     try {
-      await redisClient.set(email, refreshToken, "EX", 7 * 24 * 60 * 60); // 7 days
+      await redisClient.set(email, refreshToken, "EX", 7 * 24 * 60 * 60); 
     } catch (error) {
       console.error("Error storing refresh token:", error);
       throw new Error("Token storage failed");

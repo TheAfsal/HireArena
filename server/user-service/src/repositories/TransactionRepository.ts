@@ -1,4 +1,8 @@
 import { ITransactionRepository } from "@core/interfaces/repository/ITransactionRepository";
+import {
+  ITransaction,
+  ITransactionCreateInput,
+} from "@core/types/repository/schema.types";
 import { PrismaClient } from "@prisma/client/default";
 
 class TransactionRepository implements ITransactionRepository {
@@ -8,7 +12,9 @@ class TransactionRepository implements ITransactionRepository {
     this.prisma = prisma;
   }
 
-  async createTransaction(data: any) {
+  async createTransaction(
+    data: ITransactionCreateInput
+  ): Promise<ITransaction> {
     return await this.prisma.transaction.create({ data });
   }
 
@@ -16,8 +22,7 @@ class TransactionRepository implements ITransactionRepository {
     transactionId: string,
     status: "completed" | "failed",
     paymentId: string | null
-  ) {
-    
+  ): Promise<ITransaction> {
     return await this.prisma.transaction.update({
       where: { id: transactionId },
       data: { paymentId, status },

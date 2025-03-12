@@ -3,18 +3,21 @@ import { IUserCreateRequest } from "../core/types/IUserCreateRequest";
 import { IEmailService } from "../core/interfaces/services/IEmailService";
 import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import { ITokenService } from "../core/interfaces/services/ITokenService";
-import { IJobSeeker } from "../interfaces/IJobSeeker";
 import { IAuthResponse } from "../core/types/IAuthResponse";
 import { IUser } from "../core/types/IUser";
 import { ROLES } from "../../src/constants/roles";
 import { IRedisService } from "@core/interfaces/services/IRedisService";
 import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
+import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
+import { IEmployeeRepository } from "@core/interfaces/repository/IEmployeeRepository";
+import { IAdmin, ICompany, IEmployee, IJobSeeker } from "@shared/user.types";
+import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 
 class AuthService implements IAuthService {
   private jobSeekerRepository: IJobSeekerRepository;
-  private adminRepository: any;
-  private companyRepository: any;
-  private employeeRepository: any;
+  private adminRepository: IAdminRepository;
+  private companyRepository: ICompanyRepository;
+  private employeeRepository: IEmployeeRepository;
   private redisService: IRedisService;
   private emailService: IEmailService;
   private passwordService: IPasswordService;
@@ -22,10 +25,9 @@ class AuthService implements IAuthService {
 
   constructor(
     jobSeekerRepository: IJobSeekerRepository,
-    adminRepository: any,
-    companyRepository: any,
-    employeeRepository: any,
-    companyEmployeeRoleRepository: any,
+    adminRepository: IAdminRepository,
+    companyRepository: ICompanyRepository,
+    employeeRepository: IEmployeeRepository,
     redisService: IRedisService,
     emailService: IEmailService,
     passwordService: IPasswordService,
@@ -74,7 +76,7 @@ class AuthService implements IAuthService {
   }
 
   async verifyToken(token: string): Promise<{
-    user: IJobSeeker;
+    user: IJobSeeker | IEmployee;
     accessToken: string;
     refreshToken?: string;
     role: string;
@@ -106,8 +108,6 @@ class AuthService implements IAuthService {
       if (existingUser) {
         throw new Error("Email already verified");
       }
-
-      console.log(userData);
 
       const savedCompany = await this.companyRepository.create({
         companyName: userData.name,
@@ -249,7 +249,9 @@ class AuthService implements IAuthService {
   }
 
   async loginCompany(email: string, password: string): Promise<IAuthResponse> {
-    const user: IUser | null = await this.employeeRepository.findByEmail(email);
+    const user: IEmployee | null = await this.employeeRepository.findByEmail(
+      email
+    );
 
     if (!user || !user.password) {
       throw new Error("Invalid credentials");
@@ -275,7 +277,7 @@ class AuthService implements IAuthService {
   }
 
   async loginAdmin(email: string, password: string): Promise<IAuthResponse> {
-    const user: IUser | null = await this.adminRepository.findByEmail(email);
+    const user: IAdmin | null = await this.adminRepository.findByEmail(email);
 
     if (!user || !user.password) {
       throw new Error("Invalid credentials");
@@ -317,7 +319,7 @@ class AuthService implements IAuthService {
     return { tokens: { accessToken } };
   }
 
-  async setRefreshForGoogle(accessToken: string): Promise<any> {
+  async setRefreshForGoogle(accessToken: string): Promise<string> {
     const decoded = this.tokenService.verifyAccessToken(accessToken);
 
     const refreshToken = this.tokenService.generateRefreshToken(
@@ -349,24 +351,22 @@ class AuthService implements IAuthService {
     email: string;
     name: string;
     password: string;
-  }): Promise<any> => {
-    try {
-      const existingData = await this.jobSeekerRepository.findByEmail(
-        userData.email
-      );
+  }): Promise<Pick<IJobSeeker, "id" | "email" | "fullName"> | null> => {
+    const existingData = await this.jobSeekerRepository.findByEmail(
+      userData.email
+    );
 
-      if (existingData) {
-        return existingData;
-      }
+    if (existingData) {
+      return existingData;
+    }
 
-      const savedUser = await this.jobSeekerRepository.create({
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
-      });
+    const savedUser = await this.jobSeekerRepository.create({
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+    });
 
-      return savedUser;
-    } catch (error) {}
+    return savedUser;
   };
 }
 

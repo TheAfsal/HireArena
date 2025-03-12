@@ -4,9 +4,9 @@ import { Request, Response } from "express";
 import { IAuthService } from "../core/interfaces/services/IAuthService";
 import { IAuthResponse } from "../core/types/IAuthResponse";
 import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
-import { IJobSeeker } from "../interfaces/IJobSeeker";
 import { IUser } from "@core/types/IUser";
 import { IAuthController } from "@core/interfaces/controllers/IAuthController";
+import { IJobSeeker } from "@shared/user.types";
 
 declare global {
   namespace Express {
@@ -74,12 +74,7 @@ class AuthController implements IAuthController {
 
   verifyToken = async (
     req: Request,
-    res: Response<
-      IGenericResponse<IJobSeeker | IError> & {
-        accessToken?: string;
-        role?: string;
-      }
-    >
+    res: Response
   ): Promise<void> => {
     const { token } = req.params;
 
@@ -271,10 +266,7 @@ class AuthController implements IAuthController {
     }
   };
 
-  loginAdmin = async (
-    req: Request,
-    res: Response<IGenericResponse<IAuthResponse | IError>>
-  ) => {
+  loginAdmin = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
       console.log(email, password);

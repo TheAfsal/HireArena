@@ -1,25 +1,24 @@
 import "colors";
 import Stripe from "stripe";
-import SubscriptionRepository from "../repositories/SubscriptionRepository";
 import { fetchSubscriptionPlan } from "../config/grpcClient";
 import { UserSubscription } from "@prisma/client";
 import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
+import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
+import { IUserSubscription } from "@core/types/repository/schema.types";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-// const planPrices = {
-//   BASIC: 1000, // $10.00 for BASIC plan
-//   PRO: 2999, // $29.99 for PRO plan
-//   ENTERPRISE: 9999, // $99.99 for ENTERPRISE plan
-// };
-
 class SubscriptionService implements ISubscriptionService {
-  private subscriptionRepository: SubscriptionRepository;
-  constructor(subscriptionRepository: SubscriptionRepository) {
+  private subscriptionRepository: ISubscriptionRepository;
+  constructor(subscriptionRepository: ISubscriptionRepository) {
     this.subscriptionRepository = subscriptionRepository;
   }
 
-  async subscribeUser(userId: string, planId: string, transactionId: string) {
+  async subscribeUser(
+    userId: string,
+    planId: string,
+    transactionId: string
+  ): Promise<IUserSubscription> {
     const plan: any = await fetchSubscriptionPlan(planId);
     if (!plan) throw new Error("Subscription plan not found.");
 
@@ -36,22 +35,19 @@ class SubscriptionService implements ISubscriptionService {
       transactionId,
     };
 
+    //@ts-ignore
     return await this.subscriptionRepository.createSubscription(subscription);
   }
 
-  async fetchPlanDetails(userId: string) {
-    return await this.subscriptionRepository.findActiveSubscription(userId);
+  async fetchPlanDetails(userId: string): Promise< IUserSubscription | null> {
+     return await this.subscriptionRepository.findActiveSubscription(userId);
   }
 
   async getSubscriptionHistory(userId: string): Promise<UserSubscription[]> {
-    const subscriptions = await this.subscriptionRepository.getSubscriptionHistory(userId);
-    console.log('====================================');
-    console.log(subscriptions);
-    console.log('====================================');
-    return subscriptions;
+    return await this.subscriptionRepository.getSubscriptionHistory(userId);
   }
 
-  async getAllSubscriptions() {
+  async getAllSubscriptions():Promise<UserSubscription[]> {
     return await this.subscriptionRepository.getAllSubscriptions();
   }
 

@@ -1,10 +1,11 @@
-import { UserSubscription } from "@prisma/client";
+import { IUserSubscription } from "@core/types/repository/schema.types";
+import { Prisma, UserSubscription } from "@prisma/client";
 
 export interface ISubscriptionRepository {
-  createSubscription(data: any): Promise<any>;
-  findActiveSubscription(userId: string): Promise<any | null>;
-  findSubscriptionByUserId(userId: string): Promise<any | null>;
-  updateSubscription(userId: string, data: any): Promise<any>;
-  getSubscriptionHistory(userId: string): Promise<UserSubscription[]>;
-  getAllSubscriptions(): Promise<UserSubscription[]>;
+  createSubscription(data: IUserSubscription): Promise<IUserSubscription>;
+  findActiveSubscription(userId: string): Promise<IUserSubscription | null>;
+  // findSubscriptionByUserId(userId: string): Promise<IUserSubscription | null>;
+  // updateSubscription(userId: string, data: Partial<IUserSubscription>): Promise<IUserSubscription>;
+  getSubscriptionHistory(userId: string): Promise<IUserSubscription[]>;
+  getAllSubscriptions(): Promise<IUserSubscription[]>;
 }

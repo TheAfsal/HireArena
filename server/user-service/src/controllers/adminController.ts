@@ -3,16 +3,19 @@ import CompanyService from "@services/CompanyServices";
 import JobSeekerService from "@services/JobSeekerService";
 import SubscriptionService from "@services/SubscriptionService";
 import { IAdminController } from "@core/interfaces/controllers/IAdminController";
+import { ICompanyService } from "@core/interfaces/services/ICompanyService";
+import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
+import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
 
 class AdminController implements IAdminController {
-  private companyService: any;
-  private jobSeekerService: any;
-  private subscriptionService: any;
+  private companyService: ICompanyService;
+  private jobSeekerService: IJobSeekerService;
+  private subscriptionService: ISubscriptionService;
 
   constructor(
-    companyService: CompanyService,
-    jobSeekerService: JobSeekerService,
-    subscriptionService: SubscriptionService
+    companyService: ICompanyService,
+    jobSeekerService: IJobSeekerService,
+    subscriptionService: ISubscriptionService
   ) {
     this.companyService = companyService;
     this.jobSeekerService = jobSeekerService;

@@ -1,6 +1,7 @@
+import { IJobSeeker } from "@shared/user.types";
 
 export interface IJobSeekerService {
-    getAllCandidateProfile(userId: any): Promise<any>;
-    toggleStatus(userId: string): Promise<any>;
-}
+    getAllCandidateProfile(userId: string): Promise<any>;
+    toggleStatus(userId: string): Promise<IJobSeeker>;
+  }
   
