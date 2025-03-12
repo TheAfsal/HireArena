@@ -1,6 +1,7 @@
+import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
 import { PrismaClient, JobApplication } from "@prisma/client";
 
-class JobApplicationRepository {
+class JobApplicationRepository implements IJobApplicationRepository {
     private prisma: PrismaClient;
 
     constructor(prisma: any) {

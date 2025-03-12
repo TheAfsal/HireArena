@@ -3,9 +3,10 @@ import SubscriptionService from "@services/SubscriptionService";
 import stripeLib from "stripe";
 import { fetchSubscriptionPlan } from "@config/grpcClient";
 import { UserSubscription } from "@prisma/client";
+import { ISubscriptionController } from "@core/interfaces/controllers/ISubscriptionController";
 const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 
-class SubscriptionController {
+class SubscriptionController implements ISubscriptionController{
   private subscriptionService: any;
   private transactionService: any;
 
@@ -26,7 +27,6 @@ class SubscriptionController {
         : null;
 
       const plan = await fetchSubscriptionPlan(planId);
-      console.log(plan);
 
       if (!plan) {
         res.status(404).json({ message: "Plan not found" });

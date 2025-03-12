@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { SubscriptionService } from "@services/subscription.service";
 import { SubscriptionRepository } from "@repositories/subscription.repository";
+import { ISubscriptionController } from "@core/interfaces/controllers/ISubscriptionController";
 
 const repository = new SubscriptionRepository();
 const subscriptionService = new SubscriptionService(repository);
 
-class SubscriptionController {
-  static async create(req: Request, res: Response) {
+class SubscriptionController implements ISubscriptionController {
+  async create(req: Request, res: Response) {
     try {
       const plan = await subscriptionService.createSubscriptionPlan(
         req.body.plan
@@ -22,7 +23,7 @@ class SubscriptionController {
     }
   }
 
-  static async update(req: Request, res: Response) {
+  async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const updatedPlan = await subscriptionService.updateSubscriptionPlan(
@@ -42,7 +43,7 @@ class SubscriptionController {
     }
   }
 
-  static async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
       await subscriptionService.deleteSubscriptionPlan(id);
@@ -54,7 +55,7 @@ class SubscriptionController {
     }
   }
 
-  static async getById(req: Request, res: Response) {
+  async getById(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const plan = await subscriptionService.getSubscriptionPlanById(id);
@@ -70,7 +71,7 @@ class SubscriptionController {
     }
   }
 
-  static async getAll(req: Request, res: Response) {
+  async getAll(req: Request, res: Response) {
     try {
       const plans = await subscriptionService.getAllSubscriptionPlans();
       res.json({ data: plans });

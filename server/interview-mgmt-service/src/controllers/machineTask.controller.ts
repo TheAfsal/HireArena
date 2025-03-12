@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import MachineTaskService from "@services/machineTask.service";
+import { IMachineTaskController } from "@core/interfaces/controllers/IMachineTaskController";
 
-class MachineTaskController {
+class MachineTaskController implements IMachineTaskController{
   constructor(private machineTaskService: MachineTaskService) {}
 
   getMachineTaskByJobId = async (req: Request, res: Response) => {

@@ -1,4 +1,5 @@
-import { ISubscriptionRepository } from "../interfaces/ISubscriptionRepository";
+import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
+import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
 
 interface SubscriptionTemplate {
   featuredProfile: boolean;
@@ -11,7 +12,7 @@ interface SubscriptionTemplate {
   networkingEvents: boolean;
 }
 
-export class SubscriptionService {
+export class SubscriptionService implements ISubscriptionService {
   private repository: ISubscriptionRepository;
 
   private allowedFeatures: (keyof SubscriptionTemplate)[] = [
@@ -30,7 +31,6 @@ export class SubscriptionService {
   }
 
   async createSubscriptionPlan(plan: any): Promise<any> {
-
     const validatedFeatures: SubscriptionTemplate = this.allowedFeatures.reduce(
       (acc, feature) => {
         acc[feature] = plan.features[feature] === true;

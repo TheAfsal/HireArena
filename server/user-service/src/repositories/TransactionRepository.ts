@@ -1,6 +1,7 @@
+import { ITransactionRepository } from "@core/interfaces/repository/ITransactionRepository";
 import { PrismaClient } from "@prisma/client/default";
 
-class TransactionRepository {
+class TransactionRepository implements ITransactionRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

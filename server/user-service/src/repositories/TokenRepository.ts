@@ -1,6 +1,7 @@
+import { ITokenRepository } from "@core/interfaces/repository/ITokenRepository";
 import redisClient from "../config/redisClient";
 
-class TokenRepository {
+class TokenRepository implements ITokenRepository {
   async storeRefreshToken(email: string, refreshToken: string): Promise<void> {
     try {
       await redisClient.set(email, refreshToken, "EX", 7 * 24 * 60 * 60); // 7 days

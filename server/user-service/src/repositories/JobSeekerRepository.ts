@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { IJobSeekerRepository } from "../interfaces/IJobSeekerRepository";
-import { IUser } from "../types/IUser";
-import { IUserCreateRequest } from "../types/IUserCreateRequest";
+import { IUser } from "../core/types/IUser";
+import { IUserCreateRequest } from "../core/types/IUserCreateRequest";
 import { IJobSeeker } from "../interfaces/IJobSeeker";
+import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
 
 class JobSeekerRepository implements IJobSeekerRepository {
   private prisma: PrismaClient;

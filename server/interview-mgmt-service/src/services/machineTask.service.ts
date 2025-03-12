@@ -2,8 +2,9 @@ import GeminiHelper from "../utils/gemini.helper";
 import MachineTaskRepository from "../repositories/machineTask.repository";
 import { evaluateRepository } from "../utils/evaluateTask";
 import { InterviewStatus } from "@prisma/client";
+import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
 
-class MachineTaskService {
+class MachineTaskService implements IMachineTaskService {
   constructor(private machineTaskRepository: MachineTaskRepository) {}
 
   // Fetch Machine Task (Introduction Page)

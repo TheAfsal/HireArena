@@ -1,11 +1,12 @@
-import { IGenericResponse } from "../types/IGenericResponse";
-import { IError } from "../types/IError";
+import { IGenericResponse } from "../core/types/IGenericResponse";
+import { IError } from "../core/types/IError";
 import { Request, Response } from "express";
-import { IAuthService } from "../interfaces/IAuthService";
-import { IAuthResponse } from "../types/IAuthResponse";
-import { IUserCreateRequest } from "../types/IUserCreateRequest";
+import { IAuthService } from "../core/interfaces/services/IAuthService";
+import { IAuthResponse } from "../core/types/IAuthResponse";
+import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
 import { IJobSeeker } from "../interfaces/IJobSeeker";
-import { IUser } from "../types/IUser";
+import { IUser } from "@core/types/IUser";
+import { IAuthController } from "@core/interfaces/controllers/IAuthController";
 
 declare global {
   namespace Express {
@@ -15,7 +16,7 @@ declare global {
   }
 }
 
-class AuthController {
+class AuthController implements IAuthController {
   private authService: IAuthService;
 
   constructor(authService: IAuthService) {
@@ -384,7 +385,7 @@ class AuthController {
       const authResponse = await this.authService.setRefreshForGoogle(token);
 
       console.log("authResponse");
-      
+
       console.log(authResponse);
 
       res.cookie("refreshToken", authResponse, {
@@ -400,7 +401,6 @@ class AuthController {
         data: { tokens: token },
       });
       console.log("@@@@@@@@");
-      
     } catch (error) {
       console.log(error);
       res.status(500).json({

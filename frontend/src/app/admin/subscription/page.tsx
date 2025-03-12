@@ -15,16 +15,7 @@ export type SubscriptionPlan = {
 
 export type CreateSubscriptionData = Omit<SubscriptionPlan, "id">;
 
-export const availableFeatures = [
-  "featuredProfile",
-  "resumeReview",
-  "premiumAlerts",
-  "unlimitedApplications",
-  "interviewMaterial",
-  "skillAssessments",
-  "careerCoaching",
-  "networkingEvents",
-];
+
 
 export default function AdminSubscriptions() {
   return (

@@ -1,7 +1,8 @@
 // src/controllers/SkillController.ts
+import { ISkillController } from "@core/interfaces/controllers/ISkillController";
 import { Request, Response } from "express";
 
-export class SkillController {
+export class SkillController implements ISkillController {
   private skillService: any;
 
   constructor(skillService: any) {

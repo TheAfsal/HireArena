@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { IUser } from "../types/IUser";
+import { IUser } from "../core/types/IUser";
 import { createInterview, getCompanyIdByUserId } from "@config/grpcClient";
+import { IJobController } from "@core/interfaces/controllers/IJobController";
 
 declare global {
   namespace Express {
@@ -10,7 +11,7 @@ declare global {
   }
 }
 
-class JobController {
+class JobController implements IJobController{
   private jobService: any;
 
   constructor(jobService: any) {

@@ -1,6 +1,7 @@
+import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
 import { PrismaClient, CompanyRole } from "@prisma/client";
 
-class CompanyEmployeeRoleRepository {
+class CompanyEmployeeRoleRepository implements ICompanyEmployeeRoleRepository{
 
   private prisma: PrismaClient;
 

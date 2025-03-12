@@ -1,6 +1,7 @@
+import { IInterviewRoundRepository } from "@core/interfaces/repository/IInterviewRoundRepository";
 import { PrismaClient, RoundStatus, RoundType } from "@prisma/client";
 
-export class InterviewRoundRepository {
+export class InterviewRoundRepository implements IInterviewRoundRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

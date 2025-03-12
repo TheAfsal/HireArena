@@ -1,8 +1,7 @@
-// src/services/JobCategoryService.ts
-
+import { IJobCategoryService } from "@core/interfaces/services/IJobCategoryService";
 import JobCategoryRepository from "@repositories/JobCategoryRepository";
 
-export class JobCategoryService {
+export class JobCategoryService implements IJobCategoryService {
   private jobCategoryRepository: JobCategoryRepository;
 
   constructor(jobCategoryRepository: any) {

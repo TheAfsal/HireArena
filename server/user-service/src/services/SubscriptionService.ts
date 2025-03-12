@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import SubscriptionRepository from "../repositories/SubscriptionRepository";
 import { fetchSubscriptionPlan } from "../config/grpcClient";
 import { UserSubscription } from "@prisma/client";
+import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -12,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 //   ENTERPRISE: 9999, // $99.99 for ENTERPRISE plan
 // };
 
-class SubscriptionService {
+class SubscriptionService implements ISubscriptionService {
   private subscriptionRepository: SubscriptionRepository;
   constructor(subscriptionRepository: SubscriptionRepository) {
     this.subscriptionRepository = subscriptionRepository;

@@ -1,8 +1,8 @@
-// src/controllers/CategoryController.ts
 import { Request, Response } from "express";
 import { CategoryService } from "@services/CategoryService";
+import { ICategoryController } from "@core/interfaces/controllers/ICategoryController";
 
-export class CategoryController {
+export class CategoryController implements ICategoryController{
   private categoryService: CategoryService;
 
   constructor(categoryService: any) {

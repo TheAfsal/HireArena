@@ -1,10 +1,11 @@
 import * as grpc from "@grpc/grpc-js";
 
 import grpcClient from "../config/grpcClient";
-import { IPasswordService } from "../interfaces/IPasswordService";
+import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import JobSeekerRepository from "../repositories/JobSeekerRepository";
+import { IProfileService } from "@core/interfaces/services/IProfileService";
 
-class ProfileService {
+class ProfileService implements IProfileService {
   private JobSeekerRepository: JobSeekerRepository;
   private companyRepository: any;
   private companyEmployeeRoleRepository: any;
@@ -25,7 +26,7 @@ class ProfileService {
     let fileUrl = "";
     if (data.profileImage.mimetype) {
       console.log(data);
-      
+
       fileUrl = await new Promise((resolve, reject) => {
         grpcClient.fileServiceClient.uploadFile(
           {
@@ -172,7 +173,7 @@ class ProfileService {
         console.log(details);
 
         if (details) {
-          callback(null, {jobSeekers:details} );
+          callback(null, { jobSeekers: details });
         } else {
           callback({
             code: grpc.status.NOT_FOUND,

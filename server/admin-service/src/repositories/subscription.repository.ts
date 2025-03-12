@@ -1,5 +1,5 @@
 import prisma from "@config/prismaClient";
-import { ISubscriptionRepository } from "../interfaces/ISubscriptionRepository";
+import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
 
 export class SubscriptionRepository implements ISubscriptionRepository {
   async create(plan: any): Promise<any> {
@@ -34,9 +34,8 @@ export class SubscriptionRepository implements ISubscriptionRepository {
   async getAll(): Promise<any[]> {
     return await prisma.subscriptionPlan.findMany({
       orderBy: {
-        price: 'asc', // or 'desc' for descending order
+        price: "asc",
       },
     });
   }
-  
 }

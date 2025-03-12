@@ -10,11 +10,20 @@ import { Label } from "@/components/ui/label";
 import { createSubscription, updateSubscription } from "@/app/api/subscription";
 import { useEffect } from "react";
 import {
-  availableFeatures,
   CreateSubscriptionData,
   SubscriptionPlan,
 } from "../page";
 
+const availableFeatures = [
+  "featuredProfile",
+  "resumeReview",
+  "premiumAlerts",
+  "unlimitedApplications",
+  "interviewMaterial",
+  "skillAssessments",
+  "careerCoaching",
+  "networkingEvents",
+];
 interface SubscriptionFormProps {
   mode: "create" | "edit";
   plan?: SubscriptionPlan;

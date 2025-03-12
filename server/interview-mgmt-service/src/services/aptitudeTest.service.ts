@@ -2,8 +2,9 @@ import InterviewRepository from "@repositories/interview.repository";
 import CandidateResponseRepository from "@repositories/candidateResponse.repository";
 import { SubmitAptitudeTest } from "../usecase/submitAptitudeTest";
 import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
+import { IAptitudeTestService } from "@core/interfaces/services/IAptitudeTestService";
 
-class AptitudeTestService {
+class AptitudeTestService implements IAptitudeTestService {
   private submitAptitudeTest: SubmitAptitudeTest;
   private responseRepo: CandidateResponseRepository;
   private interviewRepo: InterviewRepository;

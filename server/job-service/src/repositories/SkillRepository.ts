@@ -1,6 +1,7 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { ISkillRepository } from "@core/interfaces/repository/ISkillRepository";
+import { PrismaClient, Prisma, Skill } from "@prisma/client";
 
-class SkillRepository {
+class SkillRepository implements ISkillRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: any) {
@@ -59,7 +60,7 @@ class SkillRepository {
     });
   }
 
-  async findAll() {
+  async findAll():Promise<any> {
     const skills = await this.prisma.skill.findMany({
       include: {
         jobCategory: true,

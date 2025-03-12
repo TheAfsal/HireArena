@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ITokenService } from "../interfaces/ITokenService";
+import { ITokenService } from "@core/interfaces/services/ITokenService";
 import crypto from "crypto";
 
 class TokenService implements ITokenService {
@@ -30,11 +30,11 @@ class TokenService implements ITokenService {
   }
 
   verifyAccessToken(token: string): string {
-      const payload = jwt.verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET || ""
-      ) as jwt.JwtPayload;
-      return payload.userId;
+    const payload = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET || ""
+    ) as jwt.JwtPayload;
+    return payload.userId;
   }
 
   verifyRefreshToken(token: string): string {

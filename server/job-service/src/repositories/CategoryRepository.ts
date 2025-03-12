@@ -1,6 +1,7 @@
+import { ICategoryRepository } from "@core/interfaces/repository/ICategoryRepository";
 import { PrismaClient, Prisma } from "@prisma/client";
 
-class CategoryRepository {
+class CategoryRepository implements ICategoryRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: any) {

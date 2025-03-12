@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import AptitudeTestService from "@services/aptitudeTest.service";
+import { IAptitudeTestController } from "@core/interfaces/controllers/IAptitudeTestController";
 
-export class AptitudeTestController {
+export class AptitudeTestController implements IAptitudeTestController {
   private aptitudeTestService: AptitudeTestService;
 
   constructor(aptitudeTestService: AptitudeTestService) {

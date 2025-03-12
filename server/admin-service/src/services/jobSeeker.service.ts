@@ -1,6 +1,7 @@
 import { GetAllJobSeekers } from "@config/grpcClient";
+import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 
-class JobSeekerService {
+class JobSeekerService implements IJobSeekerService {
   // private adminRepository: AdminRepository;
 
   // constructor(adminRepository: any) {

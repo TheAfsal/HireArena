@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import CompanyService from "@services/CompanyServices";
 import JobSeekerService from "@services/JobSeekerService";
 import SubscriptionService from "@services/SubscriptionService";
+import { IAdminController } from "@core/interfaces/controllers/IAdminController";
 
-class AdminController {
+class AdminController implements IAdminController {
   private companyService: any;
   private jobSeekerService: any;
   private subscriptionService: any;

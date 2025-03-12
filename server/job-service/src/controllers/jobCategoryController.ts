@@ -1,7 +1,7 @@
-// src/controllers/JobCategoryController.ts
 import { Request, Response } from "express";
+import { IJobCategoryController } from "@core/interfaces/controllers/IJobCategoryController";
 
-export class JobCategoryController {
+export class JobCategoryController implements IJobCategoryController{
   private jobCategoryService: any;
 
   constructor(jobCategoryService: any) {

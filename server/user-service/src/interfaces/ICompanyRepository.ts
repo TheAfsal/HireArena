@@ -1,4 +1,4 @@
-import { ICompany } from "../types/ICompany";
+import { ICompany } from "../core/types/ICompany";
 import { ICompanyCreateRequest } from "../interfaces/ICompanyCreateRequest";
 
 export interface ICompanyRepository {

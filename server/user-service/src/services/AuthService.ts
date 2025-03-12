@@ -1,14 +1,14 @@
-import { IAuthService } from "../interfaces/IAuthService";
-import { IUserCreateRequest } from "../types/IUserCreateRequest";
-import { IJobSeekerRepository } from "../interfaces/IJobSeekerRepository";
-import { IRedisService } from "../interfaces/IRedisService";
-import { IEmailService } from "../interfaces/IEmailService";
-import { IPasswordService } from "../interfaces/IPasswordService";
-import { ITokenService } from "../interfaces/ITokenService";
+import { IAuthService } from "../core/interfaces/services/IAuthService";
+import { IUserCreateRequest } from "../core/types/IUserCreateRequest";
+import { IEmailService } from "../core/interfaces/services/IEmailService";
+import { IPasswordService } from "../core/interfaces/services/IPasswordService";
+import { ITokenService } from "../core/interfaces/services/ITokenService";
 import { IJobSeeker } from "../interfaces/IJobSeeker";
-import { IAuthResponse } from "../types/IAuthResponse";
-import { IUser } from "../types/IUser";
+import { IAuthResponse } from "../core/types/IAuthResponse";
+import { IUser } from "../core/types/IUser";
 import { ROLES } from "../../src/constants/roles";
+import { IRedisService } from "@core/interfaces/services/IRedisService";
+import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
 
 class AuthService implements IAuthService {
   private jobSeekerRepository: IJobSeekerRepository;

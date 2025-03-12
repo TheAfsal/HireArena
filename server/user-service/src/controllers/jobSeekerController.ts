@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import * as grpc from "@grpc/grpc-js";
 import ProfileService from "@services/ProfileService";
+import { IJobSeekerController } from "@core/interfaces/controllers/IJobSeekerController";
 
-class JobSeekerController {
+class JobSeekerController implements IJobSeekerController{
   private profileService: any;
 
   constructor(profileService: ProfileService) {

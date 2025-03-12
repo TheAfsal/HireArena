@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { InterviewService } from "@services/interview.service";
+import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
 
-class InterviewController {
+class InterviewController implements IInterviewController {
   private interviewService: InterviewService;
 
   constructor(interviewService: InterviewService) {

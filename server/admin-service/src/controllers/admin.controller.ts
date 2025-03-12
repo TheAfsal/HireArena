@@ -1,6 +1,7 @@
+import { IAdminController } from "@core/interfaces/controllers/IAdminController";
 import { Request, Response } from "express";
 
-class AdminController {
+class AdminController implements IAdminController{
   private jobSeekerService: any;
 
   constructor(jobSeekerService: any) {

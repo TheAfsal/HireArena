@@ -1,4 +1,6 @@
-class CandidateResponseRepository {
+import { ICandidateResponseRepository } from "@core/interfaces/repository/ICandidateResponseRepository";
+
+class CandidateResponseRepository implements ICandidateResponseRepository {
   private prisma;
   constructor(prisma) {
     this.prisma = prisma;

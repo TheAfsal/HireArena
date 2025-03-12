@@ -1,8 +1,7 @@
-// src/services/SkillService.ts
-
+import { ISkillService } from "@core/interfaces/services/ISkillService";
 import SkillRepository from "@repositories/SkillRepository";
 
-export class SkillService {
+export class SkillService implements ISkillService{
   private skillRepository: SkillRepository;
 
   constructor(skillRepository: any) {

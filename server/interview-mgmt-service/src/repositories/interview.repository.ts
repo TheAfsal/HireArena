@@ -1,3 +1,4 @@
+import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 import {
   AptitudeTestQuestion,
   InterviewStatus,
@@ -5,7 +6,7 @@ import {
   RoundType,
 } from "@prisma/client";
 
-class InterviewRepository {
+class InterviewRepository implements IInterviewRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

@@ -1,6 +1,7 @@
+import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 import { PrismaClient } from "@prisma/client";
 
-class CompanyRepository {
+class CompanyRepository implements ICompanyRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

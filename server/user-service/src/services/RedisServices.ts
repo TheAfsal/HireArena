@@ -1,6 +1,7 @@
+import { IRedisService } from "@core/interfaces/services/IRedisService";
 import redisClient from "../config/redisClient";
 
-class RedisService {
+class RedisService implements IRedisService {
   async get(key: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       redisClient.get(key, (err, data) => {

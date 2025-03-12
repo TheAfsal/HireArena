@@ -1,9 +1,10 @@
+import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 import grpcClient from "../config/grpcClient";
-import { IPasswordService } from "../interfaces/IPasswordService";
+import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import JobSeekerRepository from "../repositories/JobSeekerRepository";
 import RedisService from "./RedisServices";
 
-class JobSeekerService {
+class JobSeekerService implements IJobSeekerService {
   private jobSeekerRepository: JobSeekerRepository;
   private redisService: any;
 

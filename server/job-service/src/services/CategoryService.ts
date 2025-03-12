@@ -1,6 +1,7 @@
+import { ICategoryService } from "@core/interfaces/services/ICategoryService";
 import CategoryRepository from "@repositories/CategoryRepository";
 
-export class CategoryService {
+export class CategoryService implements ICategoryService{
   private categoryRepository: CategoryRepository;
 
   constructor(categoryRepository: any) {

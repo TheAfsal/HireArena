@@ -3,8 +3,9 @@ import * as grpc from "@grpc/grpc-js";
 import InvitationService from "@services/InvitationService";
 import ProfileService from "@services/ProfileService";
 import CompanyService from "@services/CompanyServices";
+import { ICompanyController } from "@core/interfaces/controllers/ICompanyController";
 
-class CompanyController {
+class CompanyController implements ICompanyController {
   private invitationService: any;
   private profileService: any;
   private companyService: any;

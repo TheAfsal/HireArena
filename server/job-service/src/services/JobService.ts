@@ -4,6 +4,7 @@ import {
   getCompaniesDetails,
   getCompanyIdByUserId,
 } from "@config/grpcClient";
+import { IJobService } from "@core/interfaces/services/IJobService";
 import JobApplicationRepository from "@repositories/JobApplicationRepository";
 import JobRepository from "@repositories/JobRepository";
 
@@ -22,7 +23,7 @@ interface CompanyProfile {
 //   "Coding Challenge",
 // ];
 
-class JobService {
+class JobService implements IJobService{
   private jobRepository: JobRepository;
   private jobApplicationRepository: JobApplicationRepository;
 

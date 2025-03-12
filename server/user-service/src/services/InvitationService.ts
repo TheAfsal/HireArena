@@ -1,11 +1,11 @@
 import crypto from "crypto";
 import { IInvitationRepository } from "../interfaces/IInvitationRepository";
 import { ICompanyEmployeeRepository } from "../interfaces/ICompanyEmployeeRepository";
-import { ITokenService } from "../interfaces/ITokenService";
-import { IPasswordService } from "../interfaces/IPasswordService";
+import { ITokenService } from "../core/interfaces/services/ITokenService";
+import { IPasswordService } from "../core/interfaces/services/IPasswordService";
 import "colors";
 
-class InvitationService {
+class InvitationService implements InvitationService {
   constructor(
     private invitationRepository: any,
     private companyRepository: any,
@@ -14,7 +14,7 @@ class InvitationService {
     private tokenService: ITokenService,
     private passwordService: IPasswordService,
     private emailService: any,
-    private redisService: any,
+    private redisService: any
   ) {
     this.invitationRepository = invitationRepository;
     this.companyRepository = companyRepository;
@@ -80,7 +80,7 @@ class InvitationService {
 
     const { email, message, role } = invitation;
     const { companyName } = company;
-    return { email, message, role, name:companyName };
+    return { email, message, role, name: companyName };
   }
 
   async acceptInvitation(
@@ -111,13 +111,12 @@ class InvitationService {
     await this.invitationRepository.delete(token);
 
     const accessToken = this.tokenService.generateAccessToken(employee.id);
-    const refreshToken = this.tokenService.generateRefreshToken(employee.id,role);
-
-    await this.redisService.setWithTTL(
-      email,
-      refreshToken,
-      7 * 24 * 60 * 60
+    const refreshToken = this.tokenService.generateRefreshToken(
+      employee.id,
+      role
     );
+
+    await this.redisService.setWithTTL(email, refreshToken, 7 * 24 * 60 * 60);
 
     return {
       employee,

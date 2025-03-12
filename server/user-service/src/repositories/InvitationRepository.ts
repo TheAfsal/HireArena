@@ -1,6 +1,7 @@
+import { IInvitationRepository } from "@core/interfaces/repository/IInvitationRepository";
 import { CompanyRole, PrismaClient } from "@prisma/client";
 
-class InvitationRepository {
+class InvitationRepository implements IInvitationRepository{
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

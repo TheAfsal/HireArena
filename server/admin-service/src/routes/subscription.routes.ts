@@ -3,10 +3,12 @@ import SubscriptionController from "@controllers/subscription.controller";
 
 const router = Router();
 
-router.post("/", SubscriptionController.create);
-// router.put("/:id", SubscriptionController.update);
-router.delete("/:id", SubscriptionController.delete);
-// router.get("/:id", SubscriptionController.getById);
-router.get("/", SubscriptionController.getAll);
+const subscriptionController = new SubscriptionController();
+
+router.post("/", subscriptionController.create);
+// router.put("/:id", subscriptionController.update);
+router.delete("/:id", subscriptionController.delete);
+// router.get("/:id", subscriptionController.getById);
+router.get("/", subscriptionController.getAll);
 
 export default router;

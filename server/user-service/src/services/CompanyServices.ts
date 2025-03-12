@@ -1,12 +1,8 @@
 import * as grpc from "@grpc/grpc-js";
-import { IJobSeekerRepository } from "../interfaces/IJobSeekerRepository";
-import { IRedisService } from "../interfaces/IRedisService";
-import { IEmailService } from "../interfaces/IEmailService";
-import { IPasswordService } from "../interfaces/IPasswordService";
-import { ITokenService } from "../interfaces/ITokenService";
 import CompanyRepository from "../repositories/CompanyRepository";
+import { ICompanyService } from "@core/interfaces/services/ICompanyService";
 
-class CompanyService {
+class CompanyService implements ICompanyService {
   private companyEmployeeRoleRepository: any;
   private redisService: any;
   private companyRepository: any;
@@ -57,11 +53,10 @@ class CompanyService {
     this.companyRepository
       .findByIds(companyIds)
       .then((details: any) => {
-
         if (details) {
           console.log(details);
-          
-          callback(null, { companies:details });
+
+          callback(null, { companies: details });
         } else {
           callback({
             code: grpc.status.NOT_FOUND,
@@ -77,12 +72,19 @@ class CompanyService {
       });
   }
 
-  async verifyCompanyProfile(companyId: string, status: "Approved" | "Rejected", rejectReason?: string) {
+  async verifyCompanyProfile(
+    companyId: string,
+    status: "Approved" | "Rejected",
+    rejectReason?: string
+  ) {
     if (status === "Rejected" && !rejectReason) {
       throw new Error("Rejection reason is required when rejecting.");
     }
 
-    return this.companyRepository.update(companyId, { status, reject_reason: rejectReason || null });
+    return this.companyRepository.update(companyId, {
+      status,
+      reject_reason: rejectReason || null,
+    });
   }
 
   // getCompanyIdByUserId = (

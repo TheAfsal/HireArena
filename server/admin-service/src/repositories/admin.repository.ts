@@ -1,12 +1,11 @@
-// import { PrismaClient, Prisma } from "@prisma/client";
 
-class AdminRepository {
+import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
+
+class AdminRepository implements IAdminRepository {
   // private prisma: PrismaClient;
-
   // constructor(prisma: any) {
-    // this.prisma = prisma;
+  // this.prisma = prisma;
   // }
-
   // async create(data: { name: string; jobCategoryId: string; status: boolean }) {
   //   return await this.prisma.skill.create({
   //     data: {
@@ -27,7 +26,6 @@ class AdminRepository {
   //     },
   //   });
   // }
-
 }
 
 export default AdminRepository;

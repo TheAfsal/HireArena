@@ -1,4 +1,6 @@
-export class InterviewService {
+import { IInterviewService } from "@core/interfaces/services/IInterviewService";
+
+export class InterviewService  implements IInterviewService{
   constructor(private interviewRepository: any) {}
 
   async fetchAptitudeQuestions(interviewId: string) {

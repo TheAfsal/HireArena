@@ -1,6 +1,7 @@
+import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTaskRepository";
 import { InterviewStatus, MachineTask, PrismaClient, RoundStatus, RoundType } from "@prisma/client";
 
-class MachineTaskRepository {
+class MachineTaskRepository implements IMachineTaskRepository {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

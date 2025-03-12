@@ -1,6 +1,7 @@
+import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
 import { PrismaClient } from "@prisma/client";
 
-interface IAdmin {
+export interface IAdmin {
   id: string;
   name: string;
   email: string;
@@ -8,7 +9,7 @@ interface IAdmin {
   role: string;
 }
 
-class AdminRepository {
+class AdminRepository implements IAdminRepository{
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {

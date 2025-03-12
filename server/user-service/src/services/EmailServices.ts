@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { IEmailService } from "../interfaces/IEmailService";
-import 'colors'
+import { IEmailService } from "../core/interfaces/services/IEmailService";
+import "colors";
 class EmailService implements IEmailService {
   private transporter;
 
@@ -50,7 +50,12 @@ class EmailService implements IEmailService {
     }
   }
 
-  async sendInvitationEmail(email: string, token: string, companyName: string, role: string): Promise<void> {
+  async sendInvitationEmail(
+    email: string,
+    token: string,
+    companyName: string,
+    role: string
+  ): Promise<void> {
     try {
       const invitationUrl = `${process.env.FRONT_END_URL}/auth/invitation-user/${token}`;
       const message = `
@@ -75,7 +80,6 @@ class EmailService implements IEmailService {
       `;
 
       console.log(message.bgCyan);
-      
 
       // await this.transporter.sendMail({
       //   to: email,
