@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { CategoryService } from "@services/CategoryService";
 import { ICategoryController } from "@core/interfaces/controllers/ICategoryController";
+import { ICategoryService } from "@core/interfaces/services/ICategoryService";
 
 export class CategoryController implements ICategoryController{
-  private categoryService: CategoryService;
+  private categoryService: ICategoryService;
 
-  constructor(categoryService: any) {
+  constructor(categoryService: ICategoryService) {
     this.categoryService = categoryService;
   }
 

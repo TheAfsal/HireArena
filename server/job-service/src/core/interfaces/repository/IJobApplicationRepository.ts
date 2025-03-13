@@ -1,17 +1,16 @@
-// src/interfaces/IJobApplicationRepository.ts
-import { JobApplication } from "@prisma/client";
+import { IJobApplication } from "@shared/job.types";
 
 export interface IJobApplicationRepository {
   findApplication(
     jobId: string,
     jobSeekerId: string
-  ): Promise<JobApplication | null>;
+  ): Promise<IJobApplication | null>;
   createApplication(
     jobId: string,
     jobSeekerId: string,
     resumeUrl?: string
-  ): Promise<JobApplication>;
+  ): Promise<IJobApplication>;
   findJob(jobId: string): Promise<boolean>;
   findAppliedJobs(jobSeekerId: string): Promise<{ jobId: string }[]>;
-  findAllByJobSeeker(jobSeekerId: string): Promise<JobApplication[]>;
+  findAllByJobSeeker(jobSeekerId: string): Promise<Omit<IJobApplication, "id" | "jobId" | "jobSeekerId" | "status" | "appliedAt">[]>;
 }

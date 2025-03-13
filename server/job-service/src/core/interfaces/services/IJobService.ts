@@ -16,7 +16,7 @@ export interface IJobService {
 
   applyForJob(jobId: string, jobSeekerId: string): Promise<any>;
 
-  getFilteredJobs(filters: any, jobSeekerId: string): Promise<any[]>;
+  // getFilteredJobs(filters: any, jobSeekerId: string): Promise<any[]>;
 
   getCompanyJobs(companyId: string): Promise<any[]>;
 

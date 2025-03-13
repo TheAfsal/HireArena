@@ -1,4 +1,4 @@
-import { JobCategory } from "@prisma/client";
+import { IJobCategory } from "@shared/job.types";
 
 export interface IJobCategoryRepository {
   create(data: {
@@ -6,7 +6,7 @@ export interface IJobCategoryRepository {
     description: string;
     categoryTypeId: string;
     status: boolean;
-  }): Promise<JobCategory>;
+  }): Promise<Omit<IJobCategory, "jobs" | "skills">> ;
   update(
     id: string,
     data: {
@@ -16,7 +16,7 @@ export interface IJobCategoryRepository {
       categoryTypeId: string;
     }
   ): Promise<any>;
-  findById(id: string): Promise<JobCategory | null>;
+  findById(id: string): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null> ;
   findAll(): Promise<any>;
   delete(id: string): Promise<void>;
 }

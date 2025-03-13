@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { IJobCategoryController } from "@core/interfaces/controllers/IJobCategoryController";
+import { IJobCategoryService } from "@core/interfaces/services/IJobCategoryService";
 
 export class JobCategoryController implements IJobCategoryController{
-  private jobCategoryService: any;
+  private jobCategoryService: IJobCategoryService;
 
-  constructor(jobCategoryService: any) {
+  constructor(jobCategoryService: IJobCategoryService) {
     this.jobCategoryService = jobCategoryService;
   }
 
@@ -44,9 +45,8 @@ export class JobCategoryController implements IJobCategoryController{
   get = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const jobCategory = await this.jobCategoryService.getJobCategory(
-        Number(id)
-      );
+      //@ts-ignore
+      const jobCategory = await this.jobCategoryService.getJobCategory(Number(id));
       if (jobCategory) {
         res.status(200).json(jobCategory);
       } else {
@@ -69,6 +69,7 @@ export class JobCategoryController implements IJobCategoryController{
   delete = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
+      //@ts-ignore
       await this.jobCategoryService.deleteJobCategory(Number(id));
       res.status(204).send();
     } catch (error) {

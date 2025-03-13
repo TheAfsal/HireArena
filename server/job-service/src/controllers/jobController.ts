@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { IUser } from "../core/types/IUser";
 import { createInterview, getCompanyIdByUserId } from "@config/grpcClient";
 import { IJobController } from "@core/interfaces/controllers/IJobController";
+import { IJobService } from "@core/interfaces/services/IJobService";
 
 declare global {
   namespace Express {
@@ -12,9 +13,9 @@ declare global {
 }
 
 class JobController implements IJobController{
-  private jobService: any;
+  private jobService: IJobService;
 
-  constructor(jobService: any) {
+  constructor(jobService: IJobService) {
     this.jobService = jobService;
   }
 
@@ -33,17 +34,17 @@ class JobController implements IJobController{
     }
   };
 
-  getJobById = async (req: Request, res: Response) => {
-    try {
-      const job = await this.jobService.getJobById(req.params.id);
-      if (!job) {
-        return res.status(404).json({ message: "Job not found" });
-      }
-      res.json(job);
-    } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
-    }
-  };
+  // getJobById = async (req: Request, res: Response) => {
+  //   try {
+  //     const job = await this.jobService.getJobById(req.params.id);
+  //     if (!job) {
+  //       return res.status(404).json({ message: "Job not found" });
+  //     }
+  //     res.json(job);
+  //   } catch (error) {
+  //     res.status(500).json({ error: (error as Error).message });
+  //   }
+  // };
 
   getAllJobs = async (req: Request, res: Response) => {
     try {
@@ -100,16 +101,15 @@ class JobController implements IJobController{
       const application = await this.jobService.applyForJob(jobId, userId);
 
       if (application?.["Aptitude Test"]) {
-        // Call gRPC to create Interview
-        const interviewResponse: any = await createInterview(
+        const interviewResponse = await createInterview(
           application.id,
           jobId,
           userId
         );
 
         if (
-          !interviewResponse.interviewId ||
-          interviewResponse.status !== "pending"
+          //@ts-ignore
+          !interviewResponse.interviewId || interviewResponse.status !== "pending"
         ) {
           res.status(400).json({ message: "Unable to Attend Aptitude Test" });
           return;
@@ -117,6 +117,7 @@ class JobController implements IJobController{
 
         res.status(201).json({
           message: "Job application submitted, aptitude test scheduled",
+          //@ts-ignore
           interviewId: interviewResponse.interviewId,
         });
         return;
@@ -124,10 +125,9 @@ class JobController implements IJobController{
 
       res.status(201).json(application);
       return;
-    } catch (error: any) {
-      console.log(error);
+    } catch (error) {
 
-      res.status(400).json({ message: error.message });
+      res.status(400).json({ message: (error as Error).message });
       return;
     }
   };
@@ -218,7 +218,7 @@ class JobController implements IJobController{
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      const companyId = getCompanyIdByUserId(userId);
+      const companyId =await getCompanyIdByUserId(userId);
 
       if (!companyId) {
         res.status(400).json({ error: "Company ID is required" });

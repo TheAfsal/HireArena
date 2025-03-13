@@ -1,12 +1,37 @@
-import { Job } from "@prisma/client";
+import { IJobCreateInput, IJobResponse } from "@core/types/job.types";
+import { IJob } from "@shared/job.types";
 
 export interface IJobRepository {
-  createJob(jobData: any): Promise<Job>;
-  getJobById(jobId: string): Promise<Job | null>;
-  getAllJobs(): Promise<Job[]>;
-  getJob(id: string): Promise<Job | null>;
-  getAllJobsBrief(): Promise<Job[]>;
-  getJobs(filters: any): Promise<Job[]>;
-  getJobsByCompany(companyId: string): Promise<Job[]>;
-  getFilteredJobs(filters: any): Promise<Job[]>;
+  createJob(
+    jobData: IJobCreateInput
+  ): Promise<
+    Omit<
+      IJob,
+      "employmentTypes" | "categories" | "requiredSkills" | "applications"
+    >
+  >;
+
+  getJobById(
+    jobId: string
+  ): Promise<
+    Omit<
+      IJob,
+      "employmentTypes" | "categories" | "requiredSkills" | "applications"
+    > | null
+  >;
+
+  getAllJobs(): Promise<Omit<IJob, "applications">[]>;
+
+  getJob(id: string): Promise<Omit<IJob, "applications"> | null>;
+
+  getAllJobsBrief(): Promise<Omit<IJob, "applications">[]>;
+
+  getJobsByCompany(companyId: string): Promise<IJobResponse[]>;
+
+  getFilteredJobs(filters: {
+    searchQuery?: string;
+    type?: string;
+    category?: string;
+    level?: string;
+  }): Promise<Omit<IJob, "applications">[]>;
 }

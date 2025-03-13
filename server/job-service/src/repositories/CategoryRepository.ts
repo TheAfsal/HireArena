@@ -1,40 +1,39 @@
 import { ICategoryRepository } from "@core/interfaces/repository/ICategoryRepository";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { ICategoryTypeInput } from "@core/types/job.types";
+import { PrismaClient } from "@prisma/client";
+import { ICategoryType } from "@shared/job.types";
 
 class CategoryRepository implements ICategoryRepository {
   private prisma: PrismaClient;
 
-  constructor(prisma: any) {
+  constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  async create(data: { name: string; description: string; status: boolean }) {
+  async create(data: ICategoryTypeInput): Promise<ICategoryType> {
     return await this.prisma.categoryType.create({
       data,
     });
   }
 
-  async update(
-    id: string,
-    data: { name: string; description: string; status: boolean }
-  ) {
+  async update(id: string, data: ICategoryTypeInput): Promise<ICategoryType> {
     return await this.prisma.categoryType.update({
       where: { id },
       data,
     });
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<ICategoryType | null> {
     return await this.prisma.categoryType.findUnique({
       where: { id },
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<ICategoryType[]> {
     return await this.prisma.categoryType.findMany();
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     await this.prisma.categoryType.delete({
       where: { id },
     });

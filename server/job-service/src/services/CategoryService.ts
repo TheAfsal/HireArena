@@ -1,27 +1,23 @@
+import { ICategoryRepository } from "@core/interfaces/repository/ICategoryRepository";
 import { ICategoryService } from "@core/interfaces/services/ICategoryService";
-import CategoryRepository from "@repositories/CategoryRepository";
+import { ICategoryType } from "@shared/job.types";
 
-export class CategoryService implements ICategoryService{
-  private categoryRepository: CategoryRepository;
+export class CategoryService implements ICategoryService {
+  private categoryRepository: ICategoryRepository;
 
-  constructor(categoryRepository: any) {
+  constructor(categoryRepository: ICategoryRepository) {
     this.categoryRepository = categoryRepository;
   }
 
-  createCategory = async (name: string, description: string) => {
+  async createCategory(name: string, description: string): Promise<ICategoryType> {
     return await this.categoryRepository.create({
       name,
       description,
       status: true,
     });
-  };
+  }
 
-  async updateCategory(
-    id: string,
-    name: string,
-    description: string,
-    status: boolean
-  ) {
+  async updateCategory(id: string, name: string, description: string, status: boolean): Promise<ICategoryType> {
     return await this.categoryRepository.update(id, {
       name,
       description,
@@ -29,15 +25,15 @@ export class CategoryService implements ICategoryService{
     });
   }
 
-  async getCategory(id: string) {
+  async getCategory(id: string): Promise<ICategoryType | null> {
     return await this.categoryRepository.findById(id);
   }
 
-  async getCategories() {
+  async getCategories(): Promise<ICategoryType[]> {
     return await this.categoryRepository.findAll();
   }
 
-  async deleteCategory(id: string) {
-    return await this.categoryRepository.delete(id);
+  async deleteCategory(id: string): Promise<void> {
+    await this.categoryRepository.delete(id);
   }
 }

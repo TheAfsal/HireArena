@@ -1,14 +1,25 @@
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { IJobCreateInput, IJobResponse } from "@core/types/job.types";
+import { Prisma, PrismaClient } from "@prisma/client";
+import {
+  IJob,
+} from "@shared/job.types"
 
-class JobRepository implements IJobRepository{
+class JobRepository implements IJobRepository {
   private prisma: PrismaClient;
 
-  constructor(prisma: any) {
+  constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  async createJob(jobData: any) {
+  async createJob(
+    jobData: IJobCreateInput
+  ): Promise<
+    Omit<
+      IJob,
+      "employmentTypes" | "categories" | "requiredSkills" | "applications"
+    >
+  > {
     return await this.prisma.job.create({
       data: {
         jobTitle: jobData.jobTitle,
@@ -17,9 +28,9 @@ class JobRepository implements IJobRepository{
         jobDescription: jobData.jobDescription,
         responsibilities: jobData.responsibilities,
         qualifications: jobData.qualifications,
-        testOptions: jobData.testOptions,
+        testOptions: jobData.testOptions ?? Prisma.JsonNull,
         niceToHave: jobData.niceToHave,
-        benefits: jobData.benefits,
+        benefits: jobData.benefits ?? Prisma.JsonNull,
         companyId: jobData.companyId,
         employmentTypes: { create: jobData.employmentTypes.create },
         categories: { connect: jobData.categories.connect },
@@ -33,11 +44,16 @@ class JobRepository implements IJobRepository{
     });
   }
 
-  async getJobById(jobId: string) {
+  async getJobById(
+    jobId: string
+  ): Promise<Omit<
+    IJob,
+    "employmentTypes" | "categories" | "requiredSkills" | "applications"
+  > | null> {
     return await this.prisma.job.findUnique({ where: { id: jobId } });
   }
 
-  async getAllJobs() {
+  async getAllJobs(): Promise<Omit<IJob, "applications">[]> {
     return await this.prisma.job.findMany({
       include: {
         employmentTypes: true,
@@ -47,11 +63,9 @@ class JobRepository implements IJobRepository{
     });
   }
 
-  async getJob(id: string) {
+  async getJob(id: string): Promise<Omit<IJob, "applications"> | null> {
     return await this.prisma.job.findUnique({
-      where: {
-        id: id,
-      },
+      where: { id },
       include: {
         employmentTypes: true,
         categories: true,
@@ -60,7 +74,7 @@ class JobRepository implements IJobRepository{
     });
   }
 
-  async getAllJobsBrief() {
+  async getAllJobsBrief(): Promise<Omit<IJob, "applications">[]> {
     return await this.prisma.job.findMany({
       include: {
         employmentTypes: true,
@@ -70,122 +84,59 @@ class JobRepository implements IJobRepository{
     });
   }
 
-  // async getJobs(filters: any) {
-  //   return await this.prisma.job.findMany({
-  //     where: {
-  //       ...(filters.type && { type: filters.type }),
-  //       ...(filters.category && { category: filters.category }),
-  //       ...(filters.level && { level: filters.level }),
-  //       ...(filters.companyId && { companyId: filters.companyId }),
-  //     },
-  //     include: {
-  //       requiredSkills: true,
-  //     },
-  //   });
-  // }
-
-  async getJobs(filters: any) {
-    return await this.prisma.job.findMany({
-      where: {
-        ...(filters.jobTitle && {
-          jobTitle: { contains: filters.jobTitle, mode: "insensitive" },
-        }),
-        ...(filters.salaryMin && { salaryMin: { gte: filters.salaryMin } }),
-        ...(filters.salaryMax && { salaryMax: { lte: filters.salaryMax } }),
-        ...(filters.companyId && { companyId: filters.companyId }),
-
-        ...(filters.employmentTypes &&
-          Array.isArray(filters.employmentTypes) && {
-            employmentTypes: {
-              some: {
-                type: { in: filters.employmentTypes },
-              },
-            },
-          }),
-
-        ...(filters.categories && {
-          categories: {
-            some: {
-              name: {
-                in: Array.isArray(filters.categories)
-                  ? filters.categories
-                  : [filters.categories],
-              },
-            },
-          },
-        }),
-
-        ...(filters.skills && {
-          requiredSkills: {
-            some: {
-              name: {
-                in: Array.isArray(filters.skills)
-                  ? filters.skills
-                  : [filters.skills],
-              },
-            },
-          },
-        }),
-      },
-      include: {
-        employmentTypes: true,
-        categories: true,
-        requiredSkills: true,
-      },
-    });
-  }
-
-  async getJobsByCompany(companyId: string) {
+  async getJobsByCompany(companyId: string): Promise<IJobResponse[]> {
     return await this.prisma.job.findMany({
       where: { companyId },
       include: {
-        categories: { select: { name: true } }, // Fetch categories
-        requiredSkills: { select: { name: true } }, // Fetch skills
-        employmentTypes: { select: { type: true } }, // Employment types
+        categories: { select: { name: true } },
+        requiredSkills: { select: { name: true } },
+        employmentTypes: { select: { type: true, jobId: true, id: true } },
       },
     });
   }
 
-  async getFilteredJobs(filters: any) {
-    const whereClause: any = { AND: [] }; // Use AND array to hold all conditions
-    console.log(filters);
-  
-    // Keyword search
+  async getFilteredJobs(filters: {
+    searchQuery?: string;
+    type?: string;
+    category?: string;
+    level?: string;
+  }): Promise<Omit<IJob, "applications">[]> {
+    const whereClause: any = { AND: [] };
+
     if (filters.searchQuery) {
       whereClause.AND.push({
         OR: [
           { jobTitle: { contains: filters.searchQuery, mode: "insensitive" } },
-          { jobDescription: { contains: filters.searchQuery, mode: "insensitive" } },
+          {
+            jobDescription: {
+              contains: filters.searchQuery,
+              mode: "insensitive",
+            },
+          },
         ],
       });
     }
-  
-    // Employment type
+
     if (filters.type) {
       whereClause.AND.push({
         employmentTypes: { some: { type: filters.type } },
       });
     }
-  
-    // Category
+
     if (filters.category) {
       whereClause.AND.push({
         categories: { some: { name: filters.category } },
       });
     }
-  
-    // Job Level
+
     if (filters.level) {
       whereClause.AND.push({ level: filters.level });
     }
-  
-    // If no filters were applied, Prisma expects an empty object
+
     if (whereClause.AND.length === 0) {
       delete whereClause.AND;
     }
-  
-    console.log("Final whereClause:", JSON.stringify(whereClause, null, 2));
-  
+
     return await this.prisma.job.findMany({
       where: whereClause,
       include: {
@@ -195,7 +146,71 @@ class JobRepository implements IJobRepository{
       },
     });
   }
-  
 }
 
 export default JobRepository;
+
+// async getJobs(filters: any) {
+//   return await this.prisma.job.findMany({
+//     where: {
+//       ...(filters.type && { type: filters.type }),
+//       ...(filters.category && { category: filters.category }),
+//       ...(filters.level && { level: filters.level }),
+//       ...(filters.companyId && { companyId: filters.companyId }),
+//     },
+//     include: {
+//       requiredSkills: true,
+//     },
+//   });
+// }
+
+// async getJobs(filters: any) {
+//   return await this.prisma.job.findMany({
+//     where: {
+//       ...(filters.jobTitle && {
+//         jobTitle: { contains: filters.jobTitle, mode: "insensitive" },
+//       }),
+//       ...(filters.salaryMin && { salaryMin: { gte: filters.salaryMin } }),
+//       ...(filters.salaryMax && { salaryMax: { lte: filters.salaryMax } }),
+//       ...(filters.companyId && { companyId: filters.companyId }),
+
+//       ...(filters.employmentTypes &&
+//         Array.isArray(filters.employmentTypes) && {
+//           employmentTypes: {
+//             some: {
+//               type: { in: filters.employmentTypes },
+//             },
+//           },
+//         }),
+
+//       ...(filters.categories && {
+//         categories: {
+//           some: {
+//             name: {
+//               in: Array.isArray(filters.categories)
+//                 ? filters.categories
+//                 : [filters.categories],
+//             },
+//           },
+//         },
+//       }),
+
+//       ...(filters.skills && {
+//         requiredSkills: {
+//           some: {
+//             name: {
+//               in: Array.isArray(filters.skills)
+//                 ? filters.skills
+//                 : [filters.skills],
+//             },
+//           },
+//         },
+//       }),
+//     },
+//     include: {
+//       employmentTypes: true,
+//       categories: true,
+//       requiredSkills: true,
+//     },
+//   });
+// }

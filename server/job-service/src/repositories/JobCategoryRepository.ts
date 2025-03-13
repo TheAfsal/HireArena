@@ -1,10 +1,50 @@
 import { IJobCategoryRepository } from "@core/interfaces/repository/IJobCategoryRepository";
 import { PrismaClient } from "@prisma/client";
+import { ICategoryType, IJobCategory } from "@shared/job.types";
 
-class JobCategoryRepository implements IJobCategoryRepository{
+// export interface IJobCategoryRepository {
+//   create(data: {
+//     name: string;
+//     description: string;
+//     categoryTypeId: string;
+//     status: boolean;
+//   }): Promise<IJobCategory & { categoryType: ICategoryType }>;
+
+//   update(
+//     id: string,
+//     data: {
+//       name: string;
+//       description: string;
+//       status: boolean;
+//       categoryTypeId: string;
+//     }
+//   ): Promise<{
+//     id: string;
+//     name: string;
+//     description: string;
+//     status: boolean;
+//     categoryType: string;
+//   }>;
+
+//   findById(id: string): Promise<IJobCategory | null>;
+
+//   findAll(): Promise<
+//     {
+//       id: string;
+//       name: string;
+//       description: string;
+//       status: boolean;
+//       categoryType: string;
+//     }[]
+//   >;
+
+//   delete(id: string): Promise<void>;
+// }
+
+class JobCategoryRepository implements IJobCategoryRepository {
   private prisma: PrismaClient;
 
-  constructor(prisma: any) {
+  constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
@@ -13,7 +53,7 @@ class JobCategoryRepository implements IJobCategoryRepository{
     description: string;
     categoryTypeId: string;
     status: boolean;
-  }) {
+  }): Promise<Omit<IJobCategory, "jobs" | "skills">> {
     return await this.prisma.jobCategory.create({
       data,
       include: {
@@ -30,32 +70,45 @@ class JobCategoryRepository implements IJobCategoryRepository{
       status: boolean;
       categoryTypeId: string;
     }
-  ) {
+  ): Promise<{
+    id: string;
+    name: string;
+    description: string;
+    status: boolean;
+    categoryType: string;
+  }> {
     const updatedJobCategory = await this.prisma.jobCategory.update({
       where: { id },
       data,
       include: {
-        categoryType: true, 
+        categoryType: true,
       },
     });
-    
+
     return {
       id: updatedJobCategory.id,
       name: updatedJobCategory.name,
       description: updatedJobCategory.description,
       status: updatedJobCategory.status,
-      categoryType: updatedJobCategory.categoryType.name, 
+      categoryType: updatedJobCategory.categoryType.name,
     };
-    
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null> {
     return await this.prisma.jobCategory.findUnique({
       where: { id },
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<
+    {
+      id: string;
+      name: string;
+      description: string;
+      status: boolean;
+      categoryType: string;
+    }[]
+  > {
     const jobCategories = await this.prisma.jobCategory.findMany({
       include: {
         categoryType: true,
@@ -71,7 +124,7 @@ class JobCategoryRepository implements IJobCategoryRepository{
     }));
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     await this.prisma.jobCategory.delete({
       where: { id },
     });

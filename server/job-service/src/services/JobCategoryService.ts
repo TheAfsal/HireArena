@@ -1,18 +1,15 @@
 import { IJobCategoryService } from "@core/interfaces/services/IJobCategoryService";
-import JobCategoryRepository from "@repositories/JobCategoryRepository";
+import { IJobCategoryRepository } from "@core/interfaces/repository/IJobCategoryRepository";
+import { IJobCategory } from "@shared/job.types";
 
 export class JobCategoryService implements IJobCategoryService {
-  private jobCategoryRepository: JobCategoryRepository;
+  private jobCategoryRepository: IJobCategoryRepository;
 
-  constructor(jobCategoryRepository: any) {
+  constructor(jobCategoryRepository: IJobCategoryRepository) {
     this.jobCategoryRepository = jobCategoryRepository;
   }
 
-  async createJobCategory(
-    name: string,
-    description: string,
-    categoryTypeId: string
-  ) {
+  async createJobCategory(name: string, description: string, categoryTypeId: string): Promise<IJobCategory> {
     return await this.jobCategoryRepository.create({
       name,
       description,
@@ -21,13 +18,7 @@ export class JobCategoryService implements IJobCategoryService {
     });
   }
 
-  async updateJobCategory(
-    id: string,
-    name: string,
-    description: string,
-    status: boolean,
-    categoryTypeId: string
-  ) {
+  async updateJobCategory(id: string, name: string, description: string, status: boolean, categoryTypeId: string): Promise<IJobCategory> {
     return await this.jobCategoryRepository.update(id, {
       name,
       description,
@@ -36,15 +27,15 @@ export class JobCategoryService implements IJobCategoryService {
     });
   }
 
-  async getJobCategory(id: string) {
+  async getJobCategory(id: string): Promise<IJobCategory | null> {
     return await this.jobCategoryRepository.findById(id);
   }
 
-  async getJobCategories() {
+  async getJobCategories(): Promise<IJobCategory[]> {
     return await this.jobCategoryRepository.findAll();
   }
 
-  async deleteJobCategory(id: string) {
-    return await this.jobCategoryRepository.delete(id);
+  async deleteJobCategory(id: string): Promise<void> {
+    await this.jobCategoryRepository.delete(id);
   }
 }

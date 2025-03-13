@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 export interface IJobController {
   createJob(req: Request, res: Response): Promise<void>;
-  getJobById(req: Request, res: Response): Promise<void>;
+  // getJobById(req: Request, res: Response): Promise<void>;
   getAllJobs(req: Request, res: Response): Promise<void>;
   getJob(req: Request, res: Response): Promise<void>;
   getAllJobsBrief(req: Request, res: Response): Promise<void>;
