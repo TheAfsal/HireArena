@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
+    "grpc-js": "link:@types/@grpc/grpc-js",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"

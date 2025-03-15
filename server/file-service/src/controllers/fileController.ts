@@ -1,11 +1,12 @@
 import { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
-import FileService from "@services/fileService";
+import { IFileController } from "core/interfaces/controllers/IFileController";
+import { IFileService } from "core/interfaces/services/IFileService";
 import { randomBytes } from "crypto";
 
-class FileController {
-  private fileService: FileService;
+class FileController implements IFileController {
+  private fileService: IFileService;
 
-  constructor(fileService: FileService) {
+  constructor(fileService: IFileService) {
     this.fileService = fileService;
   }
 

@@ -1,15 +1,13 @@
 import { Request, Response } from "express";
-import MachineTaskService from "@services/machineTask.service";
 import { IMachineTaskController } from "@core/interfaces/controllers/IMachineTaskController";
+import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
 
 class MachineTaskController implements IMachineTaskController{
-  constructor(private machineTaskService: MachineTaskService) {}
+  constructor(private machineTaskService: IMachineTaskService) {}
 
   getMachineTaskByJobId = async (req: Request, res: Response) => {
     try {
       const { jobId } = req.params;
-
-      console.log("jobId", jobId);
 
       if (!jobId) {
         res.status(400).json({ success: false, message: "Job ID is required" });

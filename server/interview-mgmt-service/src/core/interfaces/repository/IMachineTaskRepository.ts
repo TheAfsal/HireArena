@@ -1,8 +1,13 @@
+import {
+  IMachineTaskDetails,
+  IMachineTaskPartial,
+  IUpdateManyResult,
+} from "@core/types/interview.types";
 import { InterviewStatus, MachineTask } from "@prisma/client";
 
 export interface IMachineTaskRepository {
-  getMachineTaskByJobId(jobId: string): Promise<any>;
-  getMachineTaskDetails(taskId: string): Promise<MachineTask | null>;
+  getMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial | null>;
+  getMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails | null>;
   findTaskById(taskId: string): Promise<MachineTask | null>;
   updateStartTime(taskId: string, startTime: Date): Promise<MachineTask>;
   getTaskById(taskId: string): Promise<MachineTask | null>;
@@ -10,5 +15,5 @@ export interface IMachineTaskRepository {
     candidateId: string,
     taskId: string,
     status: InterviewStatus
-  ): Promise<any>;
+  ): Promise<IUpdateManyResult>;
 }

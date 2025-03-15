@@ -1,5 +1,6 @@
 import { GetAllJobSeekers } from "@config/grpcClient";
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
+import { IJobSeeker } from "@core/types/subscription.types";
 
 class JobSeekerService implements IJobSeekerService {
   // private adminRepository: AdminRepository;
@@ -49,7 +50,7 @@ class JobSeekerService implements IJobSeekerService {
   //   return job;
   // }
 
-  async getAllCandidates() {
+  async getAllCandidates(): Promise<IJobSeeker[]>{
     return await GetAllJobSeekers();
   }
 }

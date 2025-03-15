@@ -1,9 +1,10 @@
 import AWS from "aws-sdk";
+import { IFileRepository } from "core/interfaces/repository/IFileRepository";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-class FileRepository {
+class FileRepository implements IFileRepository {
   private s3: AWS.S3;
 
   constructor() {

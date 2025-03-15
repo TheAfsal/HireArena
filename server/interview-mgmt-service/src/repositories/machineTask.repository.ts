@@ -1,5 +1,6 @@
 import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTaskRepository";
-import { InterviewStatus, MachineTask, PrismaClient, RoundStatus, RoundType } from "@prisma/client";
+import { IMachineTaskDetails, IMachineTaskPartial, IUpdateManyResult } from "@core/types/interview.types";
+import { InterviewStatus, MachineTask, PrismaClient } from "@prisma/client";
 
 class MachineTaskRepository implements IMachineTaskRepository {
   private prisma: PrismaClient;
@@ -8,19 +9,19 @@ class MachineTaskRepository implements IMachineTaskRepository {
     this.prisma = prisma;
   }
 
-  async getMachineTaskByJobId(jobId: string) {
+  async getMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial | null> {
     return this.prisma.machineTask.findFirst({
       where: { jobId },
       select: {
         id: true,
         title: true,
         description: true,
-        hoursToComplete:true
+        hoursToComplete: true,
       },
     });
   }
 
-  async getMachineTaskDetails(taskId: string) {
+  async getMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails | null> {
     return this.prisma.machineTask.findUnique({
       where: { id: taskId },
       include: {
@@ -41,24 +42,24 @@ class MachineTaskRepository implements IMachineTaskRepository {
     });
   }
 
-  // async fetchRepositoryFiles(repoUrl: string) {
-  //   return await GitHubHelper.fetchRepoFiles(repoUrl);
-  // }
-
-   async getTaskById(taskId: string) {
+  async getTaskById(taskId: string): Promise<MachineTask | null> {
     return this.prisma.machineTask.findUnique({ where: { id: taskId } });
   }
 
-   async updateCandidateTaskStatus(
+  async updateCandidateTaskStatus(
     candidateId: string,
     taskId: string,
     status: InterviewStatus
-  ) {
+  ): Promise<IUpdateManyResult> {
     return this.prisma.interview.updateMany({
       where: { candidateId, jobId: taskId },
       data: { status },
     });
   }
+}
+
+export default MachineTaskRepository;
+
 
 //   async getInterviewRound(interviewId: string, roundType: RoundType) {
 //     return this.prisma.interviewRound.findFirst({
@@ -72,8 +73,3 @@ class MachineTaskRepository implements IMachineTaskRepository {
 //       data: { status },
 //     });
 //   }
-
-}
-
-
-export default MachineTaskRepository;

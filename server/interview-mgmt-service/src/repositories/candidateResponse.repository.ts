@@ -1,8 +1,11 @@
 import { ICandidateResponseRepository } from "@core/interfaces/repository/ICandidateResponseRepository";
+import { ICandidateResponse, ICandidateResponsePartial } from "@core/types/interview.types";
+import { PrismaClient } from "@prisma/client";
 
 class CandidateResponseRepository implements ICandidateResponseRepository {
-  private prisma;
-  constructor(prisma) {
+  private prisma: PrismaClient;
+
+  constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
@@ -11,7 +14,7 @@ class CandidateResponseRepository implements ICandidateResponseRepository {
     questionId: string,
     selectedAnswer: string,
     isCorrect: boolean
-  ) {
+  ): Promise<ICandidateResponse> {
     console.log(selectedAnswer);
 
     return this.prisma.candidateResponse.create({
@@ -23,8 +26,8 @@ class CandidateResponseRepository implements ICandidateResponseRepository {
       },
     });
   }
-  
-  async getResponsesByInterviewId(interviewId: string) {
+
+  async getResponsesByInterviewId(interviewId: string): Promise<ICandidateResponsePartial[]> {
     return this.prisma.candidateResponse.findMany({
       where: { interviewId },
       select: {

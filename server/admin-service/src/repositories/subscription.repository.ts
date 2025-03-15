@@ -1,41 +1,46 @@
 import prisma from "@config/prismaClient";
 import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
+import { ISubscriptionPlan, ISubscriptionPlanCreateInput, ISubscriptionPlanUpdateInput } from "@core/types/subscription.types";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 export class SubscriptionRepository implements ISubscriptionRepository {
-  async create(plan: any): Promise<any> {
-    console.log("reaching create subscription");
-    // console.log(prisma);
-    console.log(plan.plan);
+  private prisma: PrismaClient = prisma;
 
-    return await prisma.subscriptionPlan.create({
-      data: { ...plan },
+  async create(plan: ISubscriptionPlanCreateInput): Promise<ISubscriptionPlan> {
+    return await this.prisma.subscriptionPlan.create({
+      data: { ...plan,features:plan.features?? Prisma.JsonNull },
     });
   }
 
-  async update(id: string, plan: any): Promise<any | null> {
-    return await prisma.subscriptionPlan.update({
+  async update(
+    id: string,
+    plan: ISubscriptionPlanUpdateInput
+  ): Promise<ISubscriptionPlan> {
+    return await this.prisma.subscriptionPlan.update({
       where: { id },
-      data: { ...plan },
+      data: { ...plan,features:plan.features?? Prisma.JsonNull },
     });
   }
 
   async delete(id: string): Promise<void> {
-    await prisma.subscriptionPlan.delete({
+    await this.prisma.subscriptionPlan.delete({
       where: { id },
     });
   }
 
-  async getById(id: string): Promise<any | null> {
-    return await prisma.subscriptionPlan.findUnique({
+  async getById(id: string): Promise<ISubscriptionPlan | null> {
+    return await this.prisma.subscriptionPlan.findUnique({
       where: { id },
     });
   }
 
-  async getAll(): Promise<any[]> {
-    return await prisma.subscriptionPlan.findMany({
+  async getAll(): Promise<ISubscriptionPlan[]> {
+    return await this.prisma.subscriptionPlan.findMany({
       orderBy: {
         price: "asc",
       },
     });
   }
 }
+
+export default SubscriptionRepository;

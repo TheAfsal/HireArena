@@ -1,9 +1,10 @@
-import FileRepository from "@repositories/FileRepository";
+import { IFileRepository } from "core/interfaces/repository/IFileRepository";
+import { IFileService } from "core/interfaces/services/IFileService";
 
-class FileService {
-  private fileRepository: FileRepository;
+class FileService implements IFileService{
+  private fileRepository: IFileRepository;
 
-  constructor(fileRepository: FileRepository) {
+  constructor(fileRepository: IFileRepository) {
     this.fileRepository = fileRepository;
   }
 

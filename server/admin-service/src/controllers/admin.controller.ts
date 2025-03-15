@@ -1,10 +1,11 @@
 import { IAdminController } from "@core/interfaces/controllers/IAdminController";
+import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 import { Request, Response } from "express";
 
 class AdminController implements IAdminController{
-  private jobSeekerService: any;
+  private jobSeekerService: IJobSeekerService;
 
-  constructor(jobSeekerService: any) {
+  constructor(jobSeekerService: IJobSeekerService) {
     this.jobSeekerService = jobSeekerService;
   }
 

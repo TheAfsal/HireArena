@@ -11,3 +11,4 @@ const adminController = new AdminController(jobSeekerService);
 router.get("/candidates",  adminController.getAllCandidates);
 
 export default router;
+

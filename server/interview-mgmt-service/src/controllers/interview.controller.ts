@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { InterviewService } from "@services/interview.service";
 import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
+import { IInterviewService } from "@core/interfaces/services/IInterviewService";
 
 class InterviewController implements IInterviewController {
-  private interviewService: InterviewService;
+  private interviewService: IInterviewService;
 
-  constructor(interviewService: InterviewService) {
+  constructor(interviewService: IInterviewService) {
     this.interviewService = interviewService;
   }
 

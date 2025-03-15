@@ -1,20 +1,21 @@
-import GeminiHelper from "../utils/gemini.helper";
 import MachineTaskRepository from "../repositories/machineTask.repository";
 import { evaluateRepository } from "../utils/evaluateTask";
-import { InterviewStatus } from "@prisma/client";
+import { InterviewStatus, MachineTask, MachineTaskEvaluation, MachineTaskRequirement } from "@prisma/client";
 import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
+import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTaskRepository";
+import { IMachineTaskDetails, IMachineTaskPartial } from "@core/types/interview.types";
+
 
 class MachineTaskService implements IMachineTaskService {
-  constructor(private machineTaskRepository: MachineTaskRepository) {}
+  constructor(private machineTaskRepository: IMachineTaskRepository) {}
 
-  // Fetch Machine Task (Introduction Page)
-  async fetchMachineTaskByJobId(jobId: string) {
+  async fetchMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial> {
     const task = await this.machineTaskRepository.getMachineTaskByJobId(jobId);
     if (!task) throw new Error("No machine task found for this job");
     return task;
   }
 
-  async fetchMachineTaskDetails(taskId: string) {
+  async fetchMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails> {
     const task = await this.machineTaskRepository.getMachineTaskDetails(taskId);
     if (!task) throw new Error("Machine task not found");
     return task;
@@ -42,29 +43,15 @@ class MachineTaskService implements IMachineTaskService {
     return new Date() <= deadline;
   }
 
-  // async evaluateProject(repoUrl: string) {
-  //   const files = await this.machineTaskRepository.fetchRepositoryFiles(
-  //     repoUrl
-  //   );
-
-  //   const evaluation = await GeminiHelper.evaluateCode(files);
-
-  //   const score = evaluation.score;
-  //   const status = score >= 70 ? "Passed" : "Failed";
-
-  //   return { score, status, details: evaluation.details };
-  // }
-
   async submitMachineTask(
     candidateId: string,
     taskId: string,
     repoUrl: string
-  ) {
+  ): Promise<{ status: InterviewStatus; evaluationScore: number }> {
     const machineTask = await this.machineTaskRepository.getTaskById(taskId);
     if (!machineTask) throw new Error("Machine Task not found");
 
-
-    console.log("!!!",);
+    console.log("!!!");
     const evaluationScore = await evaluateRepository(repoUrl);
 
     console.log("evaluationScore", evaluationScore);

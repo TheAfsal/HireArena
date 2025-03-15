@@ -1,9 +1,11 @@
 import { IInterviewService } from "@core/interfaces/services/IInterviewService";
+import { IInterviewRepository } from "@core/types/interview.types";
+import { AptitudeTestQuestion, InterviewStatus } from "@prisma/client";
 
-export class InterviewService  implements IInterviewService{
-  constructor(private interviewRepository: any) {}
+export class InterviewService implements IInterviewService {
+  constructor(private interviewRepository: IInterviewRepository) {}
 
-  async fetchAptitudeQuestions(interviewId: string) {
+  async fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string> {
     return this.interviewRepository.getAptitudeQuestions(interviewId);
   }
 
@@ -18,31 +20,11 @@ export class InterviewService  implements IInterviewService{
       throw new Error("No interview found for this application.");
     }
 
-    // if (interview.status === "failed") {
-    //   return "failed";
-    // }
-
-    // if (interview.status === "completed") {
-    //   // Check if any round failed
-    //   const interviewRounds = await this.interviewRepository.getInterviewRounds(
-    //     applicationId
-    //   );
-
-    //   if (
-    //     interviewRounds &&
-    //     interviewRounds.InterviewRounds.some(
-    //       (round) => round.status === "failed"
-    //     )
-    //   ) {
-    //     return "failed";
-    //   }
-
-    //   return "passed";
-    // }
-
-    // return "pending";
     return interview.status;
   }
+}
+
+export default InterviewService;
 
   // async initiateInterview(applicationId: string, candidateId: string) {
   // Create Interview Entry
@@ -60,4 +42,3 @@ export class InterviewService  implements IInterviewService{
   // async getInterviewStatus(candidateId: string) {
   //   return this.interviewRepo.getInterviewByCandidate(candidateId);
   // }
-}

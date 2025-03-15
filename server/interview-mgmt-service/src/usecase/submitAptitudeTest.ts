@@ -1,17 +1,17 @@
-import { InterviewRoundRepository } from "../repositories/interviewRound.repository";
-import CandidateResponseRepository from "../repositories/candidateResponse.repository";
-import InterviewRepository from "../repositories/interview.repository";
+import { ICandidateResponseRepository } from "@core/interfaces/repository/ICandidateResponseRepository";
+import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
+import { IInterviewRoundRepository } from "@core/interfaces/repository/IInterviewRoundRepository";
 import { InterviewStatus, RoundType } from "@prisma/client";
 
 export class SubmitAptitudeTest {
-  private interviewRepo: InterviewRepository;
-  private responseRepo: CandidateResponseRepository;
-  private roundRepo: InterviewRoundRepository;
+  private interviewRepo: IInterviewRepository;
+  private responseRepo: ICandidateResponseRepository;
+  private roundRepo: IInterviewRoundRepository;
 
   constructor(
-    interviewRepo: InterviewRepository,
-    responseRepo: CandidateResponseRepository,
-    roundRepo: InterviewRoundRepository
+    interviewRepo: IInterviewRepository,
+    responseRepo: ICandidateResponseRepository,
+    roundRepo: IInterviewRoundRepository
   ) {
     this.interviewRepo = interviewRepo;
     this.responseRepo = responseRepo;

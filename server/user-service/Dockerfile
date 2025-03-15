@@ -10,8 +10,6 @@ RUN pnpm install
 
 COPY . .
 
-RUN npx prisma generate
-
 EXPOSE 5000 
 
 EXPOSE 5051 

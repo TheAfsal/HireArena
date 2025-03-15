@@ -1,10 +1,10 @@
-import { IUser } from './IUser';
+// import { IUser } from './IUser';
 
-export interface IAuthResponse {
-  tokens:{
-    accessToken: string;
-    refreshToken?: string;
-  }
-  user?: IUser;
-  }
+// export interface IAuthResponse {
+//   tokens:{
+//     accessToken: string;
+//     refreshToken?: string;
+//   }
+//   user?: IUser;
+//   }
 
