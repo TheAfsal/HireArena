@@ -1,14 +1,21 @@
 import prisma from "@config/prismaClient";
 import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
-import { ISubscriptionPlan, ISubscriptionPlanCreateInput, ISubscriptionPlanUpdateInput } from "@core/types/subscription.types";
+import {
+  ISubscriptionPlan,
+  ISubscriptionPlanCreateInput,
+  ISubscriptionPlanUpdateInput,
+} from "@core/types/subscription.types";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { TYPES } from "di/types";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class SubscriptionRepository implements ISubscriptionRepository {
-  private prisma: PrismaClient = prisma;
+  constructor(@inject(TYPES.PrismaClient) private prisma: PrismaClient) {}
 
   async create(plan: ISubscriptionPlanCreateInput): Promise<ISubscriptionPlan> {
     return await this.prisma.subscriptionPlan.create({
-      data: { ...plan,features:plan.features?? Prisma.JsonNull },
+      data: { ...plan, features: plan.features ?? Prisma.JsonNull },
     });
   }
 
@@ -18,7 +25,7 @@ export class SubscriptionRepository implements ISubscriptionRepository {
   ): Promise<ISubscriptionPlan> {
     return await this.prisma.subscriptionPlan.update({
       where: { id },
-      data: { ...plan,features:plan.features?? Prisma.JsonNull },
+      data: { ...plan, features: plan.features ?? Prisma.JsonNull },
     });
   }
 

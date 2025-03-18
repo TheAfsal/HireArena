@@ -1,7 +1,12 @@
-
 import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
+import { PrismaClient } from "@prisma/client";
+import { TYPES } from "di/types";
+import { inject, injectable } from "inversify";
 
+@injectable()
 class AdminRepository implements IAdminRepository {
+  constructor(@inject(TYPES.PrismaClient) private prisma: PrismaClient) {}
+  
   // private prisma: PrismaClient;
   // constructor(prisma: any) {
   // this.prisma = prisma;

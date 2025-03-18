@@ -1,9 +1,11 @@
 import { Router } from "express";
-import SubscriptionController from "@controllers/subscription.controller";
+import container from "di/container";
+import { ISubscriptionController } from "@core/interfaces/controllers/ISubscriptionController";
+import { TYPES } from "di/types";
 
 const router = Router();
 
-const subscriptionController = new SubscriptionController();
+const subscriptionController = container.get<ISubscriptionController>(TYPES.SubscriptionController);
 
 router.post("/", subscriptionController.create);
 // router.put("/:id", subscriptionController.update);

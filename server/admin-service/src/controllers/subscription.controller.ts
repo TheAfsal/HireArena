@@ -1,15 +1,19 @@
 import { Request, Response } from "express";
-import { SubscriptionService } from "@services/subscription.service";
-import { SubscriptionRepository } from "@repositories/subscription.repository";
 import { ISubscriptionController } from "@core/interfaces/controllers/ISubscriptionController";
+import { inject, injectable } from "inversify";
+import { TYPES } from "di/types";
+import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
 
-const repository = new SubscriptionRepository();
-const subscriptionService = new SubscriptionService(repository);
-
+@injectable()
 class SubscriptionController implements ISubscriptionController {
+
+  constructor(
+    @inject(TYPES.SubscriptionService) private subscriptionService: ISubscriptionService
+  ) {}
+
   async create(req: Request, res: Response) {
     try {
-      const plan = await subscriptionService.createSubscriptionPlan(
+      const plan = await this.subscriptionService.createSubscriptionPlan(
         req.body.plan
       );
 
@@ -26,7 +30,7 @@ class SubscriptionController implements ISubscriptionController {
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const updatedPlan = await subscriptionService.updateSubscriptionPlan(
+      const updatedPlan = await this.subscriptionService.updateSubscriptionPlan(
         id,
         req.body.plan
       );
@@ -46,7 +50,7 @@ class SubscriptionController implements ISubscriptionController {
   async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      await subscriptionService.deleteSubscriptionPlan(id);
+      await this.subscriptionService.deleteSubscriptionPlan(id);
       res.json({ success: true, message: "Plan deleted" });
     } catch (error) {
       res
@@ -58,7 +62,7 @@ class SubscriptionController implements ISubscriptionController {
   async getById(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const plan = await subscriptionService.getSubscriptionPlanById(id);
+      const plan = await this.subscriptionService.getSubscriptionPlanById(id);
       if (!plan)
         return res
           .status(404)
@@ -73,7 +77,7 @@ class SubscriptionController implements ISubscriptionController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const plans = await subscriptionService.getAllSubscriptionPlans();
+      const plans = await this.subscriptionService.getAllSubscriptionPlans();
       res.json({ data: plans });
     } catch (error) {
       res

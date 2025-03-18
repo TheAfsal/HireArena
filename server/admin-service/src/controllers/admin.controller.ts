@@ -1,13 +1,15 @@
 import { IAdminController } from "@core/interfaces/controllers/IAdminController";
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
+import { TYPES } from "di/types";
 import { Request, Response } from "express";
+import { inject, injectable } from "inversify";
 
-class AdminController implements IAdminController{
-  private jobSeekerService: IJobSeekerService;
-
-  constructor(jobSeekerService: IJobSeekerService) {
-    this.jobSeekerService = jobSeekerService;
-  }
+@injectable()
+class AdminController implements IAdminController {
+  
+  constructor(
+    @inject(TYPES.JobSeekerService) private jobSeekerService: IJobSeekerService
+  ) {}
 
   getAllCandidates = async (req: Request, res: Response) => {
     try {

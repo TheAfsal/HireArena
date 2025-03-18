@@ -1,23 +1,18 @@
 import { ISubscriptionRepository } from "@core/interfaces/repository/ISubscriptionRepository";
 import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
-import { ISubscriptionPlan, ISubscriptionPlanCreateInput, ISubscriptionPlanInput, ISubscriptionPlanUpdateInput, SubscriptionTemplate } from "@core/types/subscription.types";
+import {
+  ISubscriptionPlan,
+  ISubscriptionPlanCreateInput,
+  ISubscriptionPlanInput,
+  ISubscriptionPlanUpdateInput,
+  SubscriptionTemplate,
+} from "@core/types/subscription.types";
 import { Prisma } from "@prisma/client";
+import { TYPES } from "di/types";
+import { inject, injectable } from "inversify";
 
-
-// export interface ISubscriptionService {
-//   createSubscriptionPlan(plan: ISubscriptionPlanInput): Promise<ISubscriptionPlan>;
-//   updateSubscriptionPlan(
-//     id: string,
-//     plan: ISubscriptionPlanInput
-//   ): Promise<ISubscriptionPlan>;
-//   deleteSubscriptionPlan(id: string): Promise<void>;
-//   getSubscriptionPlanById(id: string): Promise<ISubscriptionPlan | null>;
-//   getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]>;
-// }
-
+@injectable()
 export class SubscriptionService implements ISubscriptionService {
-  private repository: ISubscriptionRepository;
-
   private allowedFeatures: (keyof SubscriptionTemplate)[] = [
     "featuredProfile",
     "resumeReview",
@@ -29,9 +24,10 @@ export class SubscriptionService implements ISubscriptionService {
     "networkingEvents",
   ];
 
-  constructor(repository: ISubscriptionRepository) {
-    this.repository = repository;
-  }
+  constructor(
+    @inject(TYPES.SubscriptionRepository)
+    private subscriptionRepository: ISubscriptionRepository
+  ) {}
 
   async createSubscriptionPlan(
     plan: ISubscriptionPlanInput
@@ -48,11 +44,11 @@ export class SubscriptionService implements ISubscriptionService {
       name: plan.name,
       price: plan.price,
       duration: plan.duration,
-      features: validatedFeatures as unknown as Prisma.JsonValue, 
+      features: validatedFeatures as unknown as Prisma.JsonValue,
       status: plan.status || "active",
     };
 
-    return await this.repository.create(subscriptionData);
+    return await this.subscriptionRepository.create(subscriptionData);
   }
 
   async updateSubscriptionPlan(
@@ -75,19 +71,19 @@ export class SubscriptionService implements ISubscriptionService {
       status: plan.status || "active",
     };
 
-    return await this.repository.update(id, updatedData);
+    return await this.subscriptionRepository.update(id, updatedData);
   }
 
   async deleteSubscriptionPlan(id: string): Promise<void> {
-    return await this.repository.delete(id);
+    return await this.subscriptionRepository.delete(id);
   }
 
   async getSubscriptionPlanById(id: string): Promise<ISubscriptionPlan | null> {
-    return await this.repository.getById(id);
+    return await this.subscriptionRepository.getById(id);
   }
 
   async getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
-    return await this.repository.getAll();
+    return await this.subscriptionRepository.getAll();
   }
 }
 

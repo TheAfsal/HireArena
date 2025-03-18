@@ -1,13 +1,15 @@
 import { GetAllJobSeekers } from "@config/grpcClient";
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 import { IJobSeeker } from "@core/types/subscription.types";
+import AdminRepository from "@repositories/admin.repository";
+import { TYPES } from "di/types";
+import { inject, injectable } from "inversify";
 
+@injectable()
 class JobSeekerService implements IJobSeekerService {
-  // private adminRepository: AdminRepository;
-
-  // constructor(adminRepository: any) {
-  //   this.adminRepository = adminRepository;
-  // }
+  constructor(
+    @inject(TYPES.AdminRepository) private adminRepository: AdminRepository
+  ) {}
 
   // async createJob(data: any, userId: string) {
   //   var companyId;
@@ -50,7 +52,7 @@ class JobSeekerService implements IJobSeekerService {
   //   return job;
   // }
 
-  async getAllCandidates(): Promise<IJobSeeker[]>{
+  async getAllCandidates(): Promise<IJobSeeker[]> {
     return await GetAllJobSeekers();
   }
 }

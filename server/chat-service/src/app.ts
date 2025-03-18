@@ -2,7 +2,6 @@ import express, { Application } from "express";
 import { Server } from "socket.io";
 import http from "http";
 import { ChatRepository } from "./repositories/chat.repository";
-import { connectDB } from "./config/db";
 import { ChatController } from "@controllers/chat.controller";
 import { ChatService } from "@services/chat.service";
 

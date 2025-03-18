@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export async function connectDB() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/chat-app', {
+    await mongoose.connect(`mongodb://${process.env.MONGO_DB}:27017/chat-app`, {
     });
     console.log('MongoDB connected');
   } catch (error) {

@@ -1,14 +1,12 @@
-import express, { Request, Response } from "express";
-import AdminController from "@controllers/admin.controller";
-import JobSeekerService from "@services/jobSeeker.service";
+import express from "express";
+import container from "di/container";
+import { IAdminController } from "@core/interfaces/controllers/IAdminController";
+import { TYPES } from "di/types";
 
 const router = express.Router();
 
-const jobSeekerService = new JobSeekerService();
+const adminController = container.get<IAdminController>(TYPES.AdminController);
 
-const adminController = new AdminController(jobSeekerService);
-
-router.get("/candidates",  adminController.getAllCandidates);
+router.get("/candidates", adminController.getAllCandidates);
 
 export default router;
-

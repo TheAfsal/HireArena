@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "npx prisma generate && nodemon src/server.ts --legacy-watch"
+    "dev": "npx prisma generate && tsx watch src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -61,6 +61,7 @@
     "nodemon": "^3.1.9",
     "prisma": "^6.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript-eslint": "^8.20.0"
   }
 }

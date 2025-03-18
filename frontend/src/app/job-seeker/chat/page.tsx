@@ -1,58 +1,86 @@
-"use client"
+"use client";
 
-import { generateMessages, generateUsers } from "@/lib/mock-data"
-import { useState, useEffect } from "react"
-import { UserList } from "./components/user-list"
-import { ChatInterface } from "./components/chat-interface"
-import { ThemeToggle } from "./components/theme-toggle"
+import { generateMessages, generateUsers } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import { UserList } from "./components/user-list";
+import { ChatInterface } from "./components/chat-interface";
+import { ThemeToggle } from "./components/theme-toggle";
+import { io, Socket } from "socket.io-client";
 
 export interface User {
-    id: string
-    name: string
-    avatar: string
-    status: string
-    lastSeen?: Date
-  }
-  
-  export interface Message {
-    id: string
-    senderId: string
-    receiverId: string
-    content: string
-    timestamp: Date
-    status: "sent" | "delivered" | "read"
-    read?: boolean
-  }
-  
+  id: string;
+  name: string;
+  avatar: string;
+  status: string;
+  lastSeen?: Date;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: Date;
+  status: "sent" | "delivered" | "read";
+  read?: boolean;
+}
+
+export interface IMessage {
+  senderId: string;
+  content: string;
+  timestamp: Date;
+  roomId: string;
+}
 
 export default function ChatApp() {
-  const [users, setUsers] = useState<User[]>([])
-  const [messages, setMessages] = useState<{ [key: string]: Message[] }>({})
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [users, setUsers] = useState<User[]>([]);
+  const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    // Generate mock data
-    const mockUsers = generateUsers(15)
-    setUsers(mockUsers)
+    const mockUsers = generateUsers(15);
+    setUsers(mockUsers);
 
-    // Generate mock messages for each user
-    const mockMessages: { [key: string]: Message[] } = {}
+    const mockMessages: { [key: string]: Message[] } = {};
     mockUsers.forEach((user) => {
-      mockMessages[user.id] = generateMessages(user.id, 10)
-    })
-    setMessages(mockMessages)
+      mockMessages[user.id] = generateMessages(user.id, 10);
+    });
+    setMessages(mockMessages);
 
-    // Set first user as selected by default
     if (mockUsers.length > 0) {
-      setSelectedUser(mockUsers[0])
+      setSelectedUser(mockUsers[0]);
     }
-  }, [])
+  }, []);
 
-  const filteredUsers = users.filter((user) => user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  try {
+    const socket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`);
+
+    socket.emit("joinRoom", "room1");
+
+    console.log(socket);
+
+    socket.emit("message", {
+      roomId: "room1",
+      content: "Hello everyone!",
+      senderId: "user123",
+    });
+
+    socket.on("newMessage", (message: IMessage) => {
+      console.log("New message:", message);
+    });
+
+    socket.on("chatHistory", (messages: IMessage) => {
+      console.log("Chat history:", messages);
+    });
+  } catch (error) {}
+
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const sendMessage = (content: string) => {
-    if (!selectedUser || !content.trim()) return
+    if (!selectedUser || !content.trim()) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -61,48 +89,52 @@ export default function ChatApp() {
       content,
       timestamp: new Date(),
       status: "sent",
-    }
+    };
 
     setMessages((prev) => ({
       ...prev,
       [selectedUser.id]: [...(prev[selectedUser.id] || []), newMessage],
-    }))
+    }));
 
     // Simulate message being delivered after 1 second
     setTimeout(() => {
       setMessages((prev) => {
-        const updatedMessages = [...prev[selectedUser.id]]
-        const messageIndex = updatedMessages.findIndex((m) => m.id === newMessage.id)
+        const updatedMessages = [...prev[selectedUser.id]];
+        const messageIndex = updatedMessages.findIndex(
+          (m) => m.id === newMessage.id
+        );
         if (messageIndex !== -1) {
           updatedMessages[messageIndex] = {
             ...updatedMessages[messageIndex],
             status: "delivered",
-          }
+          };
         }
         return {
           ...prev,
           [selectedUser.id]: updatedMessages,
-        }
-      })
-    }, 1000)
+        };
+      });
+    }, 1000);
 
     // Simulate message being read after 2 seconds
     setTimeout(() => {
       setMessages((prev) => {
-        const updatedMessages = [...prev[selectedUser.id]]
-        const messageIndex = updatedMessages.findIndex((m) => m.id === newMessage.id)
+        const updatedMessages = [...prev[selectedUser.id]];
+        const messageIndex = updatedMessages.findIndex(
+          (m) => m.id === newMessage.id
+        );
         if (messageIndex !== -1) {
           updatedMessages[messageIndex] = {
             ...updatedMessages[messageIndex],
             status: "read",
-          }
+          };
         }
         return {
           ...prev,
           [selectedUser.id]: updatedMessages,
-        }
-      })
-    }, 2000)
+        };
+      });
+    }, 2000);
 
     // Simulate reply after 3 seconds
     setTimeout(() => {
@@ -113,14 +145,14 @@ export default function ChatApp() {
         content: `Reply to: ${content}`,
         timestamp: new Date(),
         status: "read",
-      }
+      };
 
       setMessages((prev) => ({
         ...prev,
         [selectedUser.id]: [...(prev[selectedUser.id] || []), reply],
-      }))
-    }, 3000)
-  }
+      }));
+    }, 3000);
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -137,10 +169,16 @@ export default function ChatApp() {
         </div>
         <div className="flex-1 flex flex-col">
           {selectedUser ? (
-            <ChatInterface user={selectedUser} messages={messages[selectedUser.id] || []} onSendMessage={sendMessage} />
+            <ChatInterface
+              user={selectedUser}
+              messages={messages[selectedUser.id] || []}
+              onSendMessage={sendMessage}
+            />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-text-content">Select a chat to start messaging</p>
+              <p className="text-text-content">
+                Select a chat to start messaging
+              </p>
             </div>
           )}
         </div>
@@ -149,6 +187,5 @@ export default function ChatApp() {
         <ThemeToggle />
       </div>
     </div>
-  )
+  );
 }
-
