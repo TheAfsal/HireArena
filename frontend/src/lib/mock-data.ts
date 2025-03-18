@@ -1,4 +1,4 @@
-import { Message, User } from "@/app/job-seeker/chat/page"
+import { Message, User } from "@/app/job-seeker/chats/page"
 
 
 export function generateUsers(count: number): User[] {

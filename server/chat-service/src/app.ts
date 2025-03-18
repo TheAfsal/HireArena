@@ -1,9 +1,10 @@
+import 'reflect-metadata';
 import express, { Application } from "express";
 import { Server } from "socket.io";
 import http from "http";
-import { ChatRepository } from "./repositories/chat.repository";
-import { ChatController } from "@controllers/chat.controller";
-import { ChatService } from "@services/chat.service";
+import { IChatController } from '@core/interfaces/controllers/IChatController';
+import container from 'di/container';
+import { TYPES } from 'di/types';
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -14,13 +15,11 @@ const io = new Server(server, {
   },
 });
 
-const chatRepository = new ChatRepository();
-const chatService = new ChatService(chatRepository);
-const chatController = new ChatController(io, chatService);
+const chatController = container.get<IChatController>(TYPES.ChatController);
 
 io.on("connection", (socket) => {
   console.log("New user connected:", socket.id);
-  chatController.setupSocketEvents(socket);
+  chatController.registerEvents(socket);
 });
 
 export default server;

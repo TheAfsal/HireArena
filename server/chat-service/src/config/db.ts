@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 export async function connectDB() {
   try {
     await mongoose.connect(`mongodb://${process.env.MONGO_DB}:27017/chat-app`, {
+      authSource: 'admin',
+      user: process.env.MONGO_INITDB_ROOT_USERNAME || 'root',
+      pass: process.env.MONGO_INITDB_ROOT_PASSWORD || 'root',
     });
     console.log('MongoDB connected');
   } catch (error) {

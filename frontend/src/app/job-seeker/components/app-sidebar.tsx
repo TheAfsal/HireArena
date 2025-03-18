@@ -14,6 +14,7 @@ import {
   Settings2,
   SquareTerminal,
   CrownIcon,
+  MessageCircleDashed,
 } from "lucide-react";
 
 import {
@@ -193,6 +194,11 @@ const menuItems = [
     title: "Subscriptions",
     icon: CrownIcon,
     url: "/job-seeker/subscriptions",
+  },
+  {
+    title: "Chats",
+    icon: MessageCircleDashed,
+    url: "/job-seeker/chats",
   },
 ];
 

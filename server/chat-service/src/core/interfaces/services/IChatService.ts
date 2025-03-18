@@ -1,10 +1,7 @@
-import { IMessage } from "@core/types/chat.types";
+import { IConversation, IMessage, IMessageDTO } from "@core/types/chat.types";
 
 export interface IChatService {
-  saveChatMessage(
-    senderId: string,
-    content: string,
-    roomId: string
-  ): Promise<IMessage>;
-  getChatHistory(roomId: string): Promise<IMessage[]>;
+  startConversation(participants: string[], jobId?: string): Promise<IConversation>;
+  sendMessage(message: IMessageDTO): Promise<IMessage>;  
+  getChatHistory(conversationId: string): Promise<IMessage[]>;
 }
