@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document } from "mongoose";
 
 export interface IMessage extends Document {
   conversationId: string;
@@ -23,4 +23,9 @@ export interface IMessageDTO {
   content: string;
   timestamp?: Date;
   status?: "sent" | "delivered" | "read";
+}
+export interface IUserConversations extends Document {
+  userId: string;
+  conversationIds: string[];
+  updatedAt: Date;
 }

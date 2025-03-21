@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "target": "ES6",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +19,7 @@
       "@models/*": ["models/*"],
       "@routes/*": ["routes/*"],
       "@core/*": ["core/*"],
-      "@shared/*": ["../../../shared/types/*"]
+      "@shared/*": ["../../../shared/types/*"],
     },
     "skipDefaultLibCheck": true,
     "noImplicitAny": false,

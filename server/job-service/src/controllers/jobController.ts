@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IUser } from "../core/types/IUser";
-import { createInterview, getCompanyIdByUserId } from "@config/grpcClient";
+import { createConversation, createInterview, getCompanyIdByUserId } from "@config/grpcClient";
 import { IJobController } from "@core/interfaces/controllers/IJobController";
 import { IJobService } from "@core/interfaces/services/IJobService";
 
@@ -66,7 +66,6 @@ class JobController implements IJobController{
         : null;
 
       const jobDetails = await this.jobService.getJob(id, userId);
-      console.log(jobDetails);
 
       res.json(jobDetails);
     } catch (error) {
@@ -100,6 +99,11 @@ class JobController implements IJobController{
 
       const application = await this.jobService.applyForJob(jobId, userId);
 
+      const job = await this.jobService.getJob(jobId, userId);
+      const companyId = job.companyId; 
+
+      await createConversation([userId, companyId], jobId);
+
       if (application?.["Aptitude Test"]) {
         const interviewResponse = await createInterview(
           application.id,
@@ -114,6 +118,8 @@ class JobController implements IJobController{
           res.status(400).json({ message: "Unable to Attend Aptitude Test" });
           return;
         }
+
+
 
         res.status(201).json({
           message: "Job application submitted, aptitude test scheduled",
@@ -187,10 +193,6 @@ class JobController implements IJobController{
   //       : null;
 
   //     const jobs = await this.jobService.getFilteredJobs(filters, userId);
-
-  //     console.log('====================================');
-  //     console.log(jobs);
-  //     console.log('====================================');
 
   //     res.json(jobs);
   //     return;

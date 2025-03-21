@@ -1,5 +1,6 @@
 import { IConversationRepository } from "@core/interfaces/repository/IConversationRepository";
 import { IMessageRepository } from "@core/interfaces/repository/IMessageRepository";
+import { IUserConversationsRepository } from "@core/interfaces/repository/IUserConversationRepository";
 import { IChatService } from "@core/interfaces/services/IChatService";
 import { IConversation, IMessage, IMessageDTO } from "@core/types/chat.types";
 import { TYPES } from "di/types";
@@ -9,30 +10,53 @@ import { inject, injectable } from "inversify";
 export class ChatService implements IChatService {
   constructor(
     @inject(TYPES.ConversationRepository) private conversationRepo: IConversationRepository,
-    @inject(TYPES.MessageRepository) private messageRepo: IMessageRepository
+    @inject(TYPES.MessageRepository) private messageRepo: IMessageRepository,
+    @inject(TYPES.UserConversationsRepository) private userConversationsRepo: IUserConversationsRepository
   ) {}
-  async startConversation(
-    participants: string[],
-    jobId?: string
-  ): Promise<IConversation> {
+
+  async startConversation(participants: string[], jobId?: string) {
     if (participants.length < 2) {
       throw new Error("At least two participants are required");
     }
-    return await this.conversationRepo.createConversation(participants, jobId);
+
+    const conversation = await this.conversationRepo.createConversation(participants, jobId);
+
+    await Promise.all(
+      participants.map((userId) =>
+        this.userConversationsRepo.upsertUserConversation(userId, conversation.id)
+      )
+    );
+
+    return conversation;
   }
 
-  async sendMessage(
-    message: IMessageDTO
-  ): Promise<IMessage> {
+  async sendMessage(message: IMessageDTO) {
     const newMessage: IMessage = {
       ...message,
-      id: new Date().toISOString(), 
+      id: new Date().toISOString(),
       status: "sent",
     } as IMessage;
     return await this.messageRepo.saveMessage(newMessage);
   }
 
-  async getChatHistory(conversationId: string): Promise<IMessage[]> {
+  async getChatHistory(conversationId: string) {
     return await this.messageRepo.getMessagesByConversationId(conversationId);
   }
+
+  async getUserConversations(userId: string) {
+    const userConversations = await this.userConversationsRepo.getUserConversations(userId);
+    if (!userConversations || !userConversations.conversationIds.length) {
+      return [];
+    }
+
+    const conversations = await Promise.all(
+      userConversations.conversationIds.map((conversationId) =>
+        this.conversationRepo.findConversationById(conversationId)
+      )
+    );
+
+    return conversations.filter((conv): conv is IConversation => conv !== null);
+  }
+
+  
 }

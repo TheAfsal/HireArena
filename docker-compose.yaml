@@ -1,0 +1,286 @@
+services:
+  # Gateway service
+  gateway-service:
+    build:
+      context: ./server/gateway-service
+    container_name: gateway-service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/gateway-service:/app
+      - /app/node_modules
+      - ./shared:/shared  
+    command: npm run dev
+    environment:
+      - NODE_ENV=development 
+      - REDIS_HOST=redis
+      - CLIENT_URL=localhost
+      - USER_SERVER_URL=user-service
+      - JOB_SERVER_URL=job-service
+      - ADMIN_SERVER_URL=admin-service
+      - INTERVIEW_SERVER_URL=interview-mgmt-service
+      - CHAT_SERVER_URL=chat-service
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+    networks:
+      - app-network
+    depends_on:
+      - user-service
+      - job-service
+      - redis
+
+  # User service
+  user-service:
+    build:
+      context: ./server/user-service
+    container_name: user-service
+    ports:
+      - "5000:5000"
+      - "5051:5051"
+    volumes:
+      - ./server/user-service:/app/server
+      - /app/node_modules
+      - ./shared:/shared  
+    depends_on:
+      - db-postgres
+      - redis  
+    command: npm run dev 
+    environment:
+      - PORT=5000
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=hirearena
+      - DB_HOST=db-postgres  
+      - DB_PORT=5432  
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/hirearena
+      - VERIFICATION_TOKEN_SECRET="d13d23qwe341r342e23eqe32"
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password (optional)
+      - GOOGLE_CLIENT_ID=892370541918-tpo69pcvf47h0k3r5i2tm6mbj31t3vup.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
+      - SESSION_SECRET=your_secret_key
+      - CLIENT_URL=localhost
+      - GATEWAY_URL=gateway-service
+      - FILE_SERVER_URL=file-service
+      - ADMIN_SERVER_URL=admin-service
+      - STRIPE_PUBLISH_KEY=pk_test_51QsD8pJtvAld9KrEaCGt4OohObgN59tumaWYrxBhenHHJzguKP2n4bcKk2Q0xJRkBoLCG4OspvSDgtVQUhkfSPTV00zfNEiSSb
+      - STRIPE_SECRET_KEY=sk_test_51QsD8pJtvAld9KrEzbzfrvAvoMRYhUtAHznZmdggraojmTXGyAxPqkY34z4qNMBhRj78ValWRTCMBIVM1LnHa7Wm00rNDZpwy9
+    networks:
+      - app-network
+
+  # Job service
+  job-service:
+    build:
+      context: ./server/job-service
+    container_name: job-service
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./server/job-service:/app
+      - /app/node_modules 
+      - ./shared:/shared     
+    depends_on:
+      - db-postgres
+      - redis 
+    command: npm run dev 
+    environment:
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=hirearenaJobDB
+      - DB_HOST=db-postgres  
+      - DB_PORT=5432  
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/hirearenaJobDB
+      - VERIFICATION_TOKEN_SECRET="d13d23qwe341r342e23eqe32"
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password (optional)
+      - USER_SERVER_URL=user-service:5051
+      - INTERVIEW_SERVER_URL=interview-mgmt-service:5007
+      - CHAT_SERVER_URL=chat-service:5010
+    networks:
+      - app-network
+
+  # Interview Management Service
+  interview-mgmt-service:
+    build:
+      context: ./server/interview-mgmt-service 
+    container_name: interview-mgmt-service
+    ports:
+      - "5006:5006"
+      - "5007:5007"
+    volumes:
+      - ./server/interview-mgmt-service:/app
+      - /app/node_modules    
+      - ./shared:/shared  
+    depends_on:
+      - db-postgres
+    command: npm run dev 
+    environment:
+      - PORT=5006
+      - GRPC_PORT=5007
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/interview-mgmt
+    networks:
+      - app-network
+
+  # File service
+  file-service:
+    build:
+      context: ./server/file-service
+    container_name: file-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./server/file-service:/app
+      - /app/node_modules  
+      - ./shared:/shared    
+    command: npm run dev  
+    environment:
+      - NODE_ENV=development
+      - PORT = 5004
+      - AWS_ACCESS_KEY=AKIAUW4RBCVVXJIICSPE
+      - AWS_SECRET_KEY=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
+      - AWS_REGION=eu-north-1
+      - AWS_BUCKET_NAME=bucket-hirearena
+    networks:
+      - app-network  
+
+  # Admin service
+  admin-service:
+    build:
+      context: ./server/admin-service
+    container_name: admin-service
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./server/admin-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    depends_on:
+      - db-postgres 
+    command: npm run dev
+    environment:
+      - PORT=5003
+      - NODE_ENV=development
+      - FRONT_END_URL=http://localhost:3000
+      - CLIENT_URL=localhost
+      - GATEWAY_URL=gateway-service
+      - USER_SERVER_URL=user-service
+      - DB_USER=postgres
+      - DB_PASSWORD="root"
+      - DB_NAME=admin
+      - DB_HOST=localhost  
+      - DB_PORT=5432
+      - VERIFICATION_TOKEN_SECRET=d13d23qwe341r342e23eqe32
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
+      - REFRESH_TOKEN_SECRET=your-refresh-token-secret
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your-redis-password
+      - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/admin
+    networks:
+      - app-network    
+
+  # Chat service
+  chat-service:
+    image: chat-service-image
+    build:
+      context: ./
+      dockerfile: ./server/chat-service/Dockerfile
+    container_name: chat-service
+    ports:
+      - "5009:5009"
+      - "5010:5010"
+    volumes:
+      - ./server/chat-service:/app/server/chat-service
+      - /app/node_modules
+      - /app/server/chat-service/node_modules
+      - ./shared:/app/shared
+    depends_on:
+      - db-mongo
+    environment:
+      - PORT=5009
+      - MONGO_DB=db-mongo
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    networks:
+      - app-network
+    command: ["pnpm", "run", "--filter=chat-service" ,"dev"]
+
+  # Client-side (Frontend)
+  client:
+    build:
+      context: ./frontend
+    container_name: client
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_GATEWAY_URL=localhost
+      - NEXT_PUBLIC_CHAT_SERVER_URL=http://localhost:5009
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next  
+      - ./shared:/shared  
+    networks:
+      - app-network
+
+  # Redis setup
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/var/lib/redis/data    
+    networks:
+      - app-network
+
+  # Postgres DB setup
+  db-postgres:
+    image: postgres
+    container_name: db-postgres
+    environment:
+      - POSTGRES_USER=postgres  
+      - POSTGRES_PASSWORD=root  
+      - POSTGRES_DB=hirearena 
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  
+    networks:
+      - app-network
+
+  # Monog DB setup
+  db-mongo:
+    image: mongo
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=yourdbname
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/var/lib/mongo/data  
+    networks:
+      - app-network    
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:

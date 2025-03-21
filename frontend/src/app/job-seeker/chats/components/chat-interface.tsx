@@ -1,66 +1,61 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Send, MoreVertical, Phone, Video, ArrowLeft, Check, CheckCheck } from "lucide-react"
-import { formatTime } from "@/lib/utils"
-import { Message, User } from "../page"
+import { useState, useRef, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Send, MoreVertical, Phone, Video, ArrowLeft, Check, CheckCheck } from "lucide-react";
+import { formatTime } from "@/lib/utils";
+import { Message, User } from "../page";
 
 interface ChatInterfaceProps {
-  user: User
-  messages: Message[]
-  onSendMessage: (content: string) => void
+  user: User;
+  messages: Message[];
+  onSendMessage: (content: string) => void;
 }
 
 export function ChatInterface({ user, messages, onSendMessage }: ChatInterfaceProps) {
-  const [newMessage, setNewMessage] = useState("")
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-//   const isMobile = useMobile()
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      onSendMessage(newMessage)
-      setNewMessage("")
+      onSendMessage(newMessage);
+      setNewMessage("");
     }
-  }
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const renderMessageStatus = (status: string) => {
     switch (status) {
       case "sent":
-        return <Check className="h-3 w-3 text-text-content" />
+        return <Check className="h-3 w-3 text-text-content" />;
       case "delivered":
-        return <CheckCheck className="h-3 w-3 text-text-content" />
+        return <CheckCheck className="h-3 w-3 text-text-content" />;
       case "read":
-        return <CheckCheck className="h-3 w-3 text-primary" />
+        return <CheckCheck className="h-3 w-3 text-primary" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center p-3 border-b border-border bg-card">
-        {/* {isMobile && ( */}
-          <Button variant="ghost" size="icon" className="mr-2">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        {/* )} */}
+        <Button variant="ghost" size="icon" className="mr-2">
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <Avatar className="h-10 w-10 mr-3">
           <AvatarImage src={user.avatar} alt={user.name} />
           <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
@@ -85,13 +80,17 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
       <ScrollArea className="flex-1 p-4 bg-background">
         <div className="space-y-4">
           {messages.map((message) => {
-            const isCurrentUser = message.senderId === "currentUser"
-
+            const isCurrentUser = message.senderId === "currentUser"; // Replace with auth user ID
             return (
-              <div key={message.id} className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}>
+              <div
+                key={message.id}
+                className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+              >
                 <div
                   className={`max-w-[70%] rounded-lg p-3 ${
-                    isCurrentUser ? "bg-primary text-white rounded-tr-none" : "bg-card text-text-header rounded-tl-none"
+                    isCurrentUser
+                      ? "bg-primary text-white rounded-tr-none"
+                      : "bg-card text-text-header rounded-tl-none"
                   }`}
                 >
                   <p>{message.content}</p>
@@ -101,11 +100,13 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
                     }`}
                   >
                     <span>{formatTime(message.timestamp)}</span>
-                    {isCurrentUser && <span className="ml-1">{renderMessageStatus(message.status)}</span>}
+                    {isCurrentUser && (
+                      <span className="ml-1">{renderMessageStatus(message.status)}</span>
+                    )}
                   </div>
                 </div>
               </div>
-            )
+            );
           })}
           <div ref={messagesEndRef} />
         </div>
@@ -131,6 +132,5 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
         </div>
       </div>
     </div>
-  )
+  );
 }
-

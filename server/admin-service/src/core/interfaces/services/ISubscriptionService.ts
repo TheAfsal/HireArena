@@ -14,5 +14,4 @@ export interface ISubscriptionService {
   deleteSubscriptionPlan(id: string): Promise<void>;
   getSubscriptionPlanById(id: string): Promise<any | null>;
   getAllSubscriptionPlans(): Promise<any[]>;
-  getAllSubscriptionPl(): Promise<any[]>;
 }

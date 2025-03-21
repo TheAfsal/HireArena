@@ -1,5 +1,5 @@
 import { IConversation } from "@core/types/chat.types";
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const conversationSchema = new Schema<IConversation>(
   {

@@ -1,11 +1,11 @@
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { formatDistanceToNow } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Message } from "react-hook-form";
-import { User } from "../page";
+import { User, Message } from "../page"; // Use page’s Message type
 
 interface UserListProps {
   users: User[];
@@ -41,19 +41,16 @@ export function UserList({
       <ScrollArea className="flex-1">
         <div className="p-2">
           {users.length === 0 ? (
-            <p className="text-center py-4 text-text-content">
-              No contacts found
-            </p>
+            <p className="text-center py-4 text-text-content">No contacts found</p>
           ) : (
             users.map((user) => {
-              const userMessages = messages[user.id] || [];
+              // Use a placeholder conversationId or fetch real one
+              const conversationId = `${user.id}-currentUser`; // Temporary
+              const userMessages = messages[conversationId] || [];
               const lastMessage =
-                userMessages.length > 0
-                  ? userMessages[userMessages.length - 1]
-                  : null;
+                userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
               const unreadCount = userMessages.filter(
-                //@ts-ignore
-                (m) => m.senderId === user.id && !m.read
+                (m) => m.senderId === user.id && m.status !== "read"
               ).length;
 
               return (
@@ -66,15 +63,11 @@ export function UserList({
                 >
                   <Avatar className="h-12 w-12 mr-3">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>
-                      {user.name.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
+                    <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-text-header truncate">
-                        {user.name}
-                      </h3>
+                      <h3 className="font-medium text-text-header truncate">{user.name}</h3>
                       {lastMessage && (
                         <span className="text-xs text-text-content">
                           {formatDistanceToNow(lastMessage.timestamp)}
@@ -83,9 +76,7 @@ export function UserList({
                     </div>
                     {lastMessage && (
                       <div className="flex justify-between items-center">
-                        <p className="text-sm text-text-content truncate">
-                          {lastMessage.content}
-                        </p>
+                        <p className="text-sm text-text-content truncate">{lastMessage.content}</p>
                         {unreadCount > 0 && (
                           <span className="ml-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             {unreadCount}

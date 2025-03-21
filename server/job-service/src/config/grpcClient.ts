@@ -2,37 +2,24 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
 
-const USER_SERVER_PROTO_PATH = path.join(
-  __dirname,
-  "../proto/user-service.proto"
-);
-const INTERVIEW_SERVER_PROTO_PATH = path.resolve(
-  __dirname,
-  "../proto/interview.proto"
-);
+const USER_SERVER_PROTO_PATH = path.join(  __dirname,  "../proto/user-service.proto");
+const INTERVIEW_SERVER_PROTO_PATH = path.resolve(  __dirname,  "../proto/interview.proto");
+const CHAT_SERVER_PROTO_PATH = path.resolve(  __dirname,  "../proto/chat.proto");
 
-const userServerPackageDefinition = protoLoader.loadSync(
-  USER_SERVER_PROTO_PATH
-);
-const userProto = grpc.loadPackageDefinition(userServerPackageDefinition).user;
+const userServerPackageDefinition = protoLoader.loadSync( USER_SERVER_PROTO_PATH );
+const userProto:any = grpc.loadPackageDefinition(userServerPackageDefinition).user;
 
-const interviewServerPackageDefinition = protoLoader.loadSync(
-  INTERVIEW_SERVER_PROTO_PATH
-);
-const interviewProto: any = grpc.loadPackageDefinition(
-  interviewServerPackageDefinition
-).interview;
+const interviewServerPackageDefinition = protoLoader.loadSync( INTERVIEW_SERVER_PROTO_PATH );
+const interviewProto:any = grpc.loadPackageDefinition( interviewServerPackageDefinition ).interview;
 
-//@ts-ignore
-const userServiceClient = new userProto.UserService(
-  `${process.env.USER_SERVER_URL}:5051`,
-  grpc.credentials.createInsecure()
-);
+const chatServerPackageDefinition = protoLoader.loadSync( CHAT_SERVER_PROTO_PATH );
+const chatProto:any = grpc.loadPackageDefinition(chatServerPackageDefinition).chat;
 
-const interviewServerClient = new interviewProto.InterviewService(
-  `${process.env.INTERVIEW_SERVER_URL}:${process.env.INTERVIEW_SERVER_GRPC_PORT}`,
-  grpc.credentials.createInsecure()
-);
+
+const userServiceClient = new userProto.UserService(process.env.USER_SERVER_URL,grpc.credentials.createInsecure());
+const interviewServerClient = new interviewProto.InterviewService(process.env.INTERVIEW_SERVER_URL,grpc.credentials.createInsecure());
+const chatServiceClient = new chatProto.ChatService(process.env.CHAT_SERVER_URL,grpc.credentials.createInsecure());
+
 
 const getCompanyIdByUserId = (userId: string) => {
   return new Promise<string>((resolve, reject) => {
@@ -122,5 +109,21 @@ const createMachineTask = (
   });
 };
 
-export { getCompanyIdByUserId, getCompaniesDetails, createInterview, createAptitudeTest,createMachineTask };
+const createConversation = (participants: string[], jobId: string) => {
+  return new Promise((resolve, reject) => {
+    chatServiceClient.CreateConversation(
+      { participants, jobId },
+      (err: any, response: any) => {
+        if (err) {
+          console.error("Error calling Chat Service:", err);
+          reject(err);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
+};
+
+export { getCompanyIdByUserId, getCompaniesDetails, createInterview, createAptitudeTest,createMachineTask, createConversation };
 

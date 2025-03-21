@@ -1,6 +1,5 @@
 packages:
-  - "services/user-service"
-  - "services/job-service"
+  - "server/*"
   - "frontend"
-  - "shared"
-  - "!**/node_modules/**"
+  - "shared/*"
+  - packages/**

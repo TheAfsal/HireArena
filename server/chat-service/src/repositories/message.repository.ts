@@ -1,6 +1,6 @@
 import { IMessage } from "@core/types/chat.types";
 import { BaseRepository } from "./base.repository";
-import { Message } from "../model/message";
+import { Message } from "../model/message.model";
 import { IMessageRepository } from "@core/interfaces/repository/IMessageRepository";
 
 export class MessageRepository

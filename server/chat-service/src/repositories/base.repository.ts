@@ -1,5 +1,5 @@
-import { IBaseRepository } from '@core/interfaces/repository/IBaseRepository';
-import { Model, Document } from 'mongoose';
+import { IBaseRepository } from "@core/interfaces/repository/IBaseRepository";
+import { Model, Document } from "mongoose";
 
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   constructor(protected model: Model<T>) {}
@@ -21,12 +21,19 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     return await this.model.findByIdAndUpdate(id, data, { new: true }).exec();
   }
 
+  async find(query: any): Promise<T[]> {
+    return await this.model.find(query).exec();
+  }
+
+  async findOne(query: any): Promise<T | null> {
+    return await this.model.findOne(query).exec();
+  }
+
   async delete(id: string): Promise<boolean> {
     const result = await this.model.findByIdAndDelete(id).exec();
     return !!result;
   }
 }
-
 
 // import { Model, Document } from "mongoose";
 

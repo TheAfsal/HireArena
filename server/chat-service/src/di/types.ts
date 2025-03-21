@@ -9,6 +9,7 @@ export const TYPES ={
     // Repository
     MessageRepository: Symbol.for('MessageRepository'),
     ConversationRepository: Symbol.for('ConversationRepository'),
+    UserConversationsRepository: Symbol.for("UserConversationsRepository"),
 
     SocketIOServer: Symbol.for('SocketIOServer'),   
 }

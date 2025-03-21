@@ -1,11 +1,9 @@
 "use client";
 
-import { generateMessages, generateUsers } from "@/lib/mock-data";
 import { useState, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 import { UserList } from "./components/user-list";
 import { ChatInterface } from "./components/chat-interface";
-import { ThemeToggle } from "./components/theme-toggle";
-import { io, Socket } from "socket.io-client";
 
 export interface User {
   id: string;
@@ -22,140 +20,113 @@ export interface Message {
   content: string;
   timestamp: Date;
   status: "sent" | "delivered" | "read";
-  read?: boolean;
-}
-
-export interface IMessage {
-  senderId: string;
-  content: string;
-  timestamp: Date;
-  roomId: string;
+  conversationId: string; 
 }
 
 export default function ChatApp() {
   const [users, setUsers] = useState<User[]>([]);
   const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  const getAuthToken = () => "your-jwt-token-here"; 
 
   useEffect(() => {
-    const mockUsers = generateUsers(15);
-    setUsers(mockUsers);
-
-    const mockMessages: { [key: string]: Message[] } = {};
-    mockUsers.forEach((user) => {
-      mockMessages[user.id] = generateMessages(user.id, 10);
+    const newSocket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`, {
+      auth: { token: getAuthToken() },
     });
-    setMessages(mockMessages);
 
-    if (mockUsers.length > 0) {
-      setSelectedUser(mockUsers[0]);
-    }
+    setSocket(newSocket);7
+
+    // Fetch users from user-service (mocked here for simplicity)
+    const fetchUsers = async () => {
+      // Replace with actual API call to user-service
+      const mockUsers: User[] = [
+        { id: "user1", name: "Company A", avatar: "", status: "online" },
+        { id: "user2", name: "Job Seeker B", avatar: "", status: "offline" },
+      ];
+      setUsers(mockUsers);
+      if (mockUsers.length > 0) setSelectedUser(mockUsers[0]);
+    };
+    fetchUsers();
+
+    // Socket.IO event handlers
+    newSocket.on("connect", () => {
+      console.log("Connected to chat server");
+    });
+
+    newSocket.on("newMessage", (message: Message) => {
+      setMessages((prev) => ({
+        ...prev,
+        [message.conversationId]: [...(prev[message.conversationId] || []), message],
+      }));
+    });
+
+    newSocket.on("chatHistory", (history: Message[]) => {
+      if (history.length > 0) {
+        const conversationId = history[0].conversationId;
+        setMessages((prev) => ({
+          ...prev,
+          [conversationId]: history,
+        }));
+      }
+    });
+
+    newSocket.on("error", (error: string) => {
+      console.error("Socket error:", error);
+    });
+
+    // Cleanup
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
-  try {
-    const socket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`);
-
-    socket.emit("joinRoom", "room1");
-
-    console.log(socket);
-
-    socket.emit("message", {
-      roomId: "room1",
-      content: "Hello everyone!",
-      senderId: "user123",
-    });
-
-    socket.on("newMessage", (message: IMessage) => {
-      console.log("New message:", message);
-    });
-
-    socket.on("chatHistory", (messages: IMessage) => {
-      console.log("Chat history:", messages);
-    });
-  } catch (error) {}
+  // Fetch chat history when selecting a user
+  useEffect(() => {
+    if (selectedUser && socket) {
+      // Replace with actual conversation ID from job-service or chat-service
+      const conversationId = `${selectedUser.id}-currentUser`; // Temporary; fetch real ID
+      setSelectedConversationId(conversationId);
+      socket.emit("joinRoom", conversationId);
+      socket.emit("chatHistory", conversationId);
+    }
+  }, [selectedUser, socket]);
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const sendMessage = (content: string) => {
-    if (!selectedUser || !content.trim()) return;
+    if (!selectedUser || !content.trim() || !socket || !selectedConversationId) return;
 
-    const newMessage: Message = {
+    const newMessage = {
+      roomId: selectedConversationId,
+      content,
+      senderId: "currentUser", 
+    };
+
+    socket.emit("message", newMessage);
+
+    const tempMessage: Message = {
       id: Date.now().toString(),
       senderId: "currentUser",
       receiverId: selectedUser.id,
       content,
       timestamp: new Date(),
       status: "sent",
+      conversationId: selectedConversationId,
     };
-
     setMessages((prev) => ({
       ...prev,
-      [selectedUser.id]: [...(prev[selectedUser.id] || []), newMessage],
+      [selectedConversationId]: [...(prev[selectedConversationId] || []), tempMessage],
     }));
-
-    // Simulate message being delivered after 1 second
-    setTimeout(() => {
-      setMessages((prev) => {
-        const updatedMessages = [...prev[selectedUser.id]];
-        const messageIndex = updatedMessages.findIndex(
-          (m) => m.id === newMessage.id
-        );
-        if (messageIndex !== -1) {
-          updatedMessages[messageIndex] = {
-            ...updatedMessages[messageIndex],
-            status: "delivered",
-          };
-        }
-        return {
-          ...prev,
-          [selectedUser.id]: updatedMessages,
-        };
-      });
-    }, 1000);
-
-    // Simulate message being read after 2 seconds
-    setTimeout(() => {
-      setMessages((prev) => {
-        const updatedMessages = [...prev[selectedUser.id]];
-        const messageIndex = updatedMessages.findIndex(
-          (m) => m.id === newMessage.id
-        );
-        if (messageIndex !== -1) {
-          updatedMessages[messageIndex] = {
-            ...updatedMessages[messageIndex],
-            status: "read",
-          };
-        }
-        return {
-          ...prev,
-          [selectedUser.id]: updatedMessages,
-        };
-      });
-    }, 2000);
-
-    // Simulate reply after 3 seconds
-    setTimeout(() => {
-      const reply: Message = {
-        id: (Date.now() + 1).toString(),
-        senderId: selectedUser.id,
-        receiverId: "currentUser",
-        content: `Reply to: ${content}`,
-        timestamp: new Date(),
-        status: "read",
-      };
-
-      setMessages((prev) => ({
-        ...prev,
-        [selectedUser.id]: [...(prev[selectedUser.id] || []), reply],
-      }));
-    }, 3000);
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-full bg-background">
       <div className="flex flex-col w-full h-full md:flex-row">
         <div className="w-full md:w-1/3 border-r border-border">
           <UserList
@@ -168,17 +139,15 @@ export default function ChatApp() {
           />
         </div>
         <div className="flex-1 flex flex-col">
-          {selectedUser ? (
+          {selectedUser && selectedConversationId ? (
             <ChatInterface
               user={selectedUser}
-              messages={messages[selectedUser.id] || []}
+              messages={messages[selectedConversationId] || []}
               onSendMessage={sendMessage}
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-text-content">
-                Select a chat to start messaging
-              </p>
+              <p className="text-text-content">Select a chat to start messaging</p>
             </div>
           )}
         </div>

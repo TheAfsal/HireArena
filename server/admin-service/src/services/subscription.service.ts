@@ -85,6 +85,10 @@ export class SubscriptionService implements ISubscriptionService {
   async getAllSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
     return await this.subscriptionRepository.getAll();
   }
+
+  async getAlSubscriptionPlans(): Promise<ISubscriptionPlan[]> {
+    return await this.subscriptionRepository.getAll();
+  }
 }
 
 export default SubscriptionService;

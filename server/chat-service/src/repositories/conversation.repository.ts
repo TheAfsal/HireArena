@@ -1,9 +1,12 @@
 import { IConversation } from "@core/types/chat.types";
 import { BaseRepository } from "./base.repository";
-import { Conversation } from "../model/conversation";
 import { IConversationRepository } from "@core/interfaces/repository/IConversationRepository";
+import { Conversation } from "model/conversation.model";
 
-export class ConversationRepository extends BaseRepository<IConversation> implements IConversationRepository {
+export class ConversationRepository
+  extends BaseRepository<IConversation>
+  implements IConversationRepository
+{
   constructor() {
     super(Conversation);
   }
