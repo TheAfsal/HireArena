@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { ICompany } from "@shared/user.types";
+import { ICompany } from "@shared/types/user.types";
 
 export interface IInvitation {
   id: string;
@@ -34,7 +34,7 @@ export interface SpecialisedUserSubscription
 
 export interface ISubscriptionPlanGRPC {
   duration: number;
-  features: string; 
+  features: string;
 }
 
 export interface ITransaction {

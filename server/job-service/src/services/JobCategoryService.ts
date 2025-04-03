@@ -1,6 +1,6 @@
 import { IJobCategoryService } from "@core/interfaces/services/IJobCategoryService";
 import { IJobCategoryRepository } from "@core/interfaces/repository/IJobCategoryRepository";
-import { IJobCategory } from "@shared/job.types";
+import { IJobCategory } from "@shared/types/job.types";
 
 export class JobCategoryService implements IJobCategoryService {
   private jobCategoryRepository: IJobCategoryRepository;
@@ -9,7 +9,11 @@ export class JobCategoryService implements IJobCategoryService {
     this.jobCategoryRepository = jobCategoryRepository;
   }
 
-  async createJobCategory(name: string, description: string, categoryTypeId: string): Promise<IJobCategory> {
+  async createJobCategory(
+    name: string,
+    description: string,
+    categoryTypeId: string
+  ): Promise<IJobCategory> {
     return await this.jobCategoryRepository.create({
       name,
       description,
@@ -18,7 +22,13 @@ export class JobCategoryService implements IJobCategoryService {
     });
   }
 
-  async updateJobCategory(id: string, name: string, description: string, status: boolean, categoryTypeId: string): Promise<IJobCategory> {
+  async updateJobCategory(
+    id: string,
+    name: string,
+    description: string,
+    status: boolean,
+    categoryTypeId: string
+  ): Promise<IJobCategory> {
     return await this.jobCategoryRepository.update(id, {
       name,
       description,

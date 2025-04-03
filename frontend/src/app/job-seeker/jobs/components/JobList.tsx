@@ -11,6 +11,7 @@ function JobList({ filters }: { filters: any }) {
     fetchJobs();
     console.log("filters", filters);
   }, [filters]);
+  
 
   const fetchJobs = async () => {
     try {

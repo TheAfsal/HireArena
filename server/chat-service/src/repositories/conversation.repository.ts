@@ -11,11 +11,18 @@ export class ConversationRepository
     super(Conversation);
   }
 
-  async createConversation(participants: string[], jobId?: string): Promise<IConversation> {
-    return await this.create({ participants, jobId });
+  async createConversation(
+    participants: string[],
+    jobId: string,
+    companyName: string,
+    logo: string
+  ): Promise<IConversation> {
+    return await this.create({ participants, jobId, companyName, logo });
   }
 
   async findConversationById(id: string): Promise<IConversation | null> {
     return await this.findById(id);
   }
 }
+
+

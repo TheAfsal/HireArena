@@ -16,7 +16,7 @@
       "@config/*": ["config/*"],
       "@models/*": ["models/*"],
       "@routes/*": ["routes/*"],
-      "@shared/*": ["../../../shared/types/*"]
+      "@shared/types/*": ["../../../shared/types/*"]
     },
     "skipDefaultLibCheck": true,
     "noImplicitAny": false,

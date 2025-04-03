@@ -83,34 +83,73 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     }));
   }
 
-  async getAllSubscriptions(): Promise<IUserSubscription[]> {
-    const subscriptions = await this.prisma.userSubscription.findMany({
-      include: {
-        jobSeeker: {
-          select: { fullName: true, email: true },
-        },
+//   async getAllSubscriptions(): Promise<IUserSubscription[]> {
+//     const subscriptions = await this.prisma.userSubscription.findMany({
+//       include: {
+//         jobSeeker: {
+//           select: { fullName: true, email: true },
+//         },
+//       },
+//       orderBy: { createdAt: "desc" },
+//     });
+
+//     const transactionIds = subscriptions
+//       .map((sub) => sub.transactionId)
+//       .filter(Boolean);
+
+//     const transactions = await this.prisma.transaction.findMany({
+//       where: { id: { in: transactionIds as string[] } },
+//       select: { id: true, amount: true },
+//     });
+
+//     const transactionMap = new Map(transactions.map((t) => [t.id, t.amount]));
+
+//     return subscriptions.map((sub) => ({
+//       ...sub,
+//       price: sub.transactionId
+//         ? transactionMap.get(sub.transactionId) || null
+//         : null,
+//     }));
+//   }
+
+async getAllSubscriptions(
+  skip: number,
+  take: number
+): Promise<IUserSubscription[]> {
+  const subscriptions = await this.prisma.userSubscription.findMany({
+    skip,
+    take,
+    include: {
+      jobSeeker: {
+        select: { fullName: true, email: true },
       },
-      orderBy: { createdAt: "desc" },
-    });
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
-    const transactionIds = subscriptions
-      .map((sub) => sub.transactionId)
-      .filter(Boolean);
+  const transactionIds = subscriptions
+    .map((sub) => sub.transactionId)
+    .filter(Boolean) as string[];
 
-    const transactions = await this.prisma.transaction.findMany({
-      where: { id: { in: transactionIds as string[] } },
-      select: { id: true, amount: true },
-    });
+  const transactions = await this.prisma.transaction.findMany({
+    where: { id: { in: transactionIds } },
+    select: { id: true, amount: true },
+  });
 
-    const transactionMap = new Map(transactions.map((t) => [t.id, t.amount]));
+  const transactionMap = new Map(transactions.map((t) => [t.id, t.amount]));
 
-    return subscriptions.map((sub) => ({
-      ...sub,
-      price: sub.transactionId
-        ? transactionMap.get(sub.transactionId) || null
-        : null,
-    }));
-  }
+  return subscriptions.map((sub) => ({
+    ...sub,
+    price: sub.transactionId
+      ? transactionMap.get(sub.transactionId) || null
+      : null,
+  }));
+}
+
+async countSubscriptions(): Promise<number> {
+  return await this.prisma.userSubscription.count();
+}
+
 }
 
 export default SubscriptionRepository;

@@ -11,6 +11,7 @@ import {
   GalleryVerticalEnd,
   Home,
   Map,
+  MessageCircleDashed,
   PieChart,
   Settings2,
   SquareTerminal,
@@ -179,20 +180,25 @@ const menuItems = [
     url: "#",
     badge: "1",
   },
-  {
-    title: "All Applicants",
-    icon: Users,
-    url: "#",
-  },
+  // {
+  //   title: "All Applicants",
+  //   icon: Users,
+  //   url: "#",
+  // },
   {
     title: "Job Listing",
     icon: Briefcase,
     url: "/panel/jobs-list",
   },
+  // {
+  //   title: "My Schedule",
+  //   icon: Calendar,
+  //   url: "#",
+  // },
   {
-    title: "My Schedule",
-    icon: Calendar,
-    url: "#",
+    title: "Chats",
+    icon: MessageCircleDashed,
+    url: "/panel/chats",
   },
 ];
 

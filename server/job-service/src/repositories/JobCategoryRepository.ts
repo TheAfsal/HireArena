@@ -1,6 +1,6 @@
 import { IJobCategoryRepository } from "@core/interfaces/repository/IJobCategoryRepository";
 import { PrismaClient } from "@prisma/client";
-import { ICategoryType, IJobCategory } from "@shared/job.types";
+import { ICategoryType, IJobCategory } from "@shared/types/job.types";
 
 // export interface IJobCategoryRepository {
 //   create(data: {
@@ -94,7 +94,9 @@ class JobCategoryRepository implements IJobCategoryRepository {
     };
   }
 
-  async findById(id: string): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null> {
+  async findById(
+    id: string
+  ): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null> {
     return await this.prisma.jobCategory.findUnique({
       where: { id },
     });

@@ -51,42 +51,42 @@ export interface Job {
 
 export const columns: ColumnDef<Job>[] = [
   {
-    accessorKey: "title",
+    accessorKey: "jobTitle",
     header: "Title",
-    cell: ({ row }) => <div>{row.getValue("title")}</div>,
+    cell: ({ row }) => <div>{row.getValue("jobTitle")}</div>,
   },
   {
-    accessorKey: "salaryRange",
+    accessorKey: "salaryMax",
     header: "Salary Range",
-    cell: ({ row }) => <div>{row.getValue("salaryRange")}</div>,
+    cell: ({ row }) => <div>{`upto ${row.getValue("salaryMax")}`}</div>,
   },
   {
     accessorKey: "employmentTypes",
     header: "Job Type",
     cell: ({ row }) => {
+      const employmentTypes = row.getValue("employmentTypes");
       //@ts-ignore
-      const employmentTypes = row.getValue("employmentTypes").join(", ");
-      return <Badge variant="outline">{employmentTypes}</Badge>;
+      return <Badge variant="outline">{employmentTypes[0].type}</Badge>;
     },
   },
   {
     accessorKey: "categories",
     header: "Categories",
     cell: ({ row }) => {
+      const categories = row.getValue("categories");
       //@ts-ignore
-      const categories = row.getValue("categories").join(", ");
-      return <div>{categories}</div>;
+      return <div>{categories[0].name}</div>;
     },
   },
-  {
-    accessorKey: "skills",
-    header: "Skills",
-    cell: ({ row }) => {
-      //@ts-ignore
-      const skills = row.getValue("skills").join(", ");
-      return <div>{skills}</div>;
-    },
-  },
+  // {
+  //   accessorKey: "skills",
+  //   header: "Skills",
+  //   cell: ({ row }) => {
+  //     //@ts-ignore
+  //     const skills = row.getValue("skills");
+  //     return <div>{requiredSkills[0].name}</div>;
+  //   },
+  // },
   {
     accessorKey: "createdAt",
     header: "Created At",
@@ -151,6 +151,8 @@ export function JobList() {
   if (error) {
     return <div>Error loading job data</div>;
   }
+
+  console.log(data);
 
   return (
     <div className="w-full">

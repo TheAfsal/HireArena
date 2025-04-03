@@ -1,6 +1,5 @@
-import { IAdmin } from "@shared/user.types";
+import { IAdmin } from "@shared/types/user.types";
 
 export interface IAdminRepository {
-    findByEmail(email: string): Promise<IAdmin | null>;
-  }
-  
+  findByEmail(email: string): Promise<IAdmin | null>;
+}

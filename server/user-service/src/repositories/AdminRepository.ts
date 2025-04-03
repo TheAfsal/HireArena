@@ -1,6 +1,6 @@
 import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
 import { PrismaClient } from "@prisma/client";
-import { IAdmin } from "@shared/index";
+import { IAdmin } from "@shared/types/index";
 
 // export interface IAdmin {
 //   id: string;

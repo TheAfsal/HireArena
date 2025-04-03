@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
 import { formatDistanceToNow } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Message } from "../page"; // Use page’s Message type
+import { User, Message } from "../page"; 
 
 interface UserListProps {
   users: User[];
@@ -44,30 +44,29 @@ export function UserList({
             <p className="text-center py-4 text-text-content">No contacts found</p>
           ) : (
             users.map((user) => {
-              // Use a placeholder conversationId or fetch real one
-              const conversationId = `${user.id}-currentUser`; // Temporary
+              const conversationId = user._id;
               const userMessages = messages[conversationId] || [];
               const lastMessage =
                 userMessages.length > 0 ? userMessages[userMessages.length - 1] : null;
               const unreadCount = userMessages.filter(
-                (m) => m.senderId === user.id && m.status !== "read"
+                (m) => m.senderId === user._id && m.status !== "read"
               ).length;
 
               return (
                 <div
-                  key={user.id}
+                  key={user._id}
                   className={`flex items-center p-3 rounded-lg cursor-pointer mb-1 hover:bg-muted ${
-                    selectedUser?.id === user.id ? "bg-muted" : ""
+                    selectedUser?._id === user._id ? "bg-muted" : ""
                   }`}
                   onClick={() => onSelectUser(user)}
                 >
                   <Avatar className="h-12 w-12 mr-3">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarImage src={user.logo} alt={user.companyName} />
+                    <AvatarFallback>{user.companyName.substring(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-text-header truncate">{user.name}</h3>
+                      <h3 className="font-medium text-text-header truncate">{user.companyName}</h3>
                       {lastMessage && (
                         <span className="text-xs text-text-content">
                           {formatDistanceToNow(lastMessage.timestamp)}

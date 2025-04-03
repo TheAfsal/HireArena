@@ -6,7 +6,7 @@ import JobSeekerRepository from "../repositories/JobSeekerRepository";
 import { IProfileService } from "@core/interfaces/services/IProfileService";
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
-import { ICompany, IJobSeeker } from "@shared/user.types";
+import { ICompany, IJobSeeker } from "@shared/types/user.types";
 import { IJobSeekerUpdateInput } from "@core/types/services/IJobSeekerProfile";
 
 class ProfileService implements IProfileService {
@@ -198,16 +198,23 @@ class ProfileService implements IProfileService {
   async getAllProfiles(callback: grpc.sendUnaryData<any>) {
     this.jobSeekerRepository
       .getAllProfiles()
-      .then((details: Omit<IJobSeeker, "password" | "phone" | "dob" | "gender" | "updatedAt">[]) => {
-        if (details) {
-          callback(null, { jobSeekers: details });
-        } else {
-          callback({
-            code: grpc.status.NOT_FOUND,
-            details: "User not found",
-          });
+      .then(
+        (
+          details: Omit<
+            IJobSeeker,
+            "password" | "phone" | "dob" | "gender" | "updatedAt"
+          >[]
+        ) => {
+          if (details) {
+            callback(null, { jobSeekers: details });
+          } else {
+            callback({
+              code: grpc.status.NOT_FOUND,
+              details: "User not found",
+            });
+          }
         }
-      })
+      )
       .catch((err: Error) => {
         callback({
           code: grpc.status.INTERNAL,

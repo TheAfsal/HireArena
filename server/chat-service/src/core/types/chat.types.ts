@@ -11,7 +11,9 @@ export interface IMessage extends Document {
 
 export interface IConversation extends Document {
   participants: string[];
-  jobId?: string;
+  jobId: string;
+  companyName: string;
+  logo: string;
   createdAt: Date;
   updatedAt: Date;
 }

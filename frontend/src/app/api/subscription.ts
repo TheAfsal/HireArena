@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { SubscriptionPlan } from "../admin/subscription/components/subscription-history";
 
 export async function createSubscription(plan: any): Promise<any> {
   try {
@@ -130,21 +131,46 @@ export async function fetchSubscriptionHistory(): Promise<any> {
   }
 }
 
-export async function fetchSubscriptionsByAdmin(): Promise<any> {
+
+export async function fetchSubscriptionsByAdmin(
+  page: number,
+  pageSize: number
+): Promise<{ subscriptions: SubscriptionPlan[]; total: number }> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/admin/subscriptions`
+      `/user-service/api/admin/subscriptions?page=${page}&pageSize=${pageSize}`
     );
     console.log(response.data);
 
-    return response.data.data;
+    return {
+      subscriptions: response.data.data.subscriptions,
+      total: response.data.data.total,
+    };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
         error.response ? error.response.data.error : "Something went wrong"
       );
     }
-
     throw new Error("Unknown error occurred");
   }
 }
+
+// export async function fetchSubscriptionsByAdmin(): Promise<any> {
+//   try {
+//     const response = await axiosInstance.get(
+//       `/user-service/api/admin/subscriptions`
+//     );
+//     console.log(response.data);
+
+//     return response.data.data;
+//   } catch (error: unknown) {
+//     if (axios.isAxiosError(error)) {
+//       throw new Error(
+//         error.response ? error.response.data.error : "Something went wrong"
+//       );
+//     }
+
+//     throw new Error("Unknown error occurred");
+//   }
+// }

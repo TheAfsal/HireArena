@@ -1,6 +1,8 @@
 interface Request {
   participants: string[];
   jobId: string;
+  companyName: string;
+  logo:string;
 }
 
 interface Response {
@@ -8,4 +10,4 @@ interface Response {
   message: string;
 }
 
-export { Request, Response } 
+export { Request, Response };

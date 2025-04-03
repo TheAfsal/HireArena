@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IAuthResponse } from "@core/types/IAuthResponse";
 import { IError } from "@core/types/IError";
 import { IGenericResponse } from "@core/types/IGenericResponse";
-import { IJobSeeker } from "@shared/user.types";
+import { IJobSeeker } from "@shared/types/user.types";
 
 export interface IAuthController {
   signup(

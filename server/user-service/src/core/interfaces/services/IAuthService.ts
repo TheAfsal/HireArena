@@ -1,6 +1,6 @@
 import { IUserCreateRequest } from "../../types/IUserCreateRequest";
 import { IAuthResponse } from "../../types/IAuthResponse";
-import { IEmployee, IJobSeeker } from "@shared/user.types";
+import { IEmployee, IJobSeeker } from "@shared/types/user.types";
 
 export interface IAuthService {
   signup: (userData: IUserCreateRequest) => Promise<{ message: string }>;

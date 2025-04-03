@@ -7,5 +7,7 @@ export interface ISubscriptionRepository {
   // findSubscriptionByUserId(userId: string): Promise<IUserSubscription | null>;
   // updateSubscription(userId: string, data: Partial<IUserSubscription>): Promise<IUserSubscription>;
   getSubscriptionHistory(userId: string): Promise<IUserSubscription[]>;
-  getAllSubscriptions(): Promise<IUserSubscription[]>;
+  // getAllSubscriptions(): Promise<IUserSubscription[]>;
+  countSubscriptions(): Promise<number>;
+  getAllSubscriptions( skip: number, take: number ): Promise<IUserSubscription[]> 
 }

@@ -5,6 +5,8 @@ const conversationSchema = new Schema<IConversation>(
   {
     participants: [{ type: String, required: true }],
     jobId: { type: String },
+    companyName: { type: String },
+    logo: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

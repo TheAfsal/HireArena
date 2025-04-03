@@ -6,7 +6,7 @@ import { IAuthResponse } from "../core/types/IAuthResponse";
 import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
 import { IUser } from "@core/types/IUser";
 import { IAuthController } from "@core/interfaces/controllers/IAuthController";
-import { IJobSeeker } from "@shared/user.types";
+import { IJobSeeker } from "@shared/types/user.types";
 
 declare global {
   namespace Express {
@@ -72,10 +72,7 @@ class AuthController implements IAuthController {
     }
   };
 
-  verifyToken = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
+  verifyToken = async (req: Request, res: Response): Promise<void> => {
     const { token } = req.params;
 
     try {

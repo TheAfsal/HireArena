@@ -1,6 +1,6 @@
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 import { PrismaClient, Company } from "@prisma/client";
-import { ICompany } from "@shared/user.types";
+import { ICompany } from "@shared/types/user.types";
 
 class CompanyRepository implements ICompanyRepository {
   private prisma: PrismaClient;
@@ -99,10 +99,6 @@ class CompanyRepository implements ICompanyRepository {
     });
   }
 
-  async findMany(): Promise<ICompany[]> {
-    return await this.prisma.company.findMany();
-  }
-
   async findByIds(companyIds: string[]): Promise<ICompany[]> {
     try {
       if (!Array.isArray(companyIds) || companyIds.length === 0) {
@@ -119,6 +115,38 @@ class CompanyRepository implements ICompanyRepository {
       throw error;
     }
   }
+
+  async findMany(
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<ICompany[]> {
+    return await this.prisma.company.findMany({
+      skip,
+      take,
+      where: {
+        companyName: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    });
+  }
+
+  async count(search: string): Promise<number> {
+    return await this.prisma.company.count({
+      where: {
+        companyName: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    });
+  }
+
+  // async findMany(): Promise<ICompany[]> {
+  //   return await this.prisma.company.findMany();
+  // }
 }
 
 export default CompanyRepository;

@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 
 function HeaderCard() {
+  
   return (
     <div className="relative">
       {/* <div className="absolute top-0 left-0 bg-slate-50 rounded-xl shadow-sm p-4 flex items-center gap-6">

@@ -1,7 +1,7 @@
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 import { IRedisService } from "@core/interfaces/services/IRedisService";
 import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
-import { IJobSeeker } from "@shared/user.types";
+import { IJobSeeker } from "@shared/types/user.types";
 
 class JobSeekerService implements IJobSeekerService {
   private jobSeekerRepository: IJobSeekerRepository;

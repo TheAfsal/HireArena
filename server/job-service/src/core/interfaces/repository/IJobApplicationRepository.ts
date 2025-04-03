@@ -1,4 +1,4 @@
-import { IJobApplication } from "@shared/job.types";
+import { IJobApplication } from "@shared/types/job.types";
 
 export interface IJobApplicationRepository {
   findApplication(
@@ -12,5 +12,12 @@ export interface IJobApplicationRepository {
   ): Promise<IJobApplication>;
   findJob(jobId: string): Promise<boolean>;
   findAppliedJobs(jobSeekerId: string): Promise<{ jobId: string }[]>;
-  findAllByJobSeeker(jobSeekerId: string): Promise<Omit<IJobApplication, "id" | "jobId" | "jobSeekerId" | "status" | "appliedAt">[]>;
+  findAllByJobSeeker(
+    jobSeekerId: string
+  ): Promise<
+    Omit<
+      IJobApplication,
+      "id" | "jobId" | "jobSeekerId" | "status" | "appliedAt"
+    >[]
+  >;
 }

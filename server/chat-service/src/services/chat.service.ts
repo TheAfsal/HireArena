@@ -14,12 +14,12 @@ export class ChatService implements IChatService {
     @inject(TYPES.UserConversationsRepository) private userConversationsRepo: IUserConversationsRepository
   ) {}
 
-  async startConversation(participants: string[], jobId?: string) {
+  async startConversation(participants: string[], jobId: string ,companyName: string, logo: string) {
     if (participants.length < 2) {
       throw new Error("At least two participants are required");
     }
 
-    const conversation = await this.conversationRepo.createConversation(participants, jobId);
+    const conversation = await this.conversationRepo.createConversation(participants, jobId, companyName, logo);
 
     await Promise.all(
       participants.map((userId) =>
@@ -43,7 +43,11 @@ export class ChatService implements IChatService {
     return await this.messageRepo.getMessagesByConversationId(conversationId);
   }
 
-  async getUserConversations(userId: string) {
+  async getConversation(conversationId: string) {
+    return await this.conversationRepo.findConversationById(conversationId);
+  }
+
+  async getUserConversations(userId: string): Promise<IConversation[]> {
     const userConversations = await this.userConversationsRepo.getUserConversations(userId);
     if (!userConversations || !userConversations.conversationIds.length) {
       return [];
@@ -55,8 +59,24 @@ export class ChatService implements IChatService {
       )
     );
 
-    return conversations.filter((conv): conv is IConversation => conv !== null);
+    return conversations.filter(
+      (conv): conv is IConversation => conv !== null
+    );
   }
 
-  
+  // async getUserConversations(userId: string) {
+  //   const userConversations = await this.userConversationsRepo.getUserConversations(userId);
+  //   if (!userConversations || !userConversations.conversationIds.length) {
+  //     return [];
+  //   }
+
+
+  //   const conversations = await Promise.all(
+  //     userConversations.conversationIds.map((conversationId) =>
+  //       this.conversationRepo.findConversationById(conversationId)
+  //     )
+  //   );
+
+  //   return conversations.filter((conv): conv is IConversation => conv !== null);
+  // }  
 }

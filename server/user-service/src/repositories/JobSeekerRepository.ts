@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
-import { IJobSeeker } from "@shared/user.types";
+import { IJobSeeker } from "@shared/types/user.types";
 import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
 import { IJobSeekerRepositoryInput } from "@core/types/services/IJobSeekerProfile";
 

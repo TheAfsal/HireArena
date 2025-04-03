@@ -1,5 +1,5 @@
 import * as grpc from "@grpc/grpc-js";
-import { ICompany, IJobSeeker } from "@shared/user.types";
+import { ICompany, IJobSeeker } from "@shared/types/user.types";
 import { IJobSeekerUpdateInput } from "@core/types/services/IJobSeekerProfile";
 
 export interface IProfileService {
@@ -41,7 +41,5 @@ export interface IProfileService {
 
   updateMediaLinks(userId: string, data: any): Promise<any>;
 
-  getAllProfiles(
-    callback: grpc.sendUnaryData<any>
-  ): Promise< void >;
+  getAllProfiles(callback: grpc.sendUnaryData<any>): Promise<void>;
 }

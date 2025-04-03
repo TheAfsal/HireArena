@@ -10,11 +10,15 @@
   "description": "",
   "exports": {
     "./chatProto/chat.proto": "./src/chatProto/chat.proto",
-    "./chatProto/chat.types": "./src/chatProto/chat.types.ts"
+    "./chatProto/chat.types": "./src/chatProto/chat.types.ts",
+    "./jobProto/job.proto": "./src/jobProto/job.proto",
+    "./jobProto/job.types": "./src/jobProto/job.types.ts"
   },
   "files": [
     "src/chatProto/chat.proto",
-    "src/chatProto/chat.types.ts"
+    "src/chatProto/chat.types.ts",
+    "src/jobProto/job.proto",
+    "src/jobProto/job.types.ts"
   ],
   "types": "./src/chatProto/chat.types.ts"
 }

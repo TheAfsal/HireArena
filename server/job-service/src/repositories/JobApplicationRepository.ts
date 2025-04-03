@@ -1,6 +1,6 @@
 import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
 import { PrismaClient } from "@prisma/client";
-import { IJobApplication } from "@shared/job.types";
+import { IJobApplication } from "@shared/types/job.types";
 
 class JobApplicationRepository implements IJobApplicationRepository {
   private prisma: PrismaClient;
@@ -9,13 +9,20 @@ class JobApplicationRepository implements IJobApplicationRepository {
     this.prisma = prisma;
   }
 
-  async findApplication(jobId: string, jobSeekerId: string): Promise<IJobApplication | null> {
+  async findApplication(
+    jobId: string,
+    jobSeekerId: string
+  ): Promise<IJobApplication | null> {
     return await this.prisma.jobApplication.findFirst({
       where: { jobId, jobSeekerId },
     });
   }
 
-  async createApplication(jobId: string, jobSeekerId: string, resumeUrl?: string): Promise<IJobApplication> {
+  async createApplication(
+    jobId: string,
+    jobSeekerId: string,
+    resumeUrl?: string
+  ): Promise<IJobApplication> {
     return await this.prisma.jobApplication.create({
       data: { jobId, jobSeekerId, resumeUrl },
     });
@@ -33,7 +40,14 @@ class JobApplicationRepository implements IJobApplicationRepository {
     });
   }
 
-  async findAllByJobSeeker(jobSeekerId: string): Promise<Omit<IJobApplication, "id" | "jobId" | "jobSeekerId" | "status" | "appliedAt">[]> {
+  async findAllByJobSeeker(
+    jobSeekerId: string
+  ): Promise<
+    Omit<
+      IJobApplication,
+      "id" | "jobId" | "jobSeekerId" | "status" | "appliedAt"
+    >[]
+  > {
     return await this.prisma.jobApplication.findMany({
       where: { jobSeekerId },
       include: {

@@ -7,6 +7,10 @@ const router = express.Router();
 
 const chatController = container.get<IChatController>(TYPES.ChatController);
 
-router.get("/conversations", chatController.getUserConversations);
+router.get("/", chatController.getUserConversations);
+
+router.get("/company", chatController.getUserConversationsCompany);
 
 export default router;
+
+

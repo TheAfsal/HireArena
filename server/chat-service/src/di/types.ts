@@ -11,5 +11,7 @@ export const TYPES ={
     ConversationRepository: Symbol.for('ConversationRepository'),
     UserConversationsRepository: Symbol.for("UserConversationsRepository"),
 
-    SocketIOServer: Symbol.for('SocketIOServer'),   
+    // SocketIOServer: Symbol.for('SocketIOServer'),   
+    SocketManager: Symbol.for("SocketManager"),
+    PeerServer: Symbol.for("PeerServer"),
 }

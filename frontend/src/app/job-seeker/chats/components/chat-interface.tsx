@@ -5,17 +5,29 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Send, MoreVertical, Phone, Video, ArrowLeft, Check, CheckCheck } from "lucide-react";
+import {
+  Send,
+  MoreVertical,
+  ArrowLeft,
+  Check,
+  CheckCheck,
+} from "lucide-react";
 import { formatTime } from "@/lib/utils";
 import { Message, User } from "../page";
 
 interface ChatInterfaceProps {
+  userId:string
   user: User;
   messages: Message[];
   onSendMessage: (content: string) => void;
 }
 
-export function ChatInterface({ user, messages, onSendMessage }: ChatInterfaceProps) {
+export function ChatInterface({
+  userId,
+  user,
+  messages,
+  onSendMessage,
+}: ChatInterfaceProps) {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +62,10 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
     }
   };
 
+  console.log("user : ->" , user);
+  console.log("user : ->" , userId);
+    
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center p-3 border-b border-border bg-card">
@@ -57,20 +73,16 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-10 w-10 mr-3">
-          <AvatarImage src={user.avatar} alt={user.name} />
-          <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarImage src={user.logo} alt={user.companyName} />
+          <AvatarFallback>
+            {user.companyName.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h2 className="font-medium text-text-header">{user.name}</h2>
+          <h2 className="font-medium text-text-header">{user.companyName}</h2>
           <p className="text-xs text-text-content">{user.status}</p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="ghost" size="icon">
-            <Phone className="h-5 w-5 text-primary" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Video className="h-5 w-5 text-primary" />
-          </Button>
           <Button variant="ghost" size="icon">
             <MoreVertical className="h-5 w-5" />
           </Button>
@@ -80,11 +92,13 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
       <ScrollArea className="flex-1 p-4 bg-background">
         <div className="space-y-4">
           {messages.map((message) => {
-            const isCurrentUser = message.senderId === "currentUser"; // Replace with auth user ID
+            const isCurrentUser = message.senderId === userId; 
             return (
               <div
                 key={message.id}
-                className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  isCurrentUser ? "justify-end" : "justify-start"
+                }`}
               >
                 <div
                   className={`max-w-[70%] rounded-lg p-3 ${
@@ -101,7 +115,9 @@ export function ChatInterface({ user, messages, onSendMessage }: ChatInterfacePr
                   >
                     <span>{formatTime(message.timestamp)}</span>
                     {isCurrentUser && (
-                      <span className="ml-1">{renderMessageStatus(message.status)}</span>
+                      <span className="ml-1">
+                        {renderMessageStatus(message.status)}
+                      </span>
                     )}
                   </div>
                 </div>

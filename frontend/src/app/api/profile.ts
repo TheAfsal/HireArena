@@ -62,6 +62,24 @@ export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   }
 }
 
+export async function fetchCandidateProfile(id:string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(
+      `/user-service/api/job-seeker/profile/minimal/${id}`
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
 export async function updateCompanyProfile(formData: FormData): Promise<any> {
   try {
     const response = await axiosInstance.put(

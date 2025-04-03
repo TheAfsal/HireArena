@@ -20,16 +20,19 @@ const columns = [
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const getCompanies = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchCompanies();
-        console.log(response);
-        setCompanies(response);
+        const response = await fetchCompanies(page, pageSize, searchTerm);
+        setCompanies(response.companies);
+        setTotal(response.total);
       } catch (err) {
-        console.log((err as Error).message);
         toast({
           title: "Error",
           description: "Failed to fetch companies",
@@ -41,11 +44,14 @@ export default function CompaniesPage() {
     };
 
     getCompanies();
-  }, []);
+  }, [page, searchTerm]);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setPage(1);
+  };
 
   const handleBlockUnblock = (companyName: string) => {
-    console.log(companyName);
-
     setCompanies((prevCompanies) =>
       prevCompanies.map((company) =>
         company.companyName === companyName
@@ -62,13 +68,11 @@ export default function CompaniesPage() {
     setIsLoading(true);
     try {
       await approveCompanyVerification(companyId);
-
       setCompanies((prevCompanies) =>
         prevCompanies.map((company) =>
           company.id === companyId ? { ...company, status: "Active" } : company
         )
       );
-
       toast({
         title: "Success",
         description: "Company verification approved",
@@ -92,7 +96,6 @@ export default function CompaniesPage() {
     setIsLoading(true);
     try {
       await rejectCompanyVerification(companyId, reason);
-
       setCompanies((prevCompanies) =>
         prevCompanies.map((company) =>
           company.id === companyId
@@ -100,7 +103,6 @@ export default function CompaniesPage() {
             : company
         )
       );
-
       toast({
         title: "Success",
         description: "Company verification rejected",
@@ -117,15 +119,30 @@ export default function CompaniesPage() {
     }
   };
 
+  // if (isLoading) {
+  //   return (
+  //     <div className="w-full h-screen flex justify-center items-center">
+  //       <div className="w-12 h-12 border-4 border-t-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+  //     </div>
+  //   );
+  // }
+  
+
   return (
     <DataTable
       title="Companies"
       data={companies}
       columns={columns}
-      searchPlaceholder="Search companies"
+      searchPlaceholder="Search companies by name..."
       onBlockUnblock={handleBlockUnblock}
       onApproveVerification={handleApproveVerification}
       onRejectVerification={handleRejectVerification}
+      page={page}
+      pageSize={pageSize}
+      total={total}
+      onPageChange={setPage}
+      onSearch={handleSearch}
+      isLoading={isLoading}
     />
   );
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 function JobCard({ job }: { job: any }) {
   console.log(job);
-  
+
   return (
     <Link
       href={`/jobs/${job.id}`}
@@ -25,7 +25,7 @@ function JobCard({ job }: { job: any }) {
             <span className="rounded-full bg-green-100 px-2.5 py-2 text-sm font-medium text-green-800">
               {job.jobDescription}
             </span>
-            {job.requiredSkills.map((tag:any) => (
+            {job.requiredSkills.map((tag: any) => (
               <span
                 key={tag.id}
                 className="rounded-full bg-blue-100 px-2.5 py-2 text-xs font-medium text-blue-800"
@@ -36,7 +36,7 @@ function JobCard({ job }: { job: any }) {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-end gap-2">
+      {/* <div className="flex flex-col items-end gap-2">
         {job.isApplied ? (
           <Button disabled>Applied</Button>
         ) : (
@@ -45,7 +45,7 @@ function JobCard({ job }: { job: any }) {
         <p className="text-sm text-gray-500">
           {job.applied} applied of {job.capacity} capacity
         </p>
-      </div>
+      </div> */}
     </Link>
   );
 }

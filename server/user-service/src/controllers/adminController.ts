@@ -61,9 +61,25 @@ class AdminController implements IAdminController {
 
   getAllCompanies = async (req: Request, res: Response): Promise<void> => {
     try {
-      const companies = await this.companyService.getAllCompanies();
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const search = (req.query.search as string) || "";
 
-      res.status(200).json(companies);
+      const skip = (page - 1) * pageSize;
+
+      const companies = await this.companyService.getAllCompanies(
+        skip,
+        pageSize,
+        search
+      );
+      const total = await this.companyService.getCompaniesCount(search);
+
+      res.status(200).json({
+        companies,
+        total,
+        page,
+        pageSize,
+      });
       return;
     } catch (error) {
       console.log(error);
@@ -71,6 +87,19 @@ class AdminController implements IAdminController {
       return;
     }
   };
+
+  // getAllCompanies = async (req: Request, res: Response): Promise<void> => {
+  //   try {
+  //     const companies = await this.companyService.getAllCompanies();
+
+  //     res.status(200).json(companies);
+  //     return;
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).json({ message: (error as Error).message });
+  //     return;
+  //   }
+  // };
 
   verifyCompanyProfile = async (req: Request, res: Response) => {
     try {
@@ -106,9 +135,14 @@ class AdminController implements IAdminController {
 
   getAllSubscriptions = async (req: Request, res: Response) => {
     try {
-      const subscriptions =
-        await this.subscriptionService.getAllSubscriptions();
-      res.status(200).json({ success: true, data: subscriptions });
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 5;
+      const skip = (page - 1) * pageSize;
+
+      const { subscriptions, total } =
+        await this.subscriptionService.getAllSubscriptions(skip, pageSize);
+
+      res.status(200).json({ success: true, data: { subscriptions, total } });
       return;
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
@@ -118,6 +152,21 @@ class AdminController implements IAdminController {
       return;
     }
   };
+
+  // getAllSubscriptions = async (req: Request, res: Response) => {
+  //   try {
+  //     const subscriptions =
+  //       await this.subscriptionService.getAllSubscriptions();
+  //     res.status(200).json({ success: true, data: subscriptions });
+  //     return;
+  //   } catch (error) {
+  //     console.error("Error fetching subscriptions:", error);
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: "Internal Server Error" });
+  //     return;
+  //   }
+  // };
 }
 
 export default AdminController;

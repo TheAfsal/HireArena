@@ -1,9 +1,7 @@
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
 import { IJobCreateInput, IJobResponse } from "@core/types/job.types";
 import { Prisma, PrismaClient } from "@prisma/client";
-import {
-  IJob,
-} from "@shared/job.types"
+import { IJob } from "@shared/types/job.types";
 
 class JobRepository implements IJobRepository {
   private prisma: PrismaClient;
@@ -64,6 +62,17 @@ class JobRepository implements IJobRepository {
   }
 
   async getJob(id: string): Promise<Omit<IJob, "applications"> | null> {
+    return await this.prisma.job.findUnique({
+      where: { id },
+      include: {
+        employmentTypes: true,
+        categories: true,
+        requiredSkills: true,
+      },
+    });
+  }
+
+  async getcompanyName(id: string): Promise<Pick<IJob, "jobTitle"> | null> {
     return await this.prisma.job.findUnique({
       where: { id },
       include: {

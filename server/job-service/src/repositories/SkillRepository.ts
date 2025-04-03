@@ -1,6 +1,6 @@
 import { ISkillRepository } from "@core/interfaces/repository/ISkillRepository";
 import { PrismaClient, Skill } from "@prisma/client";
-import { ISkill } from "@shared/job.types";
+import { ISkill } from "@shared/types/job.types";
 
 class SkillRepository implements ISkillRepository {
   private prisma: PrismaClient;
@@ -9,7 +9,11 @@ class SkillRepository implements ISkillRepository {
     this.prisma = prisma;
   }
 
-  async create(data: { name: string; jobCategoryId: string; status: boolean }): Promise<ISkill> {
+  async create(data: {
+    name: string;
+    jobCategoryId: string;
+    status: boolean;
+  }): Promise<ISkill> {
     return await this.prisma.skill.create({
       data: {
         name: data.name,
@@ -24,7 +28,10 @@ class SkillRepository implements ISkillRepository {
     });
   }
 
-  async update(id: string, data: { name: string; jobCategoryId: string; status: boolean }): Promise<ISkill> {
+  async update(
+    id: string,
+    data: { name: string; jobCategoryId: string; status: boolean }
+  ): Promise<ISkill> {
     return await this.prisma.skill.update({
       where: { id },
       data: {
@@ -44,7 +51,16 @@ class SkillRepository implements ISkillRepository {
     });
   }
 
-  async findAll(): Promise<{ id: string; name: string; status: boolean; jobCategory: string; createdAt: Date; modifiedAt: Date }[]> {
+  async findAll(): Promise<
+    {
+      id: string;
+      name: string;
+      status: boolean;
+      jobCategory: string;
+      createdAt: Date;
+      modifiedAt: Date;
+    }[]
+  > {
     const skills = await this.prisma.skill.findMany({
       include: {
         jobCategory: true,

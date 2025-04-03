@@ -1,7 +1,7 @@
 import { ICategoryRepository } from "@core/interfaces/repository/ICategoryRepository";
 import { ICategoryTypeInput } from "@core/types/job.types";
 import { PrismaClient } from "@prisma/client";
-import { ICategoryType } from "@shared/job.types";
+import { ICategoryType } from "@shared/types/job.types";
 
 class CategoryRepository implements ICategoryRepository {
   private prisma: PrismaClient;

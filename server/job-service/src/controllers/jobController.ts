@@ -1,8 +1,14 @@
 import { Request, Response } from "express";
 import { IUser } from "../core/types/IUser";
-import { createConversation, createInterview, getCompanyIdByUserId } from "@config/grpcClient";
+import {
+  createConversation,
+  createInterview,
+  getCompaniesDetails,
+  getCompanyIdByUserId,
+} from "@config/grpcClient";
 import { IJobController } from "@core/interfaces/controllers/IJobController";
 import { IJobService } from "@core/interfaces/services/IJobService";
+import { ICompany } from "@core/types/ICompany";
 
 declare global {
   namespace Express {
@@ -12,7 +18,7 @@ declare global {
   }
 }
 
-class JobController implements IJobController{
+class JobController implements IJobController {
   private jobService: IJobService;
 
   constructor(jobService: IJobService) {
@@ -100,9 +106,11 @@ class JobController implements IJobController{
       const application = await this.jobService.applyForJob(jobId, userId);
 
       const job = await this.jobService.getJob(jobId, userId);
-      const companyId = job.companyId; 
+      const companyId = job.companyId;
 
-      await createConversation([userId, companyId], jobId);
+      const companyDetails = await getCompaniesDetails([companyId]);
+
+      await createConversation([userId, companyId], jobId, companyDetails[0].companyName, companyDetails[0].logo);
 
       if (application?.["Aptitude Test"]) {
         const interviewResponse = await createInterview(
@@ -119,8 +127,6 @@ class JobController implements IJobController{
           return;
         }
 
-
-
         res.status(201).json({
           message: "Job application submitted, aptitude test scheduled",
           //@ts-ignore
@@ -132,7 +138,6 @@ class JobController implements IJobController{
       res.status(201).json(application);
       return;
     } catch (error) {
-
       res.status(400).json({ message: (error as Error).message });
       return;
     }
@@ -220,7 +225,7 @@ class JobController implements IJobController{
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      const companyId =await getCompanyIdByUserId(userId);
+      const companyId = await getCompanyIdByUserId(userId);
 
       if (!companyId) {
         res.status(400).json({ error: "Company ID is required" });

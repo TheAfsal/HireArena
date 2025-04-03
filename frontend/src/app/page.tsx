@@ -7,7 +7,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="bg-background">
+    <div className="bg-background h-screen">
       <Hero />
       <JobCategories />
       <FeaturedJobs />

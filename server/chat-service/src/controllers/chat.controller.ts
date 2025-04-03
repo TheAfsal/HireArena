@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { IChatController } from "@core/interfaces/controllers/IChatController";
 import { IChatService } from "@core/interfaces/services/IChatService";
-import { IMessageDTO } from "@core/types/chat.types"; 
+import { IMessageDTO } from "@core/types/chat.types";
 import { IUser } from "@core/types/IUser";
 import { TYPES } from "di/types";
 import { inject, injectable } from "inversify";
 import { Server, Socket } from "socket.io";
-
+import { getCompanyIdByUserId } from "@config/grpc.client";
 
 declare global {
   namespace Express {
@@ -18,66 +18,132 @@ declare global {
 
 @injectable()
 export class ChatController implements IChatController {
-  constructor(@inject(TYPES.SocketIOServer) private io: Server,@inject(TYPES.ChatService)  private chatService: IChatService) {}
+  constructor(
+    // @inject(TYPES.SocketIOServer) private io: Server,
+    @inject(TYPES.ChatService) private chatService: IChatService
+  ) {}
 
-  public registerEvents(socket: Socket) {
-    socket.on("joinRoom", (roomId: string) => {
-      console.log(roomId + " joined");
-      console.log("socket.id : ",socket.id);
-      
-      socket.join(roomId);
-      console.log(`${socket.data.userId} joined room ${roomId}`);
-    });
+  // public registerEvents(socket: Socket) {
+  //   socket.on("joinRoom", (roomId: string) => {
+  //     console.log(roomId + " joined");
+  //     console.log("socket.id : ", socket.id);
 
-    socket.on("message", async (data: { roomId: string; content: string }) => {
-      const { roomId, content } = data;
-      const senderId = socket.data.userId;
+  //     socket.join(roomId);
+  //     console.log(`${socket.id} joined room ${roomId}`);
+  //   });
 
-      const conversation = await this.chatService.getChatHistory(roomId);
-      if (!conversation) {
-        socket.emit("error", "Conversation not found");
-        return; 
-      }
+  //   socket.on("message", async (data: { roomId: string; content: string }) => {
+  //     const { roomId, content } = data;
 
-      const message: IMessageDTO = {
-        conversationId: roomId,
-        senderId,
-        receiverId: conversation.find((m) => m.senderId !== senderId)?.receiverId || "",
-        content,
-      };
+  //     const conversation = await this.chatService.getConversation(roomId);
+  //     if (!conversation) {
+  //       socket.emit("error", "Conversation not found");
+  //       return;
+  //     }
 
-      const savedMessage = await this.chatService.sendMessage(message);
-      this.io.to(roomId).emit("newMessage", savedMessage);
-    });
+  //     if(!socket.userId) return socket.emit("error", "Invalid user");
 
-    socket.on("chatHistory", async (roomId: string) => {
-      const messages = await this.chatService.getChatHistory(roomId);
-      socket.emit("chatHistory", messages);
-    });
+  //     const message: IMessageDTO = {
+  //       conversationId: roomId,
+  //       senderId:socket.userId,
+  //       receiverId: conversation.participants.find((m) => m !== socket.userId)??"",
+  //       content,
+  //     };
 
-    socket.on("disconnect", () => {
-      console.log(`${socket.data.userId} disconnected`);
-    });
-  }
+  //     const savedMessage = await this.chatService.sendMessage(message);
+  //     console.log(savedMessage);
+  //     console.log(this.io);
+  //     this.io.to(roomId).emit("newMessage", savedMessage, (response) => {
+  //       console.log(response);
+        
+  //       if (response === "success") {
+  //         console.log("Message was successfully sent to the room");
+  //       } else {
+  //         console.error("Failed to send message to the room");
+  //       }
+
+  //     });
+  //   });
+
+  //   socket.on("messageCompany", async (data: { roomId: string; content: string }) => {
+  //     const { roomId, content } = data;
+
+  //     const conversation = await this.chatService.getConversation(roomId);
+  //     if (!conversation) {
+  //       socket.emit("error", "Conversation not found");
+  //       return;
+  //     }
+
+  //     if(!socket.userId) return socket.emit("error", "Invalid user");
+
+  //     const companyId = await getCompanyIdByUserId(socket.userId)
+
+  //     const message: IMessageDTO = {
+  //       conversationId: roomId,
+  //       senderId:companyId,
+  //       receiverId: conversation.participants.find((m) => m !== socket.userId)??"",
+  //       content,
+  //     };
+
+  //     const savedMessage = await this.chatService.sendMessage(message);
+  //     console.log(roomId);
+  //     this.io.to(roomId).emit("newMessage", savedMessage);
+  //   });
+
+  //   socket.on("chatHistory", async (roomId: string) => {
+  //     const messages = await this.chatService.getChatHistory(roomId);
+  //     socket.emit("chatHistory", messages);
+  //   });
+
+  //   socket.on("disconnect", () => {
+  //     console.log(`${socket.data.userId} disconnected`);
+  //   });
+  // }
 
   getUserConversations = async (req: Request, res: Response) => {
     try {
       const { userId } = req.headers["x-user"]
-      ? JSON.parse(req.headers["x-user"] as string)
-      : null;
-  
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
       if (!userId) {
         res.status(400).json({ message: "userId is required" });
-        return 
+        return;
       }
-  
+
       const conversations = await this.chatService.getUserConversations(userId);
-      res.status(200).json(conversations);
-      return 
+      res.status(200).json({ conversations, userId });
+      return;
     } catch (error) {
       res.status(500).json({ message: (error as Error).message });
-      return
+      return;
     }
   };
-  
+
+  getUserConversationsCompany = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      if (!userId) {
+        res.status(400).json({ message: "userId is required" });
+        return;
+      }
+
+      const companyId = await getCompanyIdByUserId(userId)
+
+      if (!companyId) {
+        res.status(400).json({ error: "Company ID is required" });
+        return;
+      }
+
+      const conversations = await this.chatService.getUserConversations(companyId);
+      res.status(200).json({ conversations, companyId });
+      return;
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
+  };
 }

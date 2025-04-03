@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { IDatabaseClient } from "../interfaces/IDatabaseClient";
 
-class PrismaDatabaseClient implements IDatabaseClient {
+class PrismaDatabaseClient {
   private prisma: PrismaClient;
 
   constructor() {

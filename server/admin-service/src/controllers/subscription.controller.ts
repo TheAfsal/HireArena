@@ -11,7 +11,7 @@ class SubscriptionController implements ISubscriptionController {
     @inject(TYPES.SubscriptionService) private subscriptionService: ISubscriptionService
   ) {}
 
-  async create(req: Request, res: Response) {
+  create = async (req: Request, res: Response) => {
     try {
       const plan = await this.subscriptionService.createSubscriptionPlan(
         req.body.plan
@@ -27,7 +27,7 @@ class SubscriptionController implements ISubscriptionController {
     }
   }
 
-  async update(req: Request, res: Response) {
+  update = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const updatedPlan = await this.subscriptionService.updateSubscriptionPlan(
@@ -47,7 +47,7 @@ class SubscriptionController implements ISubscriptionController {
     }
   }
 
-  async delete(req: Request, res: Response) {
+  delete = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       await this.subscriptionService.deleteSubscriptionPlan(id);
@@ -59,7 +59,7 @@ class SubscriptionController implements ISubscriptionController {
     }
   }
 
-  async getById(req: Request, res: Response) {
+  getById = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const plan = await this.subscriptionService.getSubscriptionPlanById(id);
@@ -75,11 +75,13 @@ class SubscriptionController implements ISubscriptionController {
     }
   }
 
-  async getAll(req: Request, res: Response) {
+  getAll = async (req: Request, res: Response) => {
     try {
       const plans = await this.subscriptionService.getAllSubscriptionPlans();
       res.json({ data: plans });
     } catch (error) {
+      console.log(error);
+      
       res
         .status(500)
         .json({ success: false, message: (error as Error).message });

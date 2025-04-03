@@ -3,7 +3,7 @@ import {
   IEmployeeRepository,
 } from "@core/interfaces/repository/IEmployeeRepository";
 import { PrismaClient } from "@prisma/client";
-import { ICompany, IEmployee } from "@shared/user.types";
+import { ICompany, IEmployee } from "@shared/types/user.types";
 
 class EmployeeRepository implements IEmployeeRepository {
   private prisma: PrismaClient;

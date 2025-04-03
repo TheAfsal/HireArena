@@ -1,5 +1,5 @@
 import { CompanyRole } from "@prisma/client";
-import { ICompany, IEmployee } from "@shared/user.types";
+import { ICompany, IEmployee } from "@shared/types/user.types";
 
 export interface IEmployeeCreateInput {
   name: string;
@@ -28,4 +28,3 @@ export interface IEmployeeRepository {
     (IEmployee & { companyAssociations: { company: ICompany }[] }) | null
   >;
 }
-

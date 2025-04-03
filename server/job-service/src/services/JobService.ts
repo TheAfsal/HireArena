@@ -7,19 +7,30 @@ import {
 import { IJobService } from "@core/interfaces/services/IJobService";
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
 import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
-import { IJob, IJobApplication } from "@shared/job.types";
+import { IJob, IJobApplication } from "@shared/types/job.types";
 import { IJobResponse } from "@core/types/job.types";
 
 class JobService implements IJobService {
   private jobRepository: IJobRepository;
   private jobApplicationRepository: IJobApplicationRepository;
 
-  constructor(jobRepository: IJobRepository, jobApplicationRepository: IJobApplicationRepository) {
+  constructor(
+    jobRepository: IJobRepository,
+    jobApplicationRepository: IJobApplicationRepository
+  ) {
     this.jobRepository = jobRepository;
     this.jobApplicationRepository = jobApplicationRepository;
   }
 
-  async createJob(data: any, userId: string): Promise<Omit<IJob, "employmentTypes" | "categories" | "requiredSkills" | "applications">> {
+  async createJob(
+    data: any,
+    userId: string
+  ): Promise<
+    Omit<
+      IJob,
+      "employmentTypes" | "categories" | "requiredSkills" | "applications"
+    >
+  > {
     const companyId = userId ? await getCompanyIdByUserId(userId) : null;
 
     if (!data.jobTitle || !userId || !companyId) {
@@ -51,21 +62,31 @@ class JobService implements IJobService {
         create: data.employmentTypes.map((type: string) => ({ type })),
       },
       categories: {
-        connect: data.categories.map((categoryId: string) => ({ id: categoryId })),
+        connect: data.categories.map((categoryId: string) => ({
+          id: categoryId,
+        })),
       },
       requiredSkills: {
-        connect: data.requiredSkills.map((skillId: string) => ({ id: skillId })),
+        connect: data.requiredSkills.map((skillId: string) => ({
+          id: skillId,
+        })),
       },
     });
 
     try {
       if (testOptions["Aptitude Test"]) {
-        const interviewServerResponse = await createAptitudeTest(job.id, companyId);
+        const interviewServerResponse = await createAptitudeTest(
+          job.id,
+          companyId
+        );
         console.log("Aptitude Test Created:", interviewServerResponse);
       }
 
       if (testOptions["Machine Task"]) {
-        const interviewServerResponse = await createMachineTask(job.id, companyId);
+        const interviewServerResponse = await createMachineTask(
+          job.id,
+          companyId
+        );
         console.log("Machine Task Created:", interviewServerResponse);
       }
     } catch (error) {
@@ -77,10 +98,15 @@ class JobService implements IJobService {
 
   async getAllJobs(jobSeekerId: string): Promise<Omit<IJob, "applications">[]> {
     const jobs = await this.jobRepository.getAllJobs();
-    const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(jobSeekerId);
+    const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(
+      jobSeekerId
+    );
     const appliedJobIds = new Set(appliedJobs.map((app) => app.jobId));
 
-    return jobs.map((job) => ({ ...job, isApplied: appliedJobIds.has(job.id) }));
+    return jobs.map((job) => ({
+      ...job,
+      isApplied: appliedJobIds.has(job.id),
+    }));
   }
 
   async getJob(id: string, jobSeekerId: string): Promise<any> {
@@ -88,7 +114,10 @@ class JobService implements IJobService {
     if (!job) throw new Error("Job not found");
 
     const companyDetails = await getCompaniesDetails([job.companyId]);
-    const application = await this.jobApplicationRepository.findApplication(id, jobSeekerId);
+    const application = await this.jobApplicationRepository.findApplication(
+      id,
+      jobSeekerId
+    );
 
     return { ...job, ...companyDetails[0], isApplied: !!application };
   }
@@ -97,7 +126,9 @@ class JobService implements IJobService {
     const jobs = await this.jobRepository.getAllJobsBrief();
     const companyIds = [...new Set(jobs.map((job) => job.companyId))];
     const companyDetails = await getCompaniesDetails(companyIds);
-    const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(jobSeekerId);
+    const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(
+      jobSeekerId
+    );
     const appliedJobIds = new Set(appliedJobs.map((job) => job.jobId));
 
     return jobs.map((job) => {
@@ -113,9 +144,11 @@ class JobService implements IJobService {
   }
 
   async getAllApplications(jobSeekerId: string): Promise<any[]> {
-    const applications = await this.jobApplicationRepository.findAllByJobSeeker(jobSeekerId);
+    const applications = await this.jobApplicationRepository.findAllByJobSeeker(
+      jobSeekerId
+    );
     //@ts-ignore
-    const companyIds:any[] = [...new Set(applications.map((app) => app.job.companyId))];
+    const companyIds: any[] = [...new Set(applications.map((app) => app.job.companyId))];
     const companyDetails = await getCompaniesDetails(companyIds);
 
     return applications.map((app) => {
@@ -140,8 +173,14 @@ class JobService implements IJobService {
     });
   }
 
-  async getApplicationsStatus(jobSeekerId: string, jobId: string): Promise<IJobApplication> {
-    const application = await this.jobApplicationRepository.findApplication(jobId, jobSeekerId);
+  async getApplicationsStatus(
+    jobSeekerId: string,
+    jobId: string
+  ): Promise<IJobApplication> {
+    const application = await this.jobApplicationRepository.findApplication(
+      jobId,
+      jobSeekerId
+    );
     if (!application) throw new Error("Application not found");
     return application;
   }
@@ -150,31 +189,38 @@ class JobService implements IJobService {
     const jobExists = await this.jobRepository.getJobById(jobId);
     if (!jobExists) throw new Error("Job not found");
 
-    const existingApplication = await this.jobApplicationRepository.findApplication(jobId, jobSeekerId);
-    if (existingApplication) throw new Error("You have already applied for this job");
+    const existingApplication =
+      await this.jobApplicationRepository.findApplication(jobId, jobSeekerId);
+    if (existingApplication)
+      throw new Error("You have already applied for this job");
 
-    const response = await this.jobApplicationRepository.createApplication(jobId, jobSeekerId);
+    const response = await this.jobApplicationRepository.createApplication(
+      jobId,
+      jobSeekerId
+    );
 
-    return jobExists?.testOptions?.["Aptitude Test"] ? { ...response, "Aptitude Test": true } : response;
+    return jobExists?.testOptions?.["Aptitude Test"]
+      ? { ...response, "Aptitude Test": true }
+      : response;
   }
 
   // async getFilteredJobs(filters: any, jobSeekerId: string): Promise<IJob[]> {
-    // const jobs = await this.jobRepository.getJobs(filters);
-    // const companyIds = [...new Set(jobs.map((job) => job.companyId))] as string[];
-    // const companyDetails = await getCompaniesDetails(companyIds);
-    // const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(jobSeekerId);
-    // const appliedJobIds = new Set(appliedJobs.map((job) => job.jobId));
+  // const jobs = await this.jobRepository.getJobs(filters);
+  // const companyIds = [...new Set(jobs.map((job) => job.companyId))] as string[];
+  // const companyDetails = await getCompaniesDetails(companyIds);
+  // const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(jobSeekerId);
+  // const appliedJobIds = new Set(appliedJobs.map((job) => job.jobId));
 
-    // return jobs.map((job) => {
-    //   const company = companyDetails.find((c) => c.id === job.companyId);
-    //   return {
-    //     ...job,
-    //     companyName: company?.companyName || "Unknown",
-    //     companyLocation: company?.location || null,
-    //     companyLogo: company?.logo || null,
-    //     isApplied: appliedJobIds.has(job.id),
-    //   };
-    // });
+  // return jobs.map((job) => {
+  //   const company = companyDetails.find((c) => c.id === job.companyId);
+  //   return {
+  //     ...job,
+  //     companyName: company?.companyName || "Unknown",
+  //     companyLocation: company?.location || null,
+  //     companyLogo: company?.logo || null,
+  //     isApplied: appliedJobIds.has(job.id),
+  //   };
+  // });
   // }
 
   async getCompanyJobs(companyId: string): Promise<IJobResponse[]> {
@@ -184,6 +230,10 @@ class JobService implements IJobService {
   async fetchFilteredJobs(filters: any): Promise<Omit<IJob, "applications">[]> {
     return await this.jobRepository.getFilteredJobs(filters);
   }
+
+  // async getCompanyByJobId(jobId: string): JobDetails {
+  //   return await this.jobRepository.getcompanyName(jobId);
+  // }
 }
 
 export default JobService;

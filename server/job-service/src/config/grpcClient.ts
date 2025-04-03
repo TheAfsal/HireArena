@@ -109,10 +109,10 @@ const createMachineTask = (
   });
 };
 
-const createConversation = (participants: string[], jobId: string) => {
+const createConversation = (participants: string[], jobId: string ,companyName: string, logo:string) => {
   return new Promise((resolve, reject) => {
     chatServiceClient.CreateConversation(
-      { participants, jobId },
+      { participants, jobId , companyName, logo },
       (err: any, response: any) => {
         if (err) {
           console.error("Error calling Chat Service:", err);

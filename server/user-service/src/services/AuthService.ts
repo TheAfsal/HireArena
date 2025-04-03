@@ -10,7 +10,12 @@ import { IRedisService } from "@core/interfaces/services/IRedisService";
 import { IJobSeekerRepository } from "@core/interfaces/repository/IJobSeekerRepository";
 import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
 import { IEmployeeRepository } from "@core/interfaces/repository/IEmployeeRepository";
-import { IAdmin, ICompany, IEmployee, IJobSeeker } from "@shared/user.types";
+import {
+  IAdmin,
+  ICompany,
+  IEmployee,
+  IJobSeeker,
+} from "@shared/types/user.types";
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 
 class AuthService implements IAuthService {

@@ -81,6 +81,30 @@ class JobSeekerController implements IJobSeekerController{
     }
   };
 
+  getMiniProfileByCompany = async (req: Request, res: Response): Promise<void> => {
+    try {
+
+      const { id } = req.params
+
+      if (!id) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      } 
+
+      const profile = await this.profileService.getMinimalProfile(id);
+
+      console.log(profile);
+      
+      res.status(200).json(profile);
+      return;
+    } catch (error) { 
+      console.log(error);
+      
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
+  };
+  
   changePassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req.headers["x-user"]

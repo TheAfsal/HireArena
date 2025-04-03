@@ -18,7 +18,8 @@
       "@routes/*": ["routes/*"],
       "@core/*": ["core/*"],
       "@types/*": ["core/types/*"],
-      "@shared/*": ["../../../shared/types/*"]
+      // "@shared/types/*": ["../../../shared/types/*"],
+      // "@prisma/*":["../node_modules"]
     },
     "skipDefaultLibCheck": true,
     "noImplicitAny": false,

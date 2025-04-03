@@ -1,4 +1,4 @@
-import { IAdmin, IEmployee } from "@shared/user.types";
+import { IAdmin, IEmployee } from "@shared/types/user.types";
 import { IUser } from "./IUser";
 
 export interface IAuthResponse {

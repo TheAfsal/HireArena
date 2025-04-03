@@ -2,7 +2,7 @@ import * as grpc from "@grpc/grpc-js";
 import { ICompanyService } from "@core/interfaces/services/ICompanyService";
 import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
-import { ICompany, ICompanyEmployeeRole } from "@shared/user.types";
+import { ICompany, ICompanyEmployeeRole } from "@shared/types/user.types";
 
 class CompanyService implements ICompanyService {
   private companyEmployeeRoleRepository: ICompanyEmployeeRoleRepository;
@@ -40,9 +40,21 @@ class CompanyService implements ICompanyService {
       });
   };
 
-  async getAllCompanies(): Promise<ICompany[]> {
-    return await this.companyRepository.findMany();
+  async getAllCompanies(
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<ICompany[]> {
+    return await this.companyRepository.findMany(skip, take, search);
   }
+
+  async getCompaniesCount(search: string): Promise<number> {
+    return await this.companyRepository.count(search);
+  }
+
+  // async getAllCompanies(): Promise<ICompany[]> {
+  //   return await this.companyRepository.findMany();
+  // }
 
   async getCompanyDetailsById(
     companyIds: string[],

@@ -47,8 +47,20 @@ class SubscriptionService implements ISubscriptionService {
     return await this.subscriptionRepository.getSubscriptionHistory(userId);
   }
 
-  async getAllSubscriptions():Promise<UserSubscription[]> {
-    return await this.subscriptionRepository.getAllSubscriptions();
+  // async getAllSubscriptions():Promise<UserSubscription[]> {
+  //   return await this.subscriptionRepository.getAllSubscriptions();
+  // }
+
+  async getAllSubscriptions(
+    skip: number,
+    take: number
+  ): Promise<{ subscriptions: IUserSubscription[]; total: number }> {
+    const subscriptions = await this.subscriptionRepository.getAllSubscriptions(
+      skip,
+      take
+    );
+    const total = await this.subscriptionRepository.countSubscriptions();
+    return { subscriptions, total };
   }
 
   // async createSubscription(

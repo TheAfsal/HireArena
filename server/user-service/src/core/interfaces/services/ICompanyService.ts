@@ -1,4 +1,5 @@
 import * as grpc from "@grpc/grpc-js";
+import { ICompany } from "@shared/types/user.types";
 
 export interface ICompanyService {
   getCompanyIdByUserId(
@@ -6,7 +7,13 @@ export interface ICompanyService {
     callback: grpc.sendUnaryData<{ companyId: string }>
   ): void;
 
-  getAllCompanies(): Promise<any[]>;
+  // getAllCompanies(): Promise<any[]>;
+  getAllCompanies(
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<ICompany[]>;
+  getCompaniesCount(search: string): Promise<number>;
 
   getCompanyDetailsById(
     companyIds: string[],

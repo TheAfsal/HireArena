@@ -1,5 +1,5 @@
 import { IJobCreateInput, IJobResponse } from "@core/types/job.types";
-import { IJob } from "@shared/job.types";
+import { IJob } from "@shared/types/job.types";
 
 export interface IJobRepository {
   createJob(
@@ -13,12 +13,10 @@ export interface IJobRepository {
 
   getJobById(
     jobId: string
-  ): Promise<
-    Omit<
-      IJob,
-      "employmentTypes" | "categories" | "requiredSkills" | "applications"
-    > | null
-  >;
+  ): Promise<Omit<
+    IJob,
+    "employmentTypes" | "categories" | "requiredSkills" | "applications"
+  > | null>;
 
   getAllJobs(): Promise<Omit<IJob, "applications">[]>;
 

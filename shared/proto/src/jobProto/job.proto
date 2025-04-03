@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package job;
+
+service JobService {
+  rpc GetJobDetails (GetJobDetailsRequest) returns (GetJobDetailsResponse) {}
+}
+
+message GetJobDetailsRequest {
+  string jobId = 1;
+}
+
+message GetJobDetailsResponse {
+  string jobId = 1;
+  string title = 2;        
+  string companyId = 3;    
+  string companyName = 4;
+}
