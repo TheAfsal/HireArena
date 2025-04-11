@@ -1,21 +1,77 @@
-import "tsconfig-paths/register";
-import app from "./app";
+import express from "express";
+import http from "http";
+import { Server as SocketServer, Socket } from "socket.io";
+import { TYPES } from "./di/types";
+import container from "di/container";
+import { VideoCallService } from "@services/videoCall.service";
 import { connectDB } from "@config/db";
-import server from "@config/grpc.server";
-import * as grpc from "@grpc/grpc-js";
 
-const PORT = process.env.PORT || 5009;
+const app = express();
+const httpServer = http.createServer(app);
+const io = new SocketServer(httpServer, { cors: { origin: "*" } });
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`Chat Service running at http://localhost:${PORT}`);
+const videoCallService = container.get<VideoCallService>(
+  TYPES.VideoCallService
+);
+
+// Socket.IO Events
+io.on("connection", (socket: Socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("joinCall", (conversationId: string) => {
+    socket.join(conversationId);
+    console.log(
+      `${socket.data.userId || socket.id} joined call ${conversationId}`
+    );
+  });
+
+  socket.on(
+    "startVideoCall",
+    async ({
+      conversationId,
+    }: {
+      conversationId: string;
+    }) => {
+      try {
+        const participants = ["d536c55f-0426-4281-bc3c-45c35e8b72da","84ff3281-fbc3-4062-a6b2-ba5cc5296adb"]
+        // const call = await videoCallService.startVideoCall(
+        //   conversationId,
+        //   participants
+        // );
+        io.to(conversationId).emit("videoCallStarted", {
+          conversationId: "call.conversationId",
+          participants,
+        });
+        console.log(`Video call started for ${conversationId}`);
+      } catch (error) {
+        socket.emit("error", (error as Error).message);
+        console.error(
+          `Error starting video call for ${conversationId}:`,
+          error
+        );
+      }
+    }
+  );
+
+  socket.on("getVideoCall", async (conversationId: string) => {
+    const call = await videoCallService.getVideoCall(conversationId);
+    if (call) {
+      socket.emit("videoCallDetails", call);
+    } else {
+      socket.emit("error", "Video call not found");
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
 });
 
-server.bindAsync(
-  `0.0.0.0:${5010}`,
-  grpc.ServerCredentials.createInsecure(),
-  () => {
-    console.log(`🚀 User Service running on port ${5051}`);
-    server.start();
-  }
-);
+const startServer = async () => {
+  await connectDB();
+  httpServer.listen(5013, () => {
+    console.log("Video-service running on port 5013");
+  });
+};
+
+startServer();

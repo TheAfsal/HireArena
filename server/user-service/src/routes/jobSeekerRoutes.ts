@@ -28,7 +28,9 @@ router
   .put(upload.any(), JobSeekerController.updateProfile);
 
 router.put("/change-password", JobSeekerController.changePassword);
+router.get("/userId", JobSeekerController.getUserId);
 router.get("/profile/minimal/:id", JobSeekerController.getMiniProfileByCompany);
 router.get("/profile/minimal", JobSeekerController.getMinimalProfile);
 
 export default router;
+

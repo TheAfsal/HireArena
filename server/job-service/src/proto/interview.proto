@@ -6,6 +6,21 @@ service InterviewService {
   rpc CreateInterview (InterviewRequest) returns (InterviewResponse);
   rpc CreateAptitudeTest (AptitudeTestRequest) returns (AptitudeTestResponse);
   rpc CreateMachineTask (MachineTaskRequest) returns (MachineTaskResponse);
+  rpc IsJobExist (JobExistRequest) returns (JobExistResponse);
+}
+
+message JobExistRequest {
+  string jobId = 1;
+}
+
+message JobExistResponse {
+  Job job = 1;
+}
+
+message Job {
+  string id = 1;
+  string testOptions = 8;
+  string companyId = 11;
 }
 
 message InterviewRequest {

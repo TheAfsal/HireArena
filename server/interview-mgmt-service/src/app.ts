@@ -5,6 +5,8 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import interviewRoutes from "@routes/interview.routes";
 import machineTaskRoutes from "@routes/machineTask.routes";
+import aptitudeRoutes from "@routes/aptitude.routes";
+import { connectDB } from "@config/db";
 
 dotenv.config();
 
@@ -27,6 +29,9 @@ app.use(
 app.use(helmet());
 app.use(morgan("dev"));
 
+connectDB()
+
+// app.use("/api/interviews/aptitude", aptitudeRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/machine-task", machineTaskRoutes);
 

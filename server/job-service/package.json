@@ -15,7 +15,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.12.6",
     "@grpc/proto-loader": "^0.7.13",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -45,7 +45,7 @@
     "eslint": "^9.18.0",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9",
-    "prisma": "^6.2.1",
+    "prisma": "^6.5.0",
     "ts-node": "^10.9.2",
     "typescript-eslint": "^8.20.0"
   }

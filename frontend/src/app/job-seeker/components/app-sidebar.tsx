@@ -15,6 +15,7 @@ import {
   SquareTerminal,
   CrownIcon,
   MessageCircleDashed,
+  VideoIcon,
 } from "lucide-react";
 
 import {
@@ -199,6 +200,11 @@ const menuItems = [
     title: "Chats",
     icon: MessageCircleDashed,
     url: "/job-seeker/chats",
+  },
+  {
+    title: "Video",
+    icon: VideoIcon,
+    url: "/job-seeker/video-call",
   },
 ];
 

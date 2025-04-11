@@ -4,7 +4,7 @@ import { VideoCallRepository } from "@repositories/videoCall.repository.ts";
 import { IVideoCall } from "@core/types/video.types";
 
 @injectable()
-export class VideoCallService {
+export class VideoCallService implements IVideoCallService{
   constructor(
     @inject(TYPES.VideoCallRepository) private videoCallRepo: VideoCallRepository
   ) {}

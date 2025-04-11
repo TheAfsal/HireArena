@@ -1,3 +1,5 @@
+import { IJob } from "@shared/types/job.types";
+import * as grpc from "@grpc/grpc-js";
 export interface IJobService {
   createJob(data: any, userId: string): Promise<any>;
 
@@ -9,10 +11,7 @@ export interface IJobService {
 
   getAllApplications(jobSeekerId: string): Promise<any[]>;
 
-  getApplicationsStatus(
-    jobSeekerId: string,
-    jobId: string
-  ): Promise<any>;
+  getApplicationsStatus(jobSeekerId: string, jobId: string): Promise<any>;
 
   applyForJob(jobId: string, jobSeekerId: string): Promise<any>;
 
@@ -21,4 +20,9 @@ export interface IJobService {
   getCompanyJobs(companyId: string): Promise<any[]>;
 
   fetchFilteredJobs(filters: any): Promise<any[]>;
+
+  isJobExist(
+    id: string,
+    callback: grpc.sendUnaryData<any>
+  ): void;
 }

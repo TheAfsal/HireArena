@@ -1,17 +1,30 @@
-// import * as grpc from "@grpc/grpc-js";
-// import * as protoLoader from "@grpc/proto-loader";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
+import path from "path";
+import dotenv from "dotenv";
+import prisma from "@config/prismaClient";
+import JobRepository from "@repositories/JobRepository";
+import JobApplicationRepository from "@repositories/JobApplicationRepository";
+import JobService from "@services/JobService";
+import JobController from "@controllers/jobController";
 
-// const PROTO_PATH = require.resolve("@workspace/proto/jobProto/job.proto");
+dotenv.config();
 
-// const packageDefinition = protoLoader.loadSync(PROTO_PATH);
-// const jobProto = grpc.loadPackageDefinition(packageDefinition).job;
+const PROTO_PATH = path.resolve(__dirname, "../proto/interview.proto");
+const packageDefinition = protoLoader.loadSync(PROTO_PATH);
+const interviewProto = grpc.loadPackageDefinition(packageDefinition).interview;
 
-// const server = new grpc.Server();
+const jobRepository = new JobRepository(prisma);
+const jobApplicationRepository = new JobApplicationRepository(prisma);
+const jobService = new JobService(jobRepository, jobApplicationRepository);
+const jobController = new JobController(jobService);
 
-// //@ts-ignore
-// server.addService(jobProto.jobService.service, {
-//   // GetCompaniesDetails: companyController.getCompanyDetails,
-// });
+const server = new grpc.Server();
 
-// export default server;
+//@ts-ignore
+server.addService(interviewProto.InterviewService.service, {
+    IsJobExist: jobController.isJobExist
+});
+
+export default server;
 

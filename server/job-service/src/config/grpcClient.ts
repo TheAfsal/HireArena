@@ -51,25 +51,25 @@ const getCompaniesDetails = (companyIds: string[]): Promise<any[]> => {
   });
 };
 
-const createInterview = (
-  applicationId: string,
-  jobId: string,
-  jobSeekerId: string
-) => {
-  return new Promise((resolve, reject) => {
-    interviewServerClient.CreateInterview(
-      { applicationId, jobId, jobSeekerId },
-      (err: any, response: any) => {
-        if (err) {
-          console.error("Error calling Interview Service:", err);
-          reject(err);
-        } else {
-          resolve(response);
-        }
-      }
-    );
-  });
-};
+// const createInterview = (
+//   applicationId: string,
+//   jobId: string,
+//   jobSeekerId: string
+// ) => {
+//   return new Promise((resolve, reject) => {
+//     interviewServerClient.CreateInterview(
+//       { applicationId, jobId, jobSeekerId },
+//       (err: any, response: any) => {
+//         if (err) {
+//           console.error("Error calling Interview Service:", err);
+//           reject(err);
+//         } else {
+//           resolve(response);
+//         }
+//       }
+//     );
+//   });
+// };
 
 const createAptitudeTest = (
   jobId: string,
@@ -125,5 +125,4 @@ const createConversation = (participants: string[], jobId: string ,companyName: 
   });
 };
 
-export { getCompanyIdByUserId, getCompaniesDetails, createInterview, createAptitudeTest,createMachineTask, createConversation };
-
+export { getCompanyIdByUserId, getCompaniesDetails, createAptitudeTest,createMachineTask, createConversation };

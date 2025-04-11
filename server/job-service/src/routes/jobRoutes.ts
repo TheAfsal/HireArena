@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import JobService from "@services/JobService";
 import prisma from "@config/prismaClient";
 import JobRepository from "@repositories/JobRepository";
@@ -23,10 +23,10 @@ router.get("/company", jobController.getCompanyJobs);
 
 router.get("/filter", jobController.getFilteredJobs);
 
+// router.post("/apply", jobController.applyJob);
+// router.get("/apply/:id", jobController.getApplicationStatus);
+// router.get("/my-applications", jobController.getAllApplications);
 
-router.post("/apply", jobController.applyJob);
-router.get("/apply/:id", jobController.getApplicationStatus);
-router.get("/my-applications", jobController.getAllApplications);
 router.get("/:id", jobController.getJob);
 
 export default router;

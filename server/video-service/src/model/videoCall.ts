@@ -1,5 +1,5 @@
+import { IVideoCall } from "@core/types/video.types";
 import { Schema, model, Document } from "mongoose";
-import { IVideoCall } from "../types/videoCall.types";
 
 export interface IVideoCallDocument extends IVideoCall, Document {}
 

@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 import { IUser } from "../core/types/IUser";
 import {
   createConversation,
-  createInterview,
   getCompaniesDetails,
   getCompanyIdByUserId,
 } from "@config/grpcClient";
 import { IJobController } from "@core/interfaces/controllers/IJobController";
 import { IJobService } from "@core/interfaces/services/IJobService";
-import { ICompany } from "@core/types/ICompany";
+import * as grpc from "@grpc/grpc-js";
 
 declare global {
   namespace Express {
@@ -91,98 +90,98 @@ class JobController implements IJobController {
     }
   };
 
-  applyJob = async (req: Request, res: Response) => {
-    try {
-      const { jobId } = req.body;
-      const { userId } = req.headers["x-user"]
-        ? JSON.parse(req.headers["x-user"] as string)
-        : null;
+  // applyJob = async (req: Request, res: Response) => {
+  //   try {
+  //     const { jobId } = req.body;
+  //     const { userId } = req.headers["x-user"]
+  //       ? JSON.parse(req.headers["x-user"] as string)
+  //       : null;
 
-      if (!jobId || !userId) {
-        res.status(400).json({ message: "jobId and jobSeekerId are required" });
-        return;
-      }
+  //     if (!jobId || !userId) {
+  //       res.status(400).json({ message: "jobId and jobSeekerId are required" });
+  //       return;
+  //     }
 
-      const application = await this.jobService.applyForJob(jobId, userId);
+  //     const application = await this.jobService.applyForJob(jobId, userId);
 
-      const job = await this.jobService.getJob(jobId, userId);
-      const companyId = job.companyId;
+  //     const job = await this.jobService.getJob(jobId, userId);
+  //     const companyId = job.companyId;
 
-      const companyDetails = await getCompaniesDetails([companyId]);
+  //     const companyDetails = await getCompaniesDetails([companyId]);
 
-      await createConversation([userId, companyId], jobId, companyDetails[0].companyName, companyDetails[0].logo);
+  //     await createConversation([userId, companyId], jobId, companyDetails[0].companyName, companyDetails[0].logo);
 
-      if (application?.["Aptitude Test"]) {
-        const interviewResponse = await createInterview(
-          application.id,
-          jobId,
-          userId
-        );
+  //     if (application?.["Aptitude Test"]) {
+  //       const interviewResponse = await createInterview(
+  //         application.id,
+  //         jobId,
+  //         userId
+  //       );
 
-        if (
-          //@ts-ignore
-          !interviewResponse.interviewId || interviewResponse.status !== "pending"
-        ) {
-          res.status(400).json({ message: "Unable to Attend Aptitude Test" });
-          return;
-        }
+  //       if (
+  //         //@ts-ignore
+  //         !interviewResponse.interviewId || interviewResponse.status !== "pending"
+  //       ) {
+  //         res.status(400).json({ message: "Unable to Attend Aptitude Test" });
+  //         return;
+  //       }
 
-        res.status(201).json({
-          message: "Job application submitted, aptitude test scheduled",
-          //@ts-ignore
-          interviewId: interviewResponse.interviewId,
-        });
-        return;
-      }
+  //       res.status(201).json({
+  //         message: "Job application submitted, aptitude test scheduled",
+  //         //@ts-ignore
+  //         interviewId: interviewResponse.interviewId,
+  //       });
+  //       return;
+  //     }
 
-      res.status(201).json(application);
-      return;
-    } catch (error) {
-      res.status(400).json({ message: (error as Error).message });
-      return;
-    }
-  };
+  //     res.status(201).json(application);
+  //     return;
+  //   } catch (error) {
+  //     res.status(400).json({ message: (error as Error).message });
+  //     return;
+  //   }
+  // };
 
-  getAllApplications = async (req: Request, res: Response) => {
-    try {
-      const { userId } = req.headers["x-user"]
-        ? JSON.parse(req.headers["x-user"] as string)
-        : null;
+  // getAllApplications = async (req: Request, res: Response) => {
+  //   try {
+  //     const { userId } = req.headers["x-user"]
+  //       ? JSON.parse(req.headers["x-user"] as string)
+  //       : null;
 
-      const applications = await this.jobService.getAllApplications(userId);
+  //     const applications = await this.jobService.getAllApplications(userId);
 
-      res.status(200).json({ success: true, data: applications });
-      return;
-    } catch (error) {
-      console.log("Error fetching job applications:", error);
-      res.status(500).json({ success: false, message: "Server error" });
-      return;
-    }
-  };
+  //     res.status(200).json({ success: true, data: applications });
+  //     return;
+  //   } catch (error) {
+  //     console.log("Error fetching job applications:", error);
+  //     res.status(500).json({ success: false, message: "Server error" });
+  //     return;
+  //   }
+  // };
 
-  getApplicationStatus = async (req: Request, res: Response) => {
-    try {
-      const { userId } = req.headers["x-user"]
-        ? JSON.parse(req.headers["x-user"] as string)
-        : null;
+  // getApplicationStatus = async (req: Request, res: Response) => {
+  //   try {
+  //     const { userId } = req.headers["x-user"]
+  //       ? JSON.parse(req.headers["x-user"] as string)
+  //       : null;
 
-      const jobId = req.params.id;
+  //     const jobId = req.params.id;
 
-      console.log();
+  //     console.log();
 
-      const applications = await this.jobService.getApplicationsStatus(
-        userId,
-        jobId
-      );
+  //     const applications = await this.jobService.getApplicationsStatus(
+  //       userId,
+  //       jobId
+  //     );
 
-      res.status(200).json(applications);
-      return;
-    } catch (error) {
-      console.log("Error fetching job applications:", error);
-      res.status(500).json({ success: false, message: "Server error" });
-      return;
-    }
-  };
+  //     res.status(200).json(applications);
+  //     return;
+  //   } catch (error) {
+  //     console.log("Error fetching job applications:", error);
+  //     res.status(500).json({ success: false, message: "Server error" });
+  //     return;
+  //   }
+  // };
 
   // getFilteredJobs = async (req: Request, res: Response) => {
   //   try {
@@ -238,6 +237,26 @@ class JobController implements IJobController {
       console.error("Error fetching company jobs:", error);
       res.status(500).json({ error: "Internal server error" });
     }
+  };
+
+  // isJobExist = async (req: Request, res: Response) => {
+  //   try {
+  //     const { id } = req.params;
+
+  //     const jobDetails = await this.jobService.isJobExist(id);
+
+  //     res.json({ job: jobDetails });
+  //   } catch (error) {
+  //     res.status(500).json({ error: (error as Error).message });
+  //   }
+  // };
+
+  isJobExist = (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    const { jobId } = call.request;
+    this.jobService.isJobExist(jobId, callback);
   };
 }
 

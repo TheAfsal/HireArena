@@ -153,9 +153,23 @@ class JobSeekerController implements IJobSeekerController{
     call: grpc.ServerUnaryCall<any, any>,
     callback: grpc.sendUnaryData<any>
   ) => {
-    console.log("reaching 3");
-    
     this.profileService.getAllProfiles(callback);
+  };
+
+  getUserId = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+        
+      res.status(200).json({ userId });
+      return  
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({ message: (error as Error).message });
+      return;
+    }
   };
 }
 

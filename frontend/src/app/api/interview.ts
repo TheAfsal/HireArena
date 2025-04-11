@@ -6,7 +6,7 @@ export async function fetchAptitudeQuestions(
 ): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/questions/${interviewId}`
+      `/interview-mgmt-service/api/interviews/${interviewId}`
     );
 
     return response.data.questions;

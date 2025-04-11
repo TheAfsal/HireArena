@@ -4,6 +4,7 @@ import {
   getCompaniesDetails,
   getCompanyIdByUserId,
 } from "@config/grpcClient";
+import * as grpc from "@grpc/grpc-js";
 import { IJobService } from "@core/interfaces/services/IJobService";
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
 import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
@@ -82,13 +83,13 @@ class JobService implements IJobService {
         console.log("Aptitude Test Created:", interviewServerResponse);
       }
 
-      if (testOptions["Machine Task"]) {
-        const interviewServerResponse = await createMachineTask(
-          job.id,
-          companyId
-        );
-        console.log("Machine Task Created:", interviewServerResponse);
-      }
+      // if (testOptions["Machine Task"]) {
+      //   const interviewServerResponse = await createMachineTask(
+      //     job.id,
+      //     companyId
+      //   );
+      //   console.log("Machine Task Created:", interviewServerResponse);
+      // }
     } catch (error) {
       console.error("Test creation failed:", error);
     }
@@ -234,6 +235,34 @@ class JobService implements IJobService {
   // async getCompanyByJobId(jobId: string): JobDetails {
   //   return await this.jobRepository.getcompanyName(jobId);
   // }
+
+  // async isJobExist(id: string) {
+  //   return await this.jobRepository.getJob(id);
+  // }
+
+  isJobExist = (
+    id: string,
+    callback: grpc.sendUnaryData< any >
+  ): void => {
+    this.jobRepository
+      .getJob(id)
+      .then((details: Omit<IJob, "applications"> | null) => {
+        if (details) {
+          callback(null, { job: {...details,testOptions:JSON.stringify(details.testOptions) } });
+        } else {
+          callback({
+            code: grpc.status.NOT_FOUND,
+            details: "Job not found",
+          });
+        }
+      })
+      .catch((err: Error) => {
+        callback({
+          code: grpc.status.INTERNAL,
+          details: err.message,
+        });
+      });
+  };
 }
 
 export default JobService;

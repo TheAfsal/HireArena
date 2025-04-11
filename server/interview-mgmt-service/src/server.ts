@@ -5,7 +5,6 @@ import server from "@config/grpcServer";
 
 const PORT = process.env.PORT || 5006;
 const GRPC_PORT = process.env.GRPC_PORT || 5007;
-// const GRPC_PORT = process.env.GRPC_PORT || 5005;
 
 app.listen(PORT, () =>
   console.log(`Interview Managment Service running at http://localhost:${PORT}`)

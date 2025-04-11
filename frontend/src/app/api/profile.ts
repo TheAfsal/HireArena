@@ -183,3 +183,20 @@ export async function changeJobSeekerPassword(
     throw new Error("Unknown error occurred");
   }
 }
+
+export async function getUserId(): Promise<any> {
+  try {
+    const response = await axiosInstance.get(`/user-service/api/job-seeker/userId`);
+
+    return response.data.userId;
+  } catch (error: unknown) {
+
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.message : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}

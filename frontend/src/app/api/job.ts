@@ -91,7 +91,7 @@ export async function fetchMyApplications(): Promise<any> {
 export async function applyJob(jobId: string): Promise<any> {
   
   try {
-    const response = await axiosInstance.post(`/job-service/api/jobs/apply`, {
+    const response = await axiosInstance.post(`/interview-mgmt-service/api/interviews/apply`, {
       jobId,
     });
 

@@ -13,7 +13,7 @@ const app: Application = express();
 
 app.use(
   cors({
-    origin: `http://${process.env.CLIENT_URL}:3000`,
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );

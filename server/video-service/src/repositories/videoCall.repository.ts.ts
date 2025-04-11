@@ -3,7 +3,7 @@ import { VideoCall, IVideoCallDocument } from "../model/videoCall";
 import { IVideoCall } from "@core/types/video.types";
 
 @injectable()
-export class VideoCallRepository {
+export class VideoCallRepository implements IVideoCallRepository{
   async createCall(conversationId: string, participants: string[]): Promise<IVideoCall> {
     const call = new VideoCall({ conversationId, participants });
     return await call.save();

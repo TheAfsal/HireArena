@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IChatController } from "@core/interfaces/controllers/IVideoController";
 import { IChatService } from "@core/interfaces/services/IChatService";
-import { IMessageDTO } from "@core/types/video.types";
+// import { IMessageDTO } from "@core/types/video.types";
 import { IUser } from "@core/types/IUser";
 import { TYPES } from "di/types";
 import { inject, injectable } from "inversify";
