@@ -17,8 +17,10 @@ class TokenService implements ITokenService {
     return payload.userId;
   }
 
-  generateAccessToken(userId: string): string {
-    return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET || "", {
+  generateAccessToken(userId: string, role?: string): string {
+    let payload: { userId: string; role?: string } = { userId };
+    if (role) payload.role = role;
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET || "", {
       expiresIn: "15m",
     });
   }

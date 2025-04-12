@@ -1,14 +1,23 @@
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 import IQuestionRepository from "@core/interfaces/repository/IQuestionRepository";
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
-import { IRoundStatus, RoundStatus, RoundType } from "model/Interview";
+import {
+  IInterview,
+  IRoundStatus,
+  RoundStatus,
+  RoundType,
+} from "model/Interview";
 import { IAptitudeQuestion, IQuestions } from "model/Question";
+import SubmitTest from "../usecase/submitAptitudeTest";
 import GeminiHelper from "utils/gemini.helper";
+import IAptitudeTestResultRepository from "@core/interfaces/repository/IAptitudeTestResultRepository";
+import { IsJobExist } from "@config/grpcClient";
 
 class AptitudeService implements IAptitudeService {
   constructor(
     private questionsRepo: IQuestionRepository,
-    private interviewRepository: IInterviewRepository
+    private interviewRepo: IInterviewRepository,
+    private aptitudeResultRepo: IAptitudeTestResultRepository
   ) {}
 
   async createAptitudeTest(jobId: string) {
@@ -47,8 +56,99 @@ class AptitudeService implements IAptitudeService {
       createdAt: now,
       updatedAt: now,
     };
-    await this.interviewRepository.updateAptitudeTestById(interviewId, state);
+    await this.interviewRepo.updateAptitudeTestById(interviewId, state);
     return;
+  }
+
+  async submitTest(interviewId: string, data: any): Promise<any> {
+    const application = await this.interviewRepo.findApplicationById(
+      interviewId
+    );
+
+    if (!application) {
+      throw new Error("False Submission");
+    }
+
+    const lastState = application.state[application.state.length - 1];
+
+    const isAptitudeRound =
+      lastState?.roundType === "Aptitude Test" &&
+      lastState.status === RoundStatus.Failed;
+
+    const scheduledAt = new Date(lastState.scheduledAt!).getTime();
+    const now = Date.now();
+    const diffInMinutes = (now - scheduledAt) / (1000 * 60);
+
+    const isWithinTimeLimit = diffInMinutes <= 31;
+
+    if (isAptitudeRound && isWithinTimeLimit) {
+      const submit = new SubmitTest(this.questionsRepo, this.interviewRepo);
+      let result = await submit.submitAptitudeTest(
+        interviewId,
+        application.jobId,
+        data
+      );
+
+      console.log("@@ test result", result);
+
+      const storedResult = await this.aptitudeResultRepo.saveResults(result);
+
+      if (storedResult.status === RoundStatus.Completed)
+        await this.interviewRepo.addAptitudeTestId(
+          interviewId,
+          storedResult.id,
+          true
+        );
+      else
+        await this.interviewRepo.addAptitudeTestId(
+          interviewId,
+          storedResult.id
+        );
+
+      console.log("@@ application ", application);
+
+      if (storedResult.status === RoundStatus.Completed) {
+        const testOptions: Array<string> = [
+          "Machine Task",
+          "Technical Interview",
+          "Behavioral Interview",
+          "Coding Challenge",
+        ];
+
+        const jobDetails = await IsJobExist(application.jobId);
+
+        const tests = JSON.parse(jobDetails.job.testOptions);
+
+        if (!jobDetails) throw new Error("Job not found");
+
+        let nextTest: Partial<IRoundStatus> | null = null;
+        const now = new Date();
+
+        for (let test of testOptions) {
+          if (tests[test] === true) {
+            nextTest = {
+              roundType: RoundType[test],
+              status: RoundStatus.Pending,
+              createdAt: now,
+              updatedAt: now,
+            };
+            break;
+          }
+        }
+
+        if (!nextTest) {
+          throw new Error("No pending test found to schedule next.");
+        }
+
+        return await this.interviewRepo.addNextTest(interviewId, nextTest);
+      }
+
+      return { success: true, message: "Submission accepted." };
+    } else {
+      throw new Error(
+        "Submission failed: Test window expired or invalid attempt."
+      );
+    }
   }
 
   // async getAptitudeResult(interviewId: string): Promise<IAptitudeTestResult> {

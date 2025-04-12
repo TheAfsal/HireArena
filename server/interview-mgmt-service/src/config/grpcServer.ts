@@ -6,6 +6,7 @@ import AptitudeController from "@controllers/aptitude.controller";
 import QuestionRepository from "@repositories/questions.repository";
 import AptitudeService from "@services/aptitude.service";
 import InterviewRepository from "@repositories/interview.repository";
+import AptitudeTestResultRepository from "@repositories/aptitudeTestResult.repository";
 
 dotenv.config();
 
@@ -15,8 +16,13 @@ const interviewProto = grpc.loadPackageDefinition(packageDefinition).interview;
 
 const questionRepo = new QuestionRepository();
 const interviewRepo = new InterviewRepository();
+const aptitudeResultRepo = new AptitudeTestResultRepository();
 
-const aptitudeServer = new AptitudeService(questionRepo,interviewRepo);
+const aptitudeServer = new AptitudeService(
+  questionRepo,
+  interviewRepo,
+  aptitudeResultRepo
+);
 const aptitudeController = new AptitudeController(aptitudeServer);
 
 // const interviewService = {

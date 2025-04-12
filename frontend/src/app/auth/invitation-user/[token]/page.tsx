@@ -88,7 +88,7 @@ function InvitationAccept() {
 
             <div>
               <Link
-                href={`${process.env.NEXT_PUBLIC_CLIENT_URL}/auth/invitation-signup/${token}`}
+                href={`/auth/invitation-signup/${token}`}
                 className="rounded-xl bg-blue-400 hover:bg-blue-700 hover:text-white py-3 px-5 mt-10"
               >
                 Join {invitationDetails.name}

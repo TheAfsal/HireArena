@@ -1,107 +1,114 @@
-import { ICandidateResponseRepository } from "@core/interfaces/repository/ICandidateResponseRepository";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
-import { IInterviewRoundRepository } from "@core/interfaces/repository/IInterviewRoundRepository";
-import { InterviewStatus, RoundType } from "@prisma/client";
+import IQuestionRepository from "@core/interfaces/repository/IQuestionRepository";
+import { IAptitudeTestResult } from "model/AptitudeTestResult";
+import { RoundStatus } from "model/Interview";
 
-export class SubmitAptitudeTest {
-  private interviewRepo: IInterviewRepository;
-  private responseRepo: ICandidateResponseRepository;
-  private roundRepo: IInterviewRoundRepository;
-
+class SubmitTest {
   constructor(
-    interviewRepo: IInterviewRepository,
-    responseRepo: ICandidateResponseRepository,
-    roundRepo: IInterviewRoundRepository
-  ) {
-    this.interviewRepo = interviewRepo;
-    this.responseRepo = responseRepo;
-    this.roundRepo = roundRepo;
-  }
+    private questionsRepo: IQuestionRepository,
+    private interviewRepo: IInterviewRepository
+  ) {}
 
-  async submit(
+  async submitAptitudeTest(
     interviewId: string,
+    jobId: string,
     responses: { questionId: string; selectedAnswer: string | null }[]
-  ) {
+  ):Promise<Partial<IAptitudeTestResult>> {
     console.log(responses);
-    
+
     const validResponses = responses.filter(
-      response => response.selectedAnswer !== null
+      (response) => response.selectedAnswer !== null
     );
-    
-    const questions = await this.interviewRepo.getQuestionsByInterviewId(
-      interviewId
-    );
-    
-    if (!questions || questions.length === 0) {
+
+    const questions = await this.questionsRepo.getQuestions(jobId);
+
+    if (!questions || questions.aptitudeQuestions.length === 0) {
       throw new Error("No questions found for this interview.");
     }
-    
+
+    console.log("@@ questions", questions);
+    console.log("@@ questions length", questions.aptitudeQuestions.length);
+    console.log("@@ responses", responses);
+
     let correctCount = 0;
     let incorrectCount = 0;
     let attemptedCount = validResponses.length;
-    
+
     const evaluationResults: { questionId: string; isCorrect: boolean }[] = [];
-    
+
     for (const response of validResponses) {
-      const question = questions.find((q) => q.id === response.questionId);
-      
+      const question = questions.aptitudeQuestions.find(
+        (q) => q.q_id === response.questionId
+      );
+
       if (!question) {
         throw new Error(`Invalid question ID: ${response.questionId}`);
       }
-      
+
       const isCorrect = question.correctAnswer === response.selectedAnswer;
-      
-      await this.responseRepo.saveCandidateResponse(
-        interviewId,
-        question.id,
-        response.selectedAnswer as string,
-        isCorrect
-      );
-      
+
+      // await this.responseRepo.saveCandidateResponse(
+      //   interviewId,
+      //   question.id,
+      //   response.selectedAnswer as string,
+      //   isCorrect
+      // );
+
       isCorrect ? correctCount++ : incorrectCount++;
-      evaluationResults.push({ questionId: question.id, isCorrect });
+      evaluationResults.push({ questionId: question.q_id, isCorrect });
     }
-    
-    const unansweredCount = questions.length - attemptedCount;
-    
-    const totalQuestions = questions.length;
+
+    const unansweredCount = questions.aptitudeQuestions.length - attemptedCount;
+
+    const totalQuestions = questions.aptitudeQuestions.length;
     const scorePercentage = (correctCount / totalQuestions) * 100;
     //@ts-ignore
     const passed = scorePercentage >= 70;
-    
-    const interviewRound = await this.roundRepo.getInterviewRound(
-      interviewId,
-      RoundType.aptitude
-    );
-    
-    if (!interviewRound) {
-      throw new Error("Aptitude test round not found.");
-    }
-    
-    const roundStatus = passed ? "completed" : "failed";
-    await this.roundRepo.updateInterviewRoundStatus(
-      interviewRound.id,
-      roundStatus
-    );
-    
-    if (passed) {
-      await this.interviewRepo.progressToNextRound(interviewId);
-    } else {
-      await this.interviewRepo.updateInterviewStatus(interviewId, InterviewStatus.failed);
-    }
-    
+
+    // const interviewRound = await this.roundRepo.getInterviewRound(
+    //   interviewId,
+    //   RoundType.aptitude
+    // );
+
+    // if (!interviewRound) {
+    //   throw new Error("Aptitude test round not found.");
+    // }
+
+    // const roundStatus = passed ? "completed" : "failed";
+    // await this.roundRepo.updateInterviewRoundStatus(
+    //   interviewRound.id,
+    //   roundStatus
+    // );
+
+    // if (passed) {
+    //   await this.interviewRepo.progressToNextRound(interviewId);
+    // } else {
+    //   await this.interviewRepo.updateInterviewStatus(
+    //     interviewId,
+    //     InterviewStatus.failed
+    //   );
+    // }
+
+    // return {
+    //   success: true,
+    //   totalQuestions,
+    //   attemptedCount,
+    //   correctCount,
+    //   incorrectCount,
+    //   unansweredCount,
+    //   scorePercentage: parseFloat(scorePercentage.toFixed(2)),
+    //   passed,
+    //   results: evaluationResults,
+    // };
+  
     return {
-      success: true,
       totalQuestions,
       attemptedCount,
-      correctCount,
-      incorrectCount,
-      unansweredCount,
       scorePercentage: parseFloat(scorePercentage.toFixed(2)),
-      passed,
+      status:passed ? RoundStatus.Completed : RoundStatus.Failed,
       results: evaluationResults,
     };
   }
 }
 
-
+export default SubmitTest;

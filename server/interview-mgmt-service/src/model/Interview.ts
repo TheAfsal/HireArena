@@ -22,7 +22,7 @@ export enum RoundStatus {
 export interface IRoundStatus {
   roundType: RoundType;
   status: RoundStatus;
-  scheduledAt: Date;
+  scheduledAt?: Date;
   completedAt?: Date;
   remarks?: string;
   createdAt: Date;
@@ -50,6 +50,11 @@ const RoundStatusSchema: Schema = new Schema(
       type: String,
       enum: Object.values(RoundStatus),
       required: true
+    },
+    testResultId: { 
+      type: Schema.Types.ObjectId, 
+      ref: 'AptitudeTestResult',
+      required: false 
     },
     scheduledAt: { type: Date, required: true, default: Date.now  },
     completedAt: { type: Date },

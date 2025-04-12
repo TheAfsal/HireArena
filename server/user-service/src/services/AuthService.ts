@@ -262,6 +262,9 @@ class AuthService implements IAuthService {
       throw new Error("Invalid credentials");
     }
 
+    console.log("@@ company employee find ", user);
+    
+
     const isPasswordValid = await this.passwordService.compare(
       password,
       user.password
@@ -270,7 +273,7 @@ class AuthService implements IAuthService {
       throw new Error("Invalid credentials");
     }
 
-    const accessToken = this.tokenService.generateAccessToken(user.id);
+    const accessToken = this.tokenService.generateAccessToken(user.id, user.role);
     const refreshToken = this.tokenService.generateRefreshToken(
       user.id,
       ROLES.COMPANY

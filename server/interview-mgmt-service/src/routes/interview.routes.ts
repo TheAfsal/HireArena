@@ -2,10 +2,9 @@ import express from "express";
 import InterviewController from "@controllers/interview.controller";
 import InterviewService from "@services/interview.service";
 import InterviewRepository from "@repositories/interview.repository";
-import AptitudeTestService from "@services/aptitude.service";
-import { SubmitAptitudeTest } from "../usecase/submitAptitudeTest";
 import AptitudeService from "@services/aptitude.service";
 import QuestionRepository from "@repositories/questions.repository";
+import AptitudeTestResultRepository from "@repositories/aptitudeTestResult.repository";
 // import CandidateResponseRepository from "@repositories/candidateResponse.repository";
 // import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
 
@@ -13,9 +12,10 @@ const router = express.Router();
 
 const interviewRepo = new InterviewRepository();
 const questionRepo = new QuestionRepository();
+const aptitudeResultRepo = new AptitudeTestResultRepository();
 
 const interviewServer = new InterviewService(interviewRepo);
-const aptitudeServer = new AptitudeService(questionRepo, interviewRepo);
+const aptitudeServer = new AptitudeService(questionRepo, interviewRepo,aptitudeResultRepo);
 
 const interviewController = new InterviewController(
   interviewServer,

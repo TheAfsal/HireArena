@@ -27,7 +27,7 @@ export async function submitAptitude(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/interviews/submit-aptitude`,
+      `/interview-mgmt-service/api/interviews/aptitude/submit`,
       { interviewId, data }
     );
 

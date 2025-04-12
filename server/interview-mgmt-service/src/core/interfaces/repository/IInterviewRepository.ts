@@ -35,6 +35,8 @@ export interface IInterviewRepository {
   ): Promise<IInterview | null>;
   createApplication(jobDetails: Partial<IInterview>): Promise<IInterview>;
   updateAptitudeTestById(interviewId: string, state: IRoundStatus): Promise<void>;
+  addAptitudeTestId( interviewId: string, testResultId: string, completed?: boolean): Promise<void>;
+  addNextTest(interviewId: string, newTest: Partial<IRoundStatus>): Promise<void>;
   // getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string>;
   // getQuestionsByInterviewId(interviewId: string): Promise<IAptitudeTestQuestion[]>;
   // progressToNextRound(interviewId: string): Promise<IInterview>;

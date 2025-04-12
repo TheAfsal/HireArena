@@ -23,8 +23,8 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAptitudeQuestions, submitAptitude } from "@/app/api/interview";
 
 export interface AptitudeQuestion {
-  id: string;
-  questionText: string;
+  q_id: string;
+  question: string;
   options: Array<string>;
 }
 
@@ -40,6 +40,10 @@ export default function TestPage() {
     queryKey: ["aptitude_test_questions"],
     queryFn: () => fetchAptitudeQuestions(interviewId),
   });
+
+  console.log('====================================');
+  console.log(questions);
+  console.log('====================================');
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(
@@ -75,8 +79,6 @@ export default function TestPage() {
       </div>
     );
   }
-
-  console.log(questions);
 
   const answeredCount = answers.filter((answer) => answer !== null).length;
   const progressPercentage = (answeredCount / questions.length) * 100;
@@ -123,7 +125,7 @@ export default function TestPage() {
       let response = await submitAptitude(
         interviewId,
         answers.map((answer, i) => ({
-          questionId: questions[i].id,
+          questionId: questions[i].q_id,
           selectedAnswer: answer === null ? null : answer.toString(),
         }))
       );
@@ -258,7 +260,7 @@ export default function TestPage() {
 
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">
-                  {questions[currentQuestion].questionText}
+                  {questions[currentQuestion].question}
                 </h2>
                 <RadioGroup
                   value={answers[currentQuestion]?.toString() || ""}

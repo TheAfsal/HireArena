@@ -31,7 +31,7 @@ app.use(morgan("dev"));
 
 connectDB()
 
-// app.use("/api/interviews/aptitude", aptitudeRoutes);
+app.use("/api/interviews/aptitude", aptitudeRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/machine-task", machineTaskRoutes);
 

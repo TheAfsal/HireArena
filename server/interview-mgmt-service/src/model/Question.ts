@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IAptitudeQuestion {
-  q_id: number;
+  q_id: string;
   question: string;
   options: string[];
   correctAnswer: string;
