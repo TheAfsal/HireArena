@@ -31,9 +31,9 @@ const interviewController = new InterviewController(
 
 router.post("/apply", interviewController.applyJob);
 router.get("/status/:id", interviewController.getApplicationStatus);
+router.get("/company-applications", interviewController.getAllApplications);
 router.get("/:interviewId", interviewController.getInterview);
 
-// router.get("/my-applications", interviewController.getAllApplications);
 
 // router.get("/status/:jobId", interviewController.fetchAppliedJobStatus);
 

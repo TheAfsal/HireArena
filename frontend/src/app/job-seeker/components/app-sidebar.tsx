@@ -41,8 +41,9 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { verifyAuth } from "@/redux/slices/authSlice";
 
 const data = {
   teams: [
@@ -224,14 +225,18 @@ const settingsItems = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const auth = useSelector((state: any) => state.auth);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     console.log(auth);
 
     if (!auth.token) {
       router.push("/");
+    } else if (!auth.isAuthenticated) {
+      //@ts-ignore
+      dispatch(verifyAuth());
     }
-  }, [auth]);
+  }, [auth.token, auth.isAuthenticated, dispatch, router]);
 
   // React.useEffect(() => {
   //   if (auth.role != 'company') {

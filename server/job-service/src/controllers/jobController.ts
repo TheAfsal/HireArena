@@ -8,6 +8,7 @@ import {
 import { IJobController } from "@core/interfaces/controllers/IJobController";
 import { IJobService } from "@core/interfaces/services/IJobService";
 import * as grpc from "@grpc/grpc-js";
+import { IJob } from "@shared/types/job.types";
 
 declare global {
   namespace Express {
@@ -239,24 +240,42 @@ class JobController implements IJobController {
     }
   };
 
-  // isJobExist = async (req: Request, res: Response) => {
-  //   try {
-  //     const { id } = req.params;
-
-  //     const jobDetails = await this.jobService.isJobExist(id);
-
-  //     res.json({ job: jobDetails });
-  //   } catch (error) {
-  //     res.status(500).json({ error: (error as Error).message });
-  //   }
-  // };
-
   isJobExist = (
     call: grpc.ServerUnaryCall<any, any>,
     callback: grpc.sendUnaryData<any>
   ) => {
     const { jobId } = call.request;
     this.jobService.isJobExist(jobId, callback);
+  };
+
+  findJobIdsByCompanyId = async (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<{jobIds:string[]}>
+  ) => {
+    try {
+      const { companyId } = call.request;
+
+      if (!companyId) {
+        callback({
+          code: grpc.status.NOT_FOUND,
+          details: "Company ID is required",
+        });
+        return;
+      }
+
+      const jobs: IJob[] = await this.jobService.getCompanyJobs(companyId);
+      const jobIds = jobs.map(job => (job.id));
+
+      console.log("@@ refracted for jobIds ", jobIds);
+      
+      
+      callback(null, { jobIds:jobIds });      
+    } catch (error) {
+      callback({
+        code: grpc.status.INTERNAL,
+        details: (error as Error).message,
+      });
+    }
   };
 }
 

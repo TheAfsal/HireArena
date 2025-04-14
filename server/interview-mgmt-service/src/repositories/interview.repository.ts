@@ -1,6 +1,10 @@
 import { Model } from "mongoose";
 import BaseRepository from "./base.repository";
-import InterviewModel, { IInterview, IRoundStatus, RoundStatus } from "model/Interview";
+import InterviewModel, {
+  IInterview,
+  IRoundStatus,
+  RoundStatus,
+} from "model/Interview";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 class InterviewRepository
   extends BaseRepository<IInterview, string>
@@ -44,25 +48,33 @@ class InterviewRepository
     const update: any = {
       "state.0.testResultId": testResultId,
     };
-  
+
     if (completed) {
       update["state.0.status"] = RoundStatus.Completed;
     }
-  
-    await this.model.findByIdAndUpdate(
-      interviewId,
-      {
-        $set: update,
-      }
-    ).exec();
-  }
-  
 
-  async addNextTest(interviewId: string, newTest: Partial<IRoundStatus>): Promise<void> {
-    this.model
-      .findByIdAndUpdate(interviewId, { 
-        $push: { state: newTest }, 
+    await this.model
+      .findByIdAndUpdate(interviewId, {
+        $set: update,
       })
+      .exec();
+  }
+
+  async addNextTest(
+    interviewId: string,
+    newTest: Partial<IRoundStatus>
+  ): Promise<void> {
+    this.model
+      .findByIdAndUpdate(interviewId, {
+        $push: { state: newTest },
+      })
+      .exec();
+  }
+
+  async findApplicationByJobId(jobs: string[]): Promise<IInterview[]> {
+    return this.model
+      .find({ jobId: { $in: jobs } })
+      .sort({ createdAt: -1 })
       .exec();
   }
 

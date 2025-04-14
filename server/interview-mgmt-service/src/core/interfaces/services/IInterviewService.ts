@@ -11,6 +11,7 @@ export interface IInterviewService {
     jobId: string
   ): Promise<IInterview | null>;
   findApplicationById(interviewId: string): Promise<IInterview | null>;
+  getAllApplications(userId: string, companyId: string ): Promise<IInterview[]>
   // fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string>;
   // fetchAppliedJobStatus(jobId: string, userId: string): Promise<string>;
 }

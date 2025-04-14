@@ -1,5 +1,5 @@
 import { CompanyRole } from "@prisma/client";
-import { ICompanyEmployeeRole } from "@shared/types/user.types";
+import { ICompanyEmployeeRole, IEmployee } from "@shared/types/user.types";
 
 export interface ICompanyEmployeeRoleRepository {
   // findByUserAndCompany(
@@ -22,6 +22,8 @@ export interface ICompanyEmployeeRoleRepository {
   ): Promise<ICompanyEmployeeRole>;
 
   delete(userId: string, companyId: string): Promise<ICompanyEmployeeRole>;
+
+  fetchProfile(userId: string): Promise<Partial<IEmployee> | null>
 
   assignRole(
     employeeId: string,

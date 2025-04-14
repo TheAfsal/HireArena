@@ -1,7 +1,7 @@
 export interface ITokenService {
   generateVerificationToken(userId: string): string;
   verifyVerificationToken(token: string): string;
-  generateAccessToken(userId: string, role?: string): string;
+  generateAccessToken(userId: string, role?: string, companyId?:string): string;
   generateRefreshToken(userId: string, role: string): string;
   verifyRefreshToken(token: string): string;
   verifyAccessToken(token: string): string;

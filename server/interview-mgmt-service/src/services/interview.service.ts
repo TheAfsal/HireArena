@@ -1,6 +1,7 @@
+import { FindJobIdsByCompanyId } from "@config/grpcClient";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 import { IInterviewService } from "@core/interfaces/services/IInterviewService";
-import { IInterview, IRoundStatus, RoundStatus, RoundType } from "model/Interview";
+import { IInterview, RoundStatus, RoundType } from "model/Interview";
 
 export class InterviewService implements IInterviewService {
   constructor(private interviewRepository: IInterviewRepository) {}
@@ -87,7 +88,19 @@ export class InterviewService implements IInterviewService {
     return await this.interviewRepository.findApplicationById(interviewId);
   }
 
-  
+  async getAllApplications(
+    userId: string,
+    companyId: string,
+  ): Promise<IInterview[]> {
+    const jobs =await FindJobIdsByCompanyId(companyId)
+    if (!jobs?.length) {
+      return []
+    }
+
+    console.log("@@ job ids from job-server ", jobs);
+
+    return await this.interviewRepository.findApplicationByJobId(jobs);
+  }
 
 
   // async getCompanyDetailsById(

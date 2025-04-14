@@ -39,7 +39,7 @@ services:
       - "5000:5000"
       - "5051:5051"
     volumes:
-      - ./server/user-service:/app/server
+      - ./server/user-service:/app
       - /app/node_modules
       - ./shared:/shared  
     depends_on:

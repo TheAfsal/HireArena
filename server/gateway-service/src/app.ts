@@ -41,7 +41,6 @@ app.use(
   "/user-service/auth",
   (req, res, next) => {
     console.log(`http://${process.env.USER_SERVER_URL}:5000`);
-    console.log(process.env.USER_SERVER_URL);
     next();
   },
   proxyMiddleware

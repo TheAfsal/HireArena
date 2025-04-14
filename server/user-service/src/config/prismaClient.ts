@@ -6,7 +6,7 @@ prisma
   .$connect()
   .then(() => console.log("Postgres connected successfully!"))
   .catch((error: any) => {
-    console.error("Failed to connect to the database:", error.message);
+    console.log("Failed to connect to the database:", error.message);
     process.exit(1);
   });
 

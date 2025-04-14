@@ -17,9 +17,16 @@ class TokenService implements ITokenService {
     return payload.userId;
   }
 
-  generateAccessToken(userId: string, role?: string): string {
-    let payload: { userId: string; role?: string } = { userId };
-    if (role) payload.role = role;
+  generateAccessToken(
+    userId: string,
+    role?: string,
+    companyId?: string
+  ): string {
+    let payload: { userId: string; role?: string; companyId?:string } = { userId };
+    if (role && companyId) {
+      payload.role = role;
+      payload.companyId = companyId;
+    }
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET || "", {
       expiresIn: "15m",
     });

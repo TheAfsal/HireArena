@@ -262,18 +262,20 @@ class AuthService implements IAuthService {
       throw new Error("Invalid credentials");
     }
 
-    console.log("@@ company employee find ", user);
-    
+    console.log("@@ user: ", user);
 
     const isPasswordValid = await this.passwordService.compare(
       password,
       user.password
     );
-    if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
-    }
+    if (!isPasswordValid || !user?.companyAssociations) throw new Error("Invalid credentials");    
 
-    const accessToken = this.tokenService.generateAccessToken(user.id, user.role);
+    const accessToken = this.tokenService.generateAccessToken(
+      user.id,
+      user?.companyAssociations[0].role,
+      user?.companyAssociations[0].companyId
+    );
+
     const refreshToken = this.tokenService.generateRefreshToken(
       user.id,
       ROLES.COMPANY
@@ -281,7 +283,7 @@ class AuthService implements IAuthService {
 
     await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
 
-    return { tokens: { accessToken, refreshToken }, user };
+    return { tokens: { accessToken, refreshToken }, user }; 
   }
 
   async loginAdmin(email: string, password: string): Promise<IAuthResponse> {

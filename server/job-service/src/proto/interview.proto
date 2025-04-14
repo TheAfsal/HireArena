@@ -7,6 +7,15 @@ service InterviewService {
   rpc CreateAptitudeTest (AptitudeTestRequest) returns (AptitudeTestResponse);
   rpc CreateMachineTask (MachineTaskRequest) returns (MachineTaskResponse);
   rpc IsJobExist (JobExistRequest) returns (JobExistResponse);
+  rpc FindJobIdsByCompanyId (FindJobsRequest) returns (FindJobsResponse);
+}
+
+message FindJobsRequest {
+  string companyId = 1;
+}
+
+message FindJobsResponse {
+  repeated string jobIds = 1;
 }
 
 message JobExistRequest {

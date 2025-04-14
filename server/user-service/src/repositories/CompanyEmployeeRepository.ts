@@ -55,6 +55,23 @@ class CompanyEmployeeRoleRepository implements ICompanyEmployeeRoleRepository {
     });
   }
 
+  async fetchProfile(userId: string): Promise<Partial<IEmployee> | null> {
+    return await this.prisma.companyEmployeeRole.findUnique({
+      where: { userId },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+  }
+
   async assignRole(
     employeeId: string,
     companyId: string,

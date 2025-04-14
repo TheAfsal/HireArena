@@ -66,7 +66,7 @@ const companyController = new CompanyController(
   companyService
 );
 
-const authController = new AuthController(authService);
+const authController = new AuthController(authService, profileService);
 
 const router = Router();
 
@@ -87,6 +87,6 @@ router.post("/refresh-token", authController.refresh);
 
 router.post("/refresh-token-google", authController.setRefreshForGoogle);
 
-router.post("/who-am-i", authController.whoAmI);
+router.get("/who-am-i", authController.whoAmI);
 
 export default router;

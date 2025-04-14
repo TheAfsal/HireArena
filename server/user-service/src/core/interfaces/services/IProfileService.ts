@@ -1,5 +1,5 @@
 import * as grpc from "@grpc/grpc-js";
-import { ICompany, IJobSeeker } from "@shared/types/user.types";
+import { ICompany, IEmployee, IJobSeeker } from "@shared/types/user.types";
 import { IJobSeekerUpdateInput } from "@core/types/services/IJobSeekerProfile";
 
 export interface IProfileService {
@@ -29,6 +29,8 @@ export interface IProfileService {
   ): Promise<IJobSeeker>;
 
   updateProfileCompany(data: any): Promise<any>;
+
+  fetchEmployeeProfile(userId: string): Promise<Partial<IEmployee> | null> 
 
   fetchCompanyProfile(userId: string): Promise<ICompany | null>;
 

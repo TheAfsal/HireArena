@@ -6,7 +6,7 @@ import JobSeekerRepository from "../repositories/JobSeekerRepository";
 import { IProfileService } from "@core/interfaces/services/IProfileService";
 import { ICompanyRepository } from "@core/interfaces/repository/ICompanyRepository";
 import { ICompanyEmployeeRoleRepository } from "@core/interfaces/repository/ICompanyEmployeeRoleRepository";
-import { ICompany, IJobSeeker } from "@shared/types/user.types";
+import { ICompany, IEmployee, IJobSeeker } from "@shared/types/user.types";
 import { IJobSeekerUpdateInput } from "@core/types/services/IJobSeekerProfile";
 
 class ProfileService implements IProfileService {
@@ -163,6 +163,10 @@ class ProfileService implements IProfileService {
       throw new Error("User not found in any company");
     }
     return await this.companyRepository.findById(relationDetails.companyId);
+  }
+
+  async fetchEmployeeProfile(userId: string): Promise<Partial<IEmployee> | null> {
+    return await this.companyEmployeeRoleRepository.fetchProfile(userId);
   }
 
   async medialLinks(

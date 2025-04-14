@@ -40,8 +40,9 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { verifyAuth } from "@/redux/slices/authSlice";
 
 const data = {
   teams: [
@@ -175,26 +176,20 @@ const menuItems = [
     active: true,
   },
   {
-    title: "Messages",
-    icon: MessageSquare,
-    url: "#",
-    badge: "1",
+    title: "All Applicants",
+    icon: Users,
+    url: "/panel/list-applications",
   },
-  // {
-  //   title: "All Applicants",
-  //   icon: Users,
-  //   url: "#",
-  // },
   {
     title: "Job Listing",
     icon: Briefcase,
     url: "/panel/jobs-list",
   },
-  // {
-  //   title: "My Schedule",
-  //   icon: Calendar,
-  //   url: "#",
-  // },
+  {
+    title: "My Schedule",
+    icon: Calendar,
+    url: "/panel/schedule",
+  },
   {
     title: "Chats",
     icon: MessageCircleDashed,
@@ -219,18 +214,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const auth = useSelector((state: any) => state.auth);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
+
     if (!auth.token) {
       router.push("/");
+    } else if (!auth.isAuthenticated) {
+      //@ts-ignore
+      dispatch(verifyAuth());
     }
-  }, [auth]);
-
-  // React.useEffect(() => {
-  //   if (auth.role != 'company') {
-  //     router.push("/");
-  //   }
-  // }, [auth]);
+  }, [auth.token, auth.isAuthenticated, dispatch, router]);
 
   return (
     <Sidebar collapsible="icon" {...props}>

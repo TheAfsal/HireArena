@@ -17,8 +17,6 @@ const IsJobExist = (jobId:string) => {
   return new Promise<any>((resolve, reject) => {
     interviewServiceClient.IsJobExist({jobId}, (error: any, response: any) => {
       if (error) {
-        console.log("@@ error on grpc job exist");
-        
         reject(error);
       } else {
         resolve(response);
@@ -27,7 +25,20 @@ const IsJobExist = (jobId:string) => {
   });
 };
 
-export { IsJobExist };
+const FindJobIdsByCompanyId = (companyId:string) => {
+  return new Promise<any>((resolve, reject) => {
+    interviewServiceClient.FindJobIdsByCompanyId({companyId}, (error: any, response: any) => {
+      if (error) {
+        console.log("@@ error on grpc job exist ", error);
+        reject(error);
+      } else {
+        resolve(response.jobIds);
+      }
+    });
+  });
+};
+
+export { IsJobExist, FindJobIdsByCompanyId };
 
 
 

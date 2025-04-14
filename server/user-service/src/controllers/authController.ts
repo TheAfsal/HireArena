@@ -7,6 +7,7 @@ import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
 import { IUser } from "@core/types/IUser";
 import { IAuthController } from "@core/interfaces/controllers/IAuthController";
 import { IJobSeeker } from "@shared/types/user.types";
+import { IProfileService } from "@core/interfaces/services/IProfileService";
 
 declare global {
   namespace Express {
@@ -17,11 +18,10 @@ declare global {
 }
 
 class AuthController implements IAuthController {
-  private authService: IAuthService;
-
-  constructor(authService: IAuthService) {
-    this.authService = authService;
-  }
+  constructor(
+    private authService: IAuthService,
+    private profileService: IProfileService
+  ) {}
 
   signup = async (
     req: Request,
@@ -254,7 +254,6 @@ class AuthController implements IAuthController {
       });
     } catch (error) {
       console.log(error);
-
       res.status(500).json({
         status: "error",
         message: "An error occurred during login",
@@ -405,21 +404,50 @@ class AuthController implements IAuthController {
     res: Response<IGenericResponse<{ role: string } | IError>>
   ) => {
     try {
-      const { token } = req.body;
-      if (!token) {
-        res
-          .status(401)
-          .json({ status: "error", message: "Identification failed" });
-        return;
+      const { userId, role } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      let details;
+      console.log(role);
+      
+      if (!role) {
+
+        details = await this.profileService.getProfile(userId);
+        console.log("@@ who am i: ", details);
+        res.status(200).json({
+          status: "success",
+          message: "user verified successfully",
+          role: "job-seeker",
+          user: {
+            fullName: details.fullName,
+            email: details.email,
+            image: details.image,
+          },
+        });
+      } else {
+
+        details = await this.profileService.fetchEmployeeProfile(userId);
+        console.log("@@ who am i - : ", details);
+        res.status(200).json({
+          status: "success",
+          message: "user verified successfully",
+          role: details.role,
+          user: {
+            fullName: "details.name",
+            email: "details.email",
+            image: "",
+          },
+        });
       }
 
-      // const authResponse = await this.authService.whoAmI(refreshToken);
+      if (!details)
+        return res.status(500).json({
+          status: "error",
+          message: "User failed during identification",
+        });
 
-      res.status(200).json({
-        status: "success",
-        message: "user verified successfully",
-        // role:authResponse.role,
-      });
+
     } catch (error) {
       console.log(error);
       res.status(500).json({

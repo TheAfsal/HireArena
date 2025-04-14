@@ -3,7 +3,7 @@ import {
   ITransaction,
   ITransactionCreateInput,
 } from "@core/types/repository/schema.types";
-import { PrismaClient } from "@prisma/client/default";
+import { PrismaClient } from "@prisma/client";
 
 class TransactionRepository implements ITransactionRepository {
   private prisma: PrismaClient;

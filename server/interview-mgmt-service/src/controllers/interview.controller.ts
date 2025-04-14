@@ -157,10 +157,8 @@ class InterviewController implements IInterviewController {
       if (
         application.state[application.state.length - 1].roundType ===
         "Aptitude Test"
-      ){
-        await this.aptitudeService.scheduleAptitude(
-          interviewId
-        );
+      ) {
+        await this.aptitudeService.scheduleAptitude(interviewId);
         res.json({ success: true, questions: questions.aptitudeQuestions });
       }
     } catch (error) {
@@ -200,22 +198,27 @@ class InterviewController implements IInterviewController {
     }
   };
 
-  // getAllApplications = async (req: Request, res: Response) => {
-  //   try {
-  //     const { userId } = req.headers["x-user"]
-  //       ? JSON.parse(req.headers["x-user"] as string)
-  //       : null;
+  getAllApplications = async (req: Request, res: Response) => {
+    try {
+      const { userId, companyId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
 
-  //     const applications = await this.jobService.getAllApplications(userId);
+      const applications = await this.interviewService.getAllApplications(
+        userId,
+        companyId
+      );
 
-  //     res.status(200).json({ success: true, data: applications });
-  //     return;
-  //   } catch (error) {
-  //     console.log("Error fetching job applications:", error);
-  //     res.status(500).json({ success: false, message: "Server error" });
-  //     return;
-  //   }
-  // };
+      console.log("@@ companies all application", applications);
+
+      res.status(200).json(applications);
+      return;
+    } catch (error) {
+      console.log("@@ Error fetching job applications by Company:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+      return;
+    }
+  };
 
   //to delete upto -------
 
