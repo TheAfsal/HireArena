@@ -25,4 +25,6 @@ export interface IJobService {
     id: string,
     callback: grpc.sendUnaryData<any>
   ): void;
+
+  fetchJobDetails (ids: string[], callback: grpc.sendUnaryData< any >): void
 }

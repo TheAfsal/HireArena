@@ -13,6 +13,7 @@ export interface IInterviewService {
   findApplicationById(interviewId: string): Promise<IInterview | null>;
   getAllApplications(userId: string, companyId: string ): Promise<IInterview[]>
   scheduleInterview( interviewId: string, employeeId: string, roundType: RoundType, scheduledAt: Date): Promise<IInterview>
+  getApplicationsCandidate( userId: string ): Promise<IInterview[]>
   // fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string>;
   // fetchAppliedJobStatus(jobId: string, userId: string): Promise<string>;
 }

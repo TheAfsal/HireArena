@@ -25,6 +25,12 @@ class InterviewRepository
     return this.model.findOne({ jobId, candidateId: jobSeekerId }).exec();
   }
 
+  async findApplicationByCandidateId(
+    candidateId: string,
+  ): Promise<IInterview[]> {
+    return this.model.find({ candidateId }).exec();
+  }
+
   async createApplication(
     jobDetails: Partial<IInterview>
   ): Promise<IInterview> {
@@ -101,7 +107,7 @@ class InterviewRepository
     console.log("Updated document:", updateResult);
     return updateResult;
   }
-  
+
   // async getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string> {
   //   const interview = await this.findById(interviewId);
   //   if (!interview) throw new Error("Interview not found");

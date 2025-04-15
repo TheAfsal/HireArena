@@ -14,4 +14,5 @@ export interface IJobController {
   getCompanyJobs(req: Request, res: Response): Promise<void>;
   isJobExist(call: grpc.ServerUnaryCall<any, any>,callback: grpc.sendUnaryData<any>): void;
   findJobIdsByCompanyId (call: grpc.ServerUnaryCall<any, any>,callback: grpc.sendUnaryData<{jobIds:string[]}>);
+  fetchJobDetails (call: grpc.ServerUnaryCall<any, any>,callback: grpc.sendUnaryData<any>)
 }

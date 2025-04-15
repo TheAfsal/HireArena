@@ -73,9 +73,11 @@ export async function fetchJobListBrief(): Promise<any> {
 export async function fetchMyApplications(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/job-service/api/jobs/my-applications`
+      `/interview-mgmt-service/api/interviews/`
     );
 
+    console.log(response.data);
+    
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

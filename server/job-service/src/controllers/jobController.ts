@@ -248,6 +248,14 @@ class JobController implements IJobController {
     this.jobService.isJobExist(jobId, callback);
   };
 
+  fetchJobDetails = (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    const { jobIds } = call.request;
+    this.jobService.fetchJobDetails(jobIds, callback);
+  };
+
   findJobIdsByCompanyId = async (
     call: grpc.ServerUnaryCall<any, any>,
     callback: grpc.sendUnaryData<{jobIds:string[]}>

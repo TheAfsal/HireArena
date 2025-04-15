@@ -221,17 +221,37 @@ class InterviewController implements IInterviewController {
     }
   };
 
-  scheduleInterview = async (req: Request, res: Response)=> {
+  getApplicationsCandidate = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const applications = await this.interviewService.getApplicationsCandidate(
+        userId
+      );
+
+      console.log("@@ companies all application of candidate", applications);
+
+      res.status(200).json(applications);
+      return;
+    } catch (error) {
+      console.log("@@ Error fetching applications for candidate :", error);
+      res.status(500).json({ success: false, message: "Server error" });
+      return;
+    }
+  };
+
+  scheduleInterview = async (req: Request, res: Response) => {
     try {
       const { interviewId, scheduledAt } = req.body.form;
 
       const { userId, role } = req.headers["x-user"]
-      ? JSON.parse(req.headers["x-user"] as string)
-      : null;
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
 
-      console.log(interviewId,role,scheduledAt);
-      
-      
+      console.log(interviewId, role, scheduledAt);
+
       if (!interviewId || !role || !scheduledAt) {
         return res.status(400).json({ message: "Missing required fields" });
       }
@@ -251,17 +271,17 @@ class InterviewController implements IInterviewController {
       res.status(200).json({
         success: true,
         data: updatedInterview,
-        message: "Interview scheduled successfully"
+        message: "Interview scheduled successfully",
       });
     } catch (error) {
       console.log(error);
-      
+
       res.status(500).json({
         success: false,
-        message: `Error scheduling interview: ${(error as Error).message}`
+        message: `Error scheduling interview: ${(error as Error).message}`,
       });
     }
-  }
+  };
 
   //to delete upto -------
 

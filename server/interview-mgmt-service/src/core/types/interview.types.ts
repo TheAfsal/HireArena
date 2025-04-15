@@ -1,5 +1,15 @@
+import { IInterview } from "model/Interview";
 import { Document } from "mongoose";
 
+
+export interface IInterviewWithJob extends IInterview {
+    jobDetails?: {
+      jobId: string;
+      title: string;
+      description: string;
+      testOptions: string;
+    };
+  }
 
 // export interface ICandidateResponse {
 //   id: string;

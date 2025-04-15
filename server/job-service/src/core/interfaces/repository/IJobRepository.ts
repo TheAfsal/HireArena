@@ -32,4 +32,6 @@ export interface IJobRepository {
     category?: string;
     level?: string;
   }): Promise<Omit<IJob, "applications">[]>;
+
+  fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]>
 }

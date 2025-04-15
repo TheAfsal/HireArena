@@ -31,6 +31,7 @@ const interviewController = new InterviewController(
 // const aptitudeTestService = new AptitudeTestService(submitAptitudeTest,responseRepo,interviewRepo,interviewRoundRepo);
 // const aptitudeTestController = new AptitudeTestController(aptitudeTestService);
 
+router.get("/", interviewController.getApplicationsCandidate);
 router.post("/apply", interviewController.applyJob);
 router.post("/schedule", interviewController.scheduleInterview);
 router.get("/status/:id", interviewController.getApplicationStatus);

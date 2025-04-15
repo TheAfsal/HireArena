@@ -8,6 +8,15 @@ service InterviewService {
   rpc CreateMachineTask (MachineTaskRequest) returns (MachineTaskResponse);
   rpc IsJobExist (JobExistRequest) returns (JobExistResponse);
   rpc FindJobIdsByCompanyId (FindJobsRequest) returns (FindJobsResponse);
+  rpc FetchJobDetailsById (FetchJobsRequest) returns (FetchJobsResponse);
+}
+
+message FetchJobsRequest {
+  repeated string jobIds = 1;
+}
+
+message FetchJobsResponse {
+  repeated JobDetails jobs = 1;
 }
 
 message FindJobsRequest {
@@ -61,4 +70,20 @@ message MachineTaskRequest {
 message MachineTaskResponse {
   bool success = 1;
   string testId = 2;
+}
+
+message JobDetails {
+  string id = 1;
+  string jobTitle = 2;
+  int32 salaryMin = 3;
+  int32 salaryMax = 4;
+  string jobDescription = 5;
+  string responsibilities = 6;
+  string qualifications = 7;
+  string testOptions = 8; 
+  string niceToHave = 9;
+  string benefits = 10;   
+  string companyId = 11;
+  string createdAt = 12;  
+  string updatedAt = 13;  
 }

@@ -148,8 +148,10 @@ class JobService implements IJobService {
     const applications = await this.jobApplicationRepository.findAllByJobSeeker(
       jobSeekerId
     );
-    //@ts-ignore
-    const companyIds: any[] = [...new Set(applications.map((app) => app.job.companyId))];
+    const companyIds: any[] = [
+      //@ts-ignore
+      ...new Set(applications.map((app) => app.job.companyId)),
+    ];
     const companyDetails = await getCompaniesDetails(companyIds);
 
     return applications.map((app) => {
@@ -240,15 +242,46 @@ class JobService implements IJobService {
   //   return await this.jobRepository.getJob(id);
   // }
 
-  isJobExist = (
-    id: string,
-    callback: grpc.sendUnaryData< any >
-  ): void => {
+  isJobExist = (id: string, callback: grpc.sendUnaryData<any>): void => {
     this.jobRepository
       .getJob(id)
       .then((details: Omit<IJob, "applications"> | null) => {
         if (details) {
-          callback(null, { job: {...details,testOptions:JSON.stringify(details.testOptions) } });
+          callback(null, {
+            job: {
+              ...details,
+              testOptions: JSON.stringify(details.testOptions),
+            },
+          });
+        } else {
+          callback({
+            code: grpc.status.NOT_FOUND,
+            details: "Job not found",
+          });
+        }
+      })
+      .catch((err: Error) => {
+        callback({
+          code: grpc.status.INTERNAL,
+          details: err.message,
+        });
+      });
+  };
+
+  fetchJobDetails = (
+    ids: string[],
+    callback: grpc.sendUnaryData<any>
+  ): void => {
+    this.jobRepository
+      .fetchJobsByIds(ids)
+      .then((details: Omit<IJob, "applications">[]) => {
+        if (details) {
+          const transformedDetails = details.map((job) => ({
+            ...job,
+            testOptions: JSON.stringify(job.testOptions),
+          }));
+
+          callback(null, { jobs: transformedDetails });
         } else {
           callback({
             code: grpc.status.NOT_FOUND,

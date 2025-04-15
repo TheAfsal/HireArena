@@ -29,10 +29,8 @@ import { IInterview, IRoundStatus } from "model/Interview";
 
 export interface IInterviewRepository {
   findApplicationById(interviewId: string): Promise<IInterview | null>;
-  findApplication(
-    jobId: string,
-    jobSeekerId: string
-  ): Promise<IInterview | null>;
+  findApplication( jobId: string, jobSeekerId: string): Promise<IInterview | null>;
+  findApplicationByCandidateId( candidateId: string ): Promise<IInterview[]>
   createApplication(jobDetails: Partial<IInterview>): Promise<IInterview>;
   updateAptitudeTestById(interviewId: string, state: IRoundStatus): Promise<void>;
   addAptitudeTestId( interviewId: string, testResultId: string, completed?: boolean): Promise<void>;

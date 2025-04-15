@@ -24,7 +24,8 @@ const server = new grpc.Server();
 //@ts-ignore
 server.addService(interviewProto.InterviewService.service, {
     IsJobExist: jobController.isJobExist,
-    FindJobIdsByCompanyId: jobController.findJobIdsByCompanyId
+    FindJobIdsByCompanyId: jobController.findJobIdsByCompanyId,
+    FetchJobDetailsById: jobController.fetchJobDetails
 });
 
 export default server;

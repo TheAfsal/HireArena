@@ -61,6 +61,23 @@ class JobRepository implements IJobRepository {
     });
   }
 
+  async fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]> {
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        id: {
+          in: jobIds,
+        },
+      },
+      include: {
+        employmentTypes: true,
+        categories: true,
+        requiredSkills: true,
+      },
+    });
+  
+    return jobs;
+  }
+
   async getJob(id: string): Promise<Omit<IJob, "applications"> | null> {
     return await this.prisma.job.findUnique({
       where: { id },

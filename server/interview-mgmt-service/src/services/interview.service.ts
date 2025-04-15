@@ -1,7 +1,8 @@
-import { FindJobIdsByCompanyId } from "@config/grpcClient";
+import { FindJobIdsByCompanyId, FindJobsByIds } from "@config/grpcClient";
 import IEmployeeInterviewsRepository from "@core/interfaces/repository/IEmployeeInterviewsRepository";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 import { IInterviewService } from "@core/interfaces/services/IInterviewService";
+import { IInterviewWithJob } from "@core/types/interview.types";
 import { IScheduledInterview } from "model/EmployeeInterviews";
 import { IInterview, RoundStatus, RoundType } from "model/Interview";
 
@@ -107,6 +108,44 @@ export class InterviewService implements IInterviewService {
     console.log("@@ job ids from job-server ", jobs);
 
     return await this.interviewRepo.findApplicationByJobId(jobs);
+  }
+
+  async getApplicationsCandidate(userId: string): Promise<IInterviewWithJob[]> {
+    console.log(1);
+    
+    const interviews = await this.interviewRepo.findApplicationByCandidateId(userId);
+    console.log(2);
+    
+    if (!interviews.length) return [];
+    
+    const jobIds = interviews.map(interview => interview.jobId);
+    
+    const jobs = await FindJobsByIds(jobIds);
+    console.log("@@ jobs",jobs);
+    
+    const interviewsWithJobs = interviews.map(interview => {
+      const job = jobs.find(j => j.id === interview.jobId);
+      console.log("@@ # ", job);
+      
+      return {
+        ...interview.toObject(),
+        jobDetails: job
+        ? {
+          jobId: job.id,
+          title: job.jobTitle,
+          testOptions: job.testOptions,
+          description: job.jobDescription,
+        }
+        : undefined
+      };
+    });
+
+    console.log(4);
+
+    console.log("@@ interviewsWithJobs", interviewsWithJobs);
+    
+
+    return interviewsWithJobs;
   }
 
   async scheduleInterview(

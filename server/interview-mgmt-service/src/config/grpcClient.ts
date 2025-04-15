@@ -38,7 +38,20 @@ const FindJobIdsByCompanyId = (companyId:string) => {
   });
 };
 
-export { IsJobExist, FindJobIdsByCompanyId };
+const FindJobsByIds = (jobIds:string[]) => {
+  return new Promise<any>((resolve, reject) => {
+    interviewServiceClient.FetchJobDetailsById({jobIds}, (error: any, response: any) => {
+      if (error) {
+        console.log("@@ error on grpc fetching jobs by ids ", error);
+        reject(error);
+      } else {
+        resolve(response.jobs);
+      }
+    });
+  });
+};
+
+export { IsJobExist, FindJobIdsByCompanyId,FindJobsByIds };
 
 
 
