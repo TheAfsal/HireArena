@@ -239,3 +239,39 @@ export async function AcceptInvitation(
     throw new Error("Unknown error occurred");
   }
 }
+
+export async function ForgotPassword(email: string): Promise<void> {
+  try {
+    const response = await axiosInstance.post(
+      "/user-service/auth/api/auth/forgot-password",
+      {email}
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw {
+        success: false,
+        error: error.response ? error.response.data : "Something went wrong",
+      };
+    }
+    throw { success: false, error: "Unknown error occurred" };
+  }
+}
+
+export async function ConfirmToForgotPassword(token:string, newPassword: string): Promise<void> {
+  try {
+    const response = await axiosInstance.post(
+      `/user-service/auth/api/auth/forgot-password-token/${token}`,
+      {newPassword}
+    );
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw {
+        success: false,
+        error: error.response ? error.response.data : "Something went wrong",
+      };
+    }
+    throw { success: false, error: "Unknown error occurred" };
+  }
+}

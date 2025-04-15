@@ -46,4 +46,8 @@ export interface IAuthController {
     req: Request,
     res: Response<IGenericResponse<{ role: string } | IError>>
   ): Promise<void>;
+  forgotPasswordUsingToken (
+    req: Request,
+    res: Response
+  ):Promise<void>
 }

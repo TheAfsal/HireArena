@@ -268,7 +268,8 @@ class AuthService implements IAuthService {
       password,
       user.password
     );
-    if (!isPasswordValid || !user?.companyAssociations) throw new Error("Invalid credentials");    
+    if (!isPasswordValid || !user?.companyAssociations)
+      throw new Error("Invalid credentials");
 
     const accessToken = this.tokenService.generateAccessToken(
       user.id,
@@ -283,7 +284,7 @@ class AuthService implements IAuthService {
 
     await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
 
-    return { tokens: { accessToken, refreshToken }, user }; 
+    return { tokens: { accessToken, refreshToken }, user };
   }
 
   async loginAdmin(email: string, password: string): Promise<IAuthResponse> {
@@ -310,6 +311,42 @@ class AuthService implements IAuthService {
     await this.redisService.setWithTTL(user.id, refreshToken, 7 * 24 * 60 * 60);
 
     return { tokens: { accessToken, refreshToken }, user };
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user: IUser | null = await this.jobSeekerRepository.findByEmail(
+      email
+    );
+
+    if (!user) {
+      throw new Error("Invalid emailId");
+    }
+
+    if (user?.status === false) {
+      throw new Error("Account Blocked");
+    }
+    const token = this.tokenService.generateVerificationToken(user.id);
+
+    await this.emailService.sendPasswordChangeEmail(email, token);
+  }
+
+  async forgotPasswordUsingToken(
+    token: string,
+    newPassword: string
+  ): Promise<void> {
+    const userId = this.tokenService.verifyVerificationToken(token);
+
+    if (!userId) {
+      throw new Error("User not found");
+    }
+
+    const hashedPassword = await this.passwordService.hash(newPassword);
+
+    await this.jobSeekerRepository.updatePassword(
+      userId,
+      hashedPassword
+    );
+    return
   }
 
   async refresh(refreshToken: string): Promise<IAuthResponse> {

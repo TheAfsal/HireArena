@@ -22,4 +22,6 @@ export interface IAuthService {
     name: string;
     password: string;
   }) => Promise<Pick<IJobSeeker, "id" | "email" | "fullName"> | null>;
+  forgotPassword(email: string ): Promise<void>
+  forgotPasswordUsingToken( token: string, newPassword: string ): Promise<void>
 }

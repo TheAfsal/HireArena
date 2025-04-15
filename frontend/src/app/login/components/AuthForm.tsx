@@ -15,6 +15,7 @@ import type { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { loginFailure, loginSuccess } from "@/redux/slices/authSlice";
 import { toast } from "sonner";
+import EmailPopup from "./EmailPopUp";
 
 type FormType = "job-seeker" | "company";
 type FormState = "login" | "signup";
@@ -30,26 +31,27 @@ function AuthForm() {
   const [formType, setFormType] = useState<FormType>("job-seeker");
   const [formState, setFormState] = useState<FormState>("signup");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [popupForgotPassword, setPopupForgotPassword] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({
     email: "afsal@gmail.com",
     password: "123123",
     name: "",
   });
 
-  useEffect(()=>{
-    if(formType !== "job-seeker" )
-    setFormValues({
-      email: "alexander@gmail.com",
-      password: "123123",
-      name: "",
-    })
+  useEffect(() => {
+    if (formType !== "job-seeker")
+      setFormValues({
+        email: "alexander@gmail.com",
+        password: "123123",
+        name: "",
+      });
     else
       setFormValues({
         email: "afsal@gmail.com",
         password: "123123",
         name: "",
-      })
-  },[formType])
+      });
+  }, [formType]);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -214,6 +216,10 @@ function AuthForm() {
     }
   };
 
+  const closePopup = () => {
+    setPopupForgotPassword(false);
+  };
+
   const googleLogin = () => {
     window.open("http://localhost:5000/auth/google", "_self");
   };
@@ -348,8 +354,20 @@ function AuthForm() {
             {formState === "signup" ? "Continue" : "Login"}
           </Button>
 
-          <div className="text-center space-y-4">
-            <p className="text-sm text-gray-600">
+          {formState === "login" && (
+            <p className="flex justify-center text-sm text-gray-600">
+              <button
+                type="button"
+                onClick={() =>setPopupForgotPassword(true)}
+                className="text-primary font-medium"
+              >
+                forgot paasword?
+              </button>
+            </p>
+          )}
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600 mb-4">
               {formState === "signup"
                 ? "Already have an account?"
                 : "Don't have an account?"}{" "}
@@ -377,6 +395,7 @@ function AuthForm() {
             </p>
           </div>
         </form>
+        {popupForgotPassword && <EmailPopup onClose={closePopup} />}
       </div>
     </div>
   );

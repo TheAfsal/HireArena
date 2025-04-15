@@ -90,6 +90,43 @@ class EmailService implements IEmailService {
       console.log(error);
     }
   }
+
+  async sendPasswordChangeEmail(email: string, token: string): Promise<void> {
+    try {
+      const passwordChangeUrl = `${process.env.FRONT_END_URL}/auth/forgot-password/${token}`;
+      
+      const message = `<p>Dear [User's Name],</p>
+    
+        <p>We received a request to reset the password for your <strong>HireArena</strong> account.</p>
+    
+        <p>To change your password, please click the link below:</p>
+    
+        <p style="text-align: center; margin-top: 50px; margin-bottom: 50px;">
+          <a href="${passwordChangeUrl}" style="background-color: #FF5722; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Your Password</a>
+        </p>
+    
+        <p>If you did not request a password reset, please ignore this email or contact our support team at <a href="mailto:support@hirearena.com">support@hirearena.com</a>.</p>
+    
+        <p>We are committed to helping you keep your account secure!</p>
+    
+        <p>Best regards,</p>
+        <p>The HireArena Team</p>
+    
+        <p style="font-size: 12px; color: #888;">If you're having trouble clicking the button, use this link: <a href="${passwordChangeUrl}">${passwordChangeUrl}</a></p>
+      `;
+  
+      console.log(passwordChangeUrl);
+  
+      // await this.transporter.sendMail({
+      //   to: email,
+      //   subject: "Password Change Request",
+      //   html: message,
+      // });
+    } catch (error) {
+      console.error("Error sending password change email:", error);
+    }
+  }
+  
 }
 
 export default EmailService;

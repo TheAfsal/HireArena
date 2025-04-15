@@ -89,4 +89,8 @@ router.post("/refresh-token-google", authController.setRefreshForGoogle);
 
 router.get("/who-am-i", authController.whoAmI);
 
+router.post("/forgot-password", authController.forgotPassword);
+
+router.post("/forgot-password-token/:token", authController.forgotPasswordUsingToken);
+
 export default router;

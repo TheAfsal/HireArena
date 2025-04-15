@@ -457,6 +457,64 @@ class AuthController implements IAuthController {
       });
     }
   };
+
+  forgotPassword = async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+      const { email } = req.body;
+      console.log(email);
+
+      // Validate email
+      if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        res.status(400).json({
+          status: "error",
+          message: "An error occurred during login",
+          error: "Invalid email address",
+        });
+        return;
+      }
+
+       await this.authService.forgotPassword(email);
+       res.status(200).json({
+        status: "success",
+        message: "Email sent successfully",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during login",
+        error: (error as Error).message,
+      });
+    }
+  };
+
+  forgotPasswordUsingToken = async (
+    req: Request,
+    res: Response
+  ) => {
+    try {
+      const { token } = req.params;
+      const { newPassword } = req.body;
+
+       await this.authService.forgotPasswordUsingToken(token,newPassword);
+       res.status(200).json({
+        status: "success",
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred during updation",
+        error: (error as Error).message,
+      });
+    }
+  };
 }
 
 export default AuthController;
