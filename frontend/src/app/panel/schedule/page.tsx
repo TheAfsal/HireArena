@@ -4,16 +4,19 @@ import { IInterview, RoundStatus, RoundType } from "@/Types/application.types";
 import { useSelector } from "react-redux";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { fetchAllApplications, scheduleInterview } from "@/app/api/interview";
-import { useQuery } from "@tanstack/react-query";
+import {
+  fetchAllApplications,
+  fetchMySchedule,
+  scheduleInterview,
+  submitVideoInterview,
+} from "@/app/api/interview";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// Interface for scheduling
 export interface ScheduleForm {
   interviewId: string;
   scheduledAt: Date | null;
 }
 
-// ApplicantsTable Component
 const ApplicantsTable: React.FC<{
   interviews: IInterview[];
   onViewDetails: (interviewId: string) => void;
@@ -235,9 +238,9 @@ const Page: React.FC = () => {
     data: upcomingInterviews,
     isLoading: isUpcomingLoading,
     error: upcomingError,
-  } = useQuery<UpcomingInterview>({
+  } = useQuery<UpcomingInterview[]>({
     queryKey: ["upcoming_interviews"],
-    queryFn: () => fetchUpcomingInterviews(),
+    queryFn: () => fetchMySchedule(),
   });
 
   console.log("@@ upcomingInterviews", upcomingInterviews);
@@ -285,7 +288,6 @@ const Page: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="">
-        {/* Upcoming Interviews Section */}
         {isUpcomingLoading && (
           <div className="text-center text-gray-600 py-4">
             Loading upcoming interviews...
@@ -304,7 +306,6 @@ const Page: React.FC = () => {
           />
         )}
 
-        {/* Interview Dashboard Section */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
             Interview Dashboard
@@ -328,14 +329,6 @@ const Page: React.FC = () => {
           </select>
         </div>
 
-        {/* {isLoading && (
-          <div className="text-center text-gray-600 py-10">Loading interviews...</div>
-        )}
-        {error && (
-          <div className="text-center text-red-500 py-10">
-            Failed to load interviews: {(error as Error).message}
-          </div>
-        )} */}
         {interviews && (
           <ApplicantsTable
             interviews={filteredInterviews}
@@ -359,52 +352,162 @@ const Page: React.FC = () => {
 export default Page;
 
 interface UpcomingInterview {
-  _id: { $oid: string };
-  employeeId: string;
-  __v: number;
-  interviews: {
-    candidateId: string;
-    time: { $date: string };
-    link: string;
-    _id: { $oid: string };
-  }[];
-  updatedAt: { $date: string };
+  scheduledInterviewId: string;
+  candidateId: string;
+  time: string;
+  link: string;
+  _id: string;
 }
 
-// Dummy API function for upcoming interviews
-const fetchUpcomingInterviews = async (): Promise<UpcomingInterview> => {
-  return {
-    _id: { $oid: "67fe0522bc38a2e198d2d22f" },
-    employeeId: "294c1418-fb66-43a9-b457-b50032a8c76f",
-    __v: 0,
-    interviews: [
-      {
-        candidateId: "d536c55f-0426-4281-bc3c-45c35e8b72da",
-        time: { $date: "2025-04-15T07:45:00.081Z" },
-        link: "https://zoom.us/j/scheduledInterviewId1",
-        _id: { $oid: "67fe05225ce93cd11a411a41" },
-      },
-      {
-        candidateId: "d536c55f-0426-4281-bc3c-45c35e8b72da",
-        time: { $date: "2025-04-15T07:45:00.641Z" },
-        link: "https://zoom.us/j/scheduledInterviewId2",
-        _id: { $oid: "67fe0a6f5ce93cd11a411a5b" },
-      },
-    ],
-    updatedAt: { $date: "2025-04-15T07:27:43.512Z" },
-  };
+// Interface for result submission form
+interface ResultForm {
+  interviewId: string;
+  candidateId: string;
+  remarks: string;
+  status: "passed" | "failed";
+}
+
+// Dummy API function to submit interview result
+const submitInterviewResult = async (form: ResultForm): Promise<void> => {
+  console.log("Submitting interview result:", form);
+  // Simulate API call
+  return new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
-// Upcoming Interviews Component
+// Result Submission Modal Component
+const ResultModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (form: ResultForm) => void;
+  interviewId: string;
+  candidateId: string;
+}> = ({ isOpen, onClose, onSubmit, interviewId, candidateId }) => {
+  const [remarks, setRemarks] = useState("");
+  const [status, setStatus] = useState<"passed" | "failed" | "">("");
+
+  const handleSubmit = async () => {
+    if (!status) {
+      alert("Please select a status.");
+      return;
+    }
+    onSubmit({ interviewId, candidateId, remarks, status });
+    await submitVideoInterview( interviewId, candidateId, remarks, status )
+    setRemarks("");
+    setStatus("");
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Submit Interview Result
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as "passed" | "failed")}
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="" disabled>
+                Select Status
+              </option>
+              <option value="completed">Passed</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Remarks
+            </label>
+            <textarea
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              className="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500"
+              rows={4}
+              placeholder="Enter your remarks here..."
+            />
+          </div>
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// UpcomingInterviews Component
 const UpcomingInterviews: React.FC<{
-  upcomingData: UpcomingInterview;
+  upcomingData: UpcomingInterview[];
   employeeId: string;
 }> = ({ upcomingData, employeeId }) => {
-  const now = new Date();
+  const [now, setNow] = useState(new Date());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInterview, setSelectedInterview] = useState<{
+    interviewId: string;
+    candidateId: string;
+  } | null>(null);
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const canJoin = (interviewTime: string) => {
-    const interviewDate = new Date(interviewTime);
-    return now >= interviewDate;
+    try {
+      const interviewDate = new Date(interviewTime);
+      if (isNaN(interviewDate.getTime())) {
+        console.error(`Invalid date: ${interviewTime}`);
+        return false;
+      }
+      return now >= interviewDate;
+    } catch (error) {
+      console.error(`Error parsing date: ${interviewTime}`, error);
+      return false;
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: submitInterviewResult,
+    onSuccess: () => {
+      //@ts-ignore
+      queryClient.invalidateQueries(["upcoming_interviews"]);
+      console.log("Result submitted successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to submit result:", error);
+    },
+  });
+
+  const handleSubmitResult = (form: ResultForm) => {
+    mutation.mutate(form);
+  };
+
+  const openResultModal = (interviewId: string, candidateId: string) => {
+    setSelectedInterview({ interviewId, candidateId });
+    setIsModalOpen(true);
   };
 
   return (
@@ -412,46 +515,68 @@ const UpcomingInterviews: React.FC<{
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">
         Upcoming Interviews
       </h2>
-      {upcomingData.interviews.length > 0 ? (
+      {upcomingData.length > 0 ? (
         <ul className="space-y-4">
-          {upcomingData.interviews.map((interview) => (
-            <li
-              key={interview._id.$oid}
-              className="flex justify-between items-center"
-            >
-              <div>
-                <p className="text-gray-700">
-                  <span className="font-medium">Candidate ID:</span>{" "}
-                  {interview.candidateId}
-                </p>
-                <p className="text-gray-600">
-                  <span className="font-medium">Time:</span>{" "}
-                  {new Date(interview.time.$date).toLocaleString()}
-                </p>
-              </div>
-              <a
-                href={
-                  canJoin(interview.time.$date) ? interview.link : undefined
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`px-4 py-2 rounded-md text-white font-medium transition-colors ${
-                  canJoin(interview.time.$date)
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
-                onClick={(e) =>
-                  !canJoin(interview.time.$date) && e.preventDefault()
-                }
+          {upcomingData.map((interview) => {
+            const timeString = interview.time;
+            const isValidDate = !isNaN(new Date(timeString).getTime());
+
+            return (
+              <li
+                key={interview._id}
+                className="flex justify-between items-center"
               >
-                {canJoin(interview.time.$date) ? "Join Now" : "Pending"}
-              </a>
-            </li>
-          ))}
+                <div>
+                  <p className="text-gray-700">
+                    <span className="font-medium">Candidate ID:</span>{" "}
+                    {interview.candidateId}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-medium">Time:</span>{" "}
+                    {isValidDate
+                      ? new Date(timeString).toLocaleString()
+                      : "Invalid Date"}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href={canJoin(timeString) ? interview.link : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`px-4 py-2 rounded-md text-white font-medium transition-colors ${
+                      canJoin(timeString)
+                        ? "bg-green-600 hover:bg-green-700"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                    onClick={(e) => !canJoin(timeString) && e.preventDefault()}
+                  >
+                    {canJoin(timeString) ? "Join Now" : "Pending"}
+                  </a>
+                  {canJoin(timeString) && (
+                    <button
+                      onClick={() =>
+                        openResultModal(interview.scheduledInterviewId, interview.candidateId)
+                      }
+                      className="px-4 py-2 rounded-md bg-amber-400 text-white font-medium hover:bg-amber-500 transition-colors"
+                    >
+                      Submit Result
+                    </button>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="text-gray-500">No upcoming interviews scheduled.</p>
       )}
+      <ResultModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmitResult}
+        interviewId={selectedInterview?.interviewId || ""}
+        candidateId={selectedInterview?.candidateId || ""}
+      />
     </div>
   );
 };

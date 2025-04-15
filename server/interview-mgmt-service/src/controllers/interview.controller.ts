@@ -3,7 +3,7 @@ import { IInterviewService } from "@core/interfaces/services/IInterviewService";
 import { IsJobExist } from "@config/grpcClient";
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
 import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
-import { RoundType } from "model/Interview";
+import { RoundStatus, RoundType } from "model/Interview";
 
 class InterviewController implements IInterviewController {
   constructor(
@@ -242,6 +242,27 @@ class InterviewController implements IInterviewController {
     }
   };
 
+  fetchScheduleInterviews = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null;
+
+      const applications = await this.interviewService.getScheduleInterviews(
+        userId
+      );
+
+      console.log("@@ schduled applications of ", applications);
+
+      res.status(200).json(applications);
+      return;
+    } catch (error) {
+      console.log("@@ Error fetching applications for candidate :", error);
+      res.status(500).json({ success: false, message: "Server error" });
+      return;
+    }
+  };
+
   scheduleInterview = async (req: Request, res: Response) => {
     try {
       const { interviewId, scheduledAt } = req.body.form;
@@ -282,6 +303,46 @@ class InterviewController implements IInterviewController {
       });
     }
   };
+
+  submitVideoInterview = async (req: Request, res: Response) => {
+    try {
+      const { interviewId, candidateId, remarks, status } = req.body;
+      const { userId } = req.headers["x-user"]
+        ? JSON.parse(req.headers["x-user"] as string)
+        : null; 
+      
+      if (!interviewId || !candidateId || !status || !remarks) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      if (!Object.values(RoundStatus).includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      
+      const updatedInterview = await this.interviewService.submitVideoInterview(
+        interviewId,
+        candidateId,
+        userId,
+        remarks,
+        status as RoundStatus
+      );
+      console.log(3);
+      
+      res.status(200).json({
+        success: true,
+        data: updatedInterview,
+        message: "Video interview submitted successfully"
+      });
+    } catch (error) {
+      console.log(4);
+      console.log(error);
+      
+      res.status(500).json({
+        success: false,
+        message: `Error submitting video interview: ${(error as Error).message}`
+      });
+    }
+  }
 
   //to delete upto -------
 

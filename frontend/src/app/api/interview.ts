@@ -180,3 +180,45 @@ export async function scheduleInterview(form: ScheduleForm): Promise<any> {
     throw new Error("Unknown error occurred");
   }
 }
+
+export async function fetchMySchedule(): Promise<any> {
+  try {
+    const response = await axiosInstance.get(
+      `/interview-mgmt-service/api/interviews/schedule`
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function submitVideoInterview(
+  interviewId: string,
+  candidateId: string,
+  remarks: string,
+  status: string
+): Promise<any> {
+  try {
+    const response = await axiosInstance.post(
+      `/interview-mgmt-service/api/interviews/submit-video-call-interview`,
+      { interviewId, candidateId, remarks, status }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}

@@ -20,6 +20,24 @@ class EmployeeInterviewsRepository extends BaseRepository<IEmployeeInterviews> i
       )
       .exec();
   }
+
+  async findMySchedule(employeeId: string): Promise<IScheduledInterview[]> {
+    const result = await this.model.findOne({ employeeId }).exec();
+    return result ? result.interviews : [];
+  }
+
+  async removeScheduledInterview(
+    employeeId: string,
+    scheduledInterviewId: string,
+  ): Promise<IEmployeeInterviews | null> {
+    return this.model
+      .findOneAndUpdate(
+        { employeeId },
+        { $pull: { interviews: { _id:scheduledInterviewId } } }, 
+        { new: true }
+      )
+      .exec();
+  }
 }
 
 export default EmployeeInterviewsRepository;

@@ -228,8 +228,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    console.log(auth);
-
     if (!auth.token) {
       router.push("/");
     } else if (!auth.isAuthenticated) {

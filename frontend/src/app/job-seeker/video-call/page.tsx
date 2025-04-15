@@ -1,363 +1,333 @@
-"use client";
+"use client"
 
-import React, {
-  CSSProperties,
-  FC,
-  RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  forwardRef 
-} from "react";
-import Peer, { MediaConnection } from "peerjs";
-import { DndProvider, useDrag, useDrop, XYCoord } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import type React from "react"
 
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Video, Users, Plus } from "lucide-react"
 
-const App: React.FC = () => {
-  const [peerId, setPeerId] = useState<string>("");
-  const [remotePeerIds, setRemotePeerIds] = useState<string[]>([]);
-  const [remoteStreams, setRemoteStreams] = useState<
-    { id: string; stream: MediaStream }[]
-  >([]);
-  // const localVideoRef = useRef<HTMLVideoElement>(null);
-  const localVideoRef: React.RefObject<HTMLVideoElement | null> =
-    useRef<HTMLVideoElement | null>(null);
-  const peerInstance = useRef<Peer | null>(null);
-  const calls = useRef<Map<string, MediaConnection>>(new Map());
-  const [hideSourceOnDrag, setHideSourceOnDrag] = useState(true);
-  const toggle = useCallback(
-    () => setHideSourceOnDrag(!hideSourceOnDrag),
-    [hideSourceOnDrag]
-  );
+export default function Home() {
+  const router = useRouter()
+  const [meetingId, setMeetingId] = useState("")
 
-  useEffect(() => {
-    const peer = new Peer();
+  const createMeeting = () => {
+    const newMeetingId = Math.random().toString(36).substring(2, 12)
+    router.push(`/job-seeker/video-call/meeting/${newMeetingId}`)
+  }
 
-    peer.on("open", (id) => {
-      setPeerId(id);
-    });
-
-    peer.on("error", (err) => {
-      console.error("PeerJS error:", err);
-    });
-
-    peer.on("call", (call) => {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((stream) => {
-          if (localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-          }
-          call.answer(stream);
-          handleCall(call);
-        })
-        .catch((err) =>
-          console.error("Failed to get local stream for incoming call", err)
-        );
-    });
-
-    peerInstance.current = peer;
-
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
-      })
-      .catch((err) => console.error("Failed to get local stream", err));
-
-    return () => {
-      peer.destroy();
-      calls.current.forEach((call) => call.close());
-    };
-  }, []);
-
-  const handleCall = (call: MediaConnection) => {
-    call.on("stream", (remoteStream) => {
-      const peerId = call.peer;
-      setRemoteStreams((prev) => {
-        if (prev.some((s) => s.id === peerId)) return prev;
-        return [...prev, { id: peerId, stream: remoteStream }];
-      });
-      calls.current.set(peerId, call);
-    });
-
-    call.on("close", () => {
-      setRemoteStreams((prev) => prev.filter((s) => s.id !== call.peer));
-      calls.current.delete(call.peer);
-    });
-
-    call.on("error", (err) => {
-      console.error(`Call error with ${call.peer}:`, err);
-    });
-  };
-
-  const callPeers = () => {
-    if (!peerInstance.current || remotePeerIds.length === 0) return;
-
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        remotePeerIds.forEach((remoteId) => {
-          if (remoteId && !calls.current.has(remoteId)) {
-            const call = peerInstance.current!.call(remoteId.trim(), stream);
-            handleCall(call);
-          }
-        });
-      })
-      .catch((err) =>
-        console.error("Failed to get local stream for call", err)
-      );
-  };
-
-  const handlePeerIdInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ids = e.target.value
-      .split(",")
-      .map((id) => id.trim())
-      .filter((id) => id);
-    setRemotePeerIds(ids);
-  };
+  const joinMeeting = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (meetingId.trim()) {
+      router.push(`/job-seeker/video-call/meeting/${meetingId}`)
+    }
+  }
 
   return (
-    <div className="h-full p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Real-Time Video Chat
-      </h1>
-
-      <DndProvider backend={HTML5Backend}>
-        <VideoElements localVideoRef={localVideoRef} />
-        {/* <DraggableBoxWithContainer /> */}
-      </DndProvider>
-
-      {/* <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="p-4 rounded-xl shadow-md bg-amber-400">
-          <h2 className="text-xl font-semibold mb-2">Your Video</h2>
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            playsInline
-            className="w-full rounded-lg"
-          />
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Video Meet</h1>
+          <p className="text-gray-500 mt-2">Simple video conferencing for everyone</p>
         </div>
 
-        <div className="p-4 rounded-xl shadow-md" key={"remote.id"}>
-            <h2 className="text-xl font-semibold mb-2">{"remote.id"}</h2>
-            <video
-              // ref={(video) => {
-              //   if (video && video.srcObject !== remote.stream) {
-              //     video.srcObject = remote.stream;
-              //   }
-              // }}
-              autoPlay
-              playsInline
-              className="w-full rounded-lg"
-            />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center">
+                <Video className="mr-2 h-5 w-5" />
+                New Meeting
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-500 pb-2">Create a new meeting and invite others</CardContent>
+            <CardFooter>
+              <Button onClick={createMeeting} className="w-full">
+                <Plus className="mr-2 h-4 w-4" /> Create Meeting
+              </Button>
+            </CardFooter>
+          </Card>
 
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg flex items-center">
+                <Users className="mr-2 h-5 w-5" />
+                Join Meeting
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-2">
+              <form onSubmit={joinMeeting} className="space-y-2">
+                <Input
+                  placeholder="Enter meeting code"
+                  value={meetingId}
+                  onChange={(e) => setMeetingId(e.target.value)}
+                  className="w-full"
+                />
+              </form>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={joinMeeting} variant="outline" className="w-full" disabled={!meetingId.trim()}>
+                Join
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>
+            Need help? Check out our{" "}
+            <a href="#" className="text-blue-500 hover:underline">
+              documentation
+            </a>
+          </p>
+        </div>
       </div>
-       */}
-      {/* {remoteStreams.map((remote) => (
-          <div className="p-4 rounded-xl shadow-md" key={remote.id}>
-            <h2 className="text-xl font-semibold mb-2">{remote.id}</h2>
-            <video
-              ref={(video) => {
-                if (video && video.srcObject !== remote.stream) {
-                  video.srcObject = remote.stream;
-                }
-              }}
-              autoPlay
-              playsInline
-              className="w-full rounded-lg"
-            />
-          </div>
-        ))} */}
-
-      <div className="p-6 rounded-xl shadow-lg">
-        <p className="mb-2">
-          Your Peer ID:{" "}
-          <span className="text-green-400 font-mono">{peerId}</span>
-        </p>
-        <input
-          type="text"
-          value={remotePeerIds.join(",")}
-          onChange={handlePeerIdInput}
-          placeholder="Enter comma-separated peer IDs"
-          className="w-full p-2 mb-4 rounded border-gray-600 placeholder-gray-400"
-        />
-        <button
-          onClick={callPeers}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
-        >
-          Start Call
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default App;
-
-
-
-
-// const style: CSSProperties = {
-//   position: 'absolute',
-//   border: '1px dashed gray',
-//   backgroundColor: 'white',
-//   padding: '0.5rem 1rem',
-//   cursor: 'move',
-// }
-
-// const containerStyle: CSSProperties = {
-//   width: 500, // Adjust size of the large container
-//   height: 500, // Adjust size of the large container
-//   border: '2px solid black',
-//   position: 'relative',
-//   overflow: 'hidden',
-// }
-
-// export const DraggableBoxWithContainer: FC<{ hideSourceOnDrag?: boolean }> = ({
-//   hideSourceOnDrag,
-// }) => {
-//   const [boxes, setBoxes] = useState<{
-//     [key: string]: {
-//       top: number
-//       left: number
-//       title: string
-//     }
-//   }>({
-//     a: { top: 20, left: 80, title: 'Drag me' },
-//   })
-
-//   const moveBox = useCallback(
-//     (id: string, left: number, top: number) => {
-//       setBoxes((prevBoxes) => ({
-//         ...prevBoxes,
-//         [id]: { left, top, title: prevBoxes[id].title },
-//       }))
-//     },
-//     []
-//   )
-
-//   const [{ isOver, canDrop }, drop] = useDrop(
-//     () => ({
-//       accept: ItemTypes.BOX,
-//       drop(item: { id: string; left: number; top: number }, monitor) {
-//         const delta = monitor.getDifferenceFromInitialOffset() as XYCoord
-//         let left = Math.round(item.left + delta.x)
-//         let top = Math.round(item.top + delta.y)
-
-//         // Ensure the small box stays within the boundaries of the large div
-//         const maxLeft = containerStyle.width - 100; // Assuming box width is 100px
-//         const maxTop = containerStyle.height - 50; // Assuming box height is 50px
-
-//         left = Math.min(Math.max(left, 0), maxLeft)
-//         top = Math.min(Math.max(top, 0), maxTop)
-
-//         moveBox(item.id, left, top)
-//         return undefined
-//       },
-//       collect: (monitor) => ({
-//         isOver: monitor.isOver(),
-//         canDrop: monitor.canDrop(),
-//       }),
-//     }),
-//     [moveBox]
-//   )
-
-//   const Box = ({ id, left, top, title }: { id: string; left: number; top: number; title: string }) => {
-//     const [{ isDragging }, drag] = useDrag(
-//       () => ({
-//         type: ItemTypes.BOX,
-//         item: { id, left, top },
-//         collect: (monitor) => ({
-//           isDragging: monitor.isDragging(),
-//         }),
-//       }),
-//       [id, left, top]
-//     )
-
-//     if (isDragging && hideSourceOnDrag) {
-//       return <div ref={drag} />
-//     }
-
-//     return (
-//       <div
-//         ref={drag}
-//         style={{ ...style, left, top }}
-//         data-testid="box"
-//       >
-//         {title}
-//       </div>
-//     )
-//   }
-
-//   // Use React.forwardRef to forward the ref to the drop target div
-//   const DropContainer = forwardRef<HTMLDivElement, { children?: React.ReactNode }>((props, ref) => {
-//     return (
-//       <div
-//         ref={(node) => {
-//           // Connect the drop target to the div using the drop object from useDrop
-//           drop(ref as React.RefObject<HTMLDivElement>)
-//           if (typeof ref === 'function') ref(node)
-//           else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node
-//         }}
-//         style={containerStyle}
-//       >
-//         {props.children}
-//       </div>
-//     )
-//   })
-
-//   return (
-//     <DropContainer>
-//       {Object.keys(boxes).map((key) => {
-//         const { left, top, title } = boxes[key]
-//         return (
-//           <Box
-//             key={key}
-//             id={key}
-//             left={left}
-//             top={top}
-//             title={title}
-//           />
-//         )
-//       })}
-//     </DropContainer>
-//   )
-// }
-
-
-
-
-
-
-interface VideoElementsProps {
-  localVideoRef: RefObject<HTMLVideoElement | null>;
+    </main>
+  )
 }
 
-const VideoElements: React.FC<VideoElementsProps> = ({ localVideoRef }) => {
-  return (
-    <div className="relative p-4 rounded-xl shadow-md bg-amber-400 mb-8">
-      <h2 className="text-xl font-semibold mb-2">Your Video</h2>
-      <video
-        ref={localVideoRef}
-        autoPlay
-        muted
-        playsInline
-        className="w-full rounded-lg"
-      />
 
-      <div className="absolute bottom-4 right-4 w-1/4 max-w-[300px] shadow-lg rounded-lg overflow-hidden border border-white bg-black">
-        <video autoPlay playsInline className="w-full h-auto" />
-      </div>
-    </div>
-  );
-};
+
+
+
+
+
+
+
+
+
+
+
+
+// Old code to delete -----------------------------------
+
+// "use client";
+
+// import React, {
+//   CSSProperties,
+//   FC,
+//   RefObject,
+//   useCallback,
+//   useEffect,
+//   useRef,
+//   useState,
+//   forwardRef 
+// } from "react";
+// import Peer, { MediaConnection } from "peerjs";
+// import { DndProvider, useDrag, useDrop, XYCoord } from "react-dnd";
+// import { HTML5Backend } from "react-dnd-html5-backend";
+
+
+// const App: React.FC = () => {
+//   const [peerId, setPeerId] = useState<string>("");
+//   const [remotePeerIds, setRemotePeerIds] = useState<string[]>([]);
+//   const [remoteStreams, setRemoteStreams] = useState<
+//     { id: string; stream: MediaStream }[]
+//   >([]);
+//   // const localVideoRef = useRef<HTMLVideoElement>(null);
+//   const localVideoRef: React.RefObject<HTMLVideoElement | null> =
+//     useRef<HTMLVideoElement | null>(null);
+//   const peerInstance = useRef<Peer | null>(null);
+//   const calls = useRef<Map<string, MediaConnection>>(new Map());
+//   const [hideSourceOnDrag, setHideSourceOnDrag] = useState(true);
+//   const toggle = useCallback(
+//     () => setHideSourceOnDrag(!hideSourceOnDrag),
+//     [hideSourceOnDrag]
+//   );
+
+//   useEffect(() => {
+//     const peer = new Peer();
+
+//     peer.on("open", (id) => {
+//       setPeerId(id);
+//     });
+
+//     peer.on("error", (err) => {
+//       console.error("PeerJS error:", err);
+//     });
+
+//     peer.on("call", (call) => {
+//       navigator.mediaDevices
+//         .getUserMedia({ video: true, audio: true })
+//         .then((stream) => {
+//           if (localVideoRef.current) {
+//             localVideoRef.current.srcObject = stream;
+//           }
+//           call.answer(stream);
+//           handleCall(call);
+//         })
+//         .catch((err) =>
+//           console.error("Failed to get local stream for incoming call", err)
+//         );
+//     });
+
+//     peerInstance.current = peer;
+
+//     navigator.mediaDevices
+//       .getUserMedia({ video: true, audio: true })
+//       .then((stream) => {
+//         if (localVideoRef.current) {
+//           localVideoRef.current.srcObject = stream;
+//         }
+//       })
+//       .catch((err) => console.error("Failed to get local stream", err));
+
+//     return () => {
+//       peer.destroy();
+//       calls.current.forEach((call) => call.close());
+//     };
+//   }, []);
+
+//   const handleCall = (call: MediaConnection) => {
+//     call.on("stream", (remoteStream) => {
+//       const peerId = call.peer;
+//       setRemoteStreams((prev) => {
+//         if (prev.some((s) => s.id === peerId)) return prev;
+//         return [...prev, { id: peerId, stream: remoteStream }];
+//       });
+//       calls.current.set(peerId, call);
+//     });
+
+//     call.on("close", () => {
+//       setRemoteStreams((prev) => prev.filter((s) => s.id !== call.peer));
+//       calls.current.delete(call.peer);
+//     });
+
+//     call.on("error", (err) => {
+//       console.error(`Call error with ${call.peer}:`, err);
+//     });
+//   };
+
+//   const callPeers = () => {
+//     if (!peerInstance.current || remotePeerIds.length === 0) return;
+
+//     navigator.mediaDevices
+//       .getUserMedia({ video: true, audio: true })
+//       .then((stream) => {
+//         remotePeerIds.forEach((remoteId) => {
+//           if (remoteId && !calls.current.has(remoteId)) {
+//             const call = peerInstance.current!.call(remoteId.trim(), stream);
+//             handleCall(call);
+//           }
+//         });
+//       })
+//       .catch((err) =>
+//         console.error("Failed to get local stream for call", err)
+//       );
+//   };
+
+//   const handlePeerIdInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const ids = e.target.value
+//       .split(",")
+//       .map((id) => id.trim())
+//       .filter((id) => id);
+//     setRemotePeerIds(ids);
+//   };
+
+//   return (
+//     <div className="h-full p-4">
+//       <h1 className="text-3xl font-bold text-center mb-6">
+//         Real-Time Video Chat
+//       </h1>
+
+//       <DndProvider backend={HTML5Backend}>
+//         <VideoElements localVideoRef={localVideoRef} />
+//         {/* <DraggableBoxWithContainer /> */}
+//       </DndProvider>
+
+//       {/* <div className="grid md:grid-cols-2 gap-6 mb-8">
+//         <div className="p-4 rounded-xl shadow-md bg-amber-400">
+//           <h2 className="text-xl font-semibold mb-2">Your Video</h2>
+//           <video
+//             ref={localVideoRef}
+//             autoPlay
+//             muted
+//             playsInline
+//             className="w-full rounded-lg"
+//           />
+//         </div>
+
+//         <div className="p-4 rounded-xl shadow-md" key={"remote.id"}>
+//             <h2 className="text-xl font-semibold mb-2">{"remote.id"}</h2>
+//             <video
+//               // ref={(video) => {
+//               //   if (video && video.srcObject !== remote.stream) {
+//               //     video.srcObject = remote.stream;
+//               //   }
+//               // }}
+//               autoPlay
+//               playsInline
+//               className="w-full rounded-lg"
+//             />
+//           </div>
+
+//       </div>
+//        */}
+//       {/* {remoteStreams.map((remote) => (
+//           <div className="p-4 rounded-xl shadow-md" key={remote.id}>
+//             <h2 className="text-xl font-semibold mb-2">{remote.id}</h2>
+//             <video
+//               ref={(video) => {
+//                 if (video && video.srcObject !== remote.stream) {
+//                   video.srcObject = remote.stream;
+//                 }
+//               }}
+//               autoPlay
+//               playsInline
+//               className="w-full rounded-lg"
+//             />
+//           </div>
+//         ))} */}
+
+//       <div className="p-6 rounded-xl shadow-lg">
+//         <p className="mb-2">
+//           Your Peer ID:{" "}
+//           <span className="text-green-400 font-mono">{peerId}</span>
+//         </p>
+//         <input
+//           type="text"
+//           value={remotePeerIds.join(",")}
+//           onChange={handlePeerIdInput}
+//           placeholder="Enter comma-separated peer IDs"
+//           className="w-full p-2 mb-4 rounded border-gray-600 placeholder-gray-400"
+//         />
+//         <button
+//           onClick={callPeers}
+//           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+//         >
+//           Start Call
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default App;
+
+
+// interface VideoElementsProps {
+//   localVideoRef: RefObject<HTMLVideoElement | null>;
+// }
+
+// const VideoElements: React.FC<VideoElementsProps> = ({ localVideoRef }) => {
+//   return (
+//     <div className="relative p-4 rounded-xl shadow-md bg-amber-400 mb-8">
+//       <h2 className="text-xl font-semibold mb-2">Your Video</h2>
+//       <video
+//         ref={localVideoRef}
+//         autoPlay
+//         muted
+//         playsInline
+//         className="w-full rounded-lg"
+//       />
+
+//       <div className="absolute bottom-4 right-4 w-1/4 max-w-[300px] shadow-lg rounded-lg overflow-hidden border border-white bg-black">
+//         <video autoPlay playsInline className="w-full h-auto" />
+//       </div>
+//     </div>
+//   );
+// };
 
 
 

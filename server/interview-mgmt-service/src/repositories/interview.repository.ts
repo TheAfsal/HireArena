@@ -26,7 +26,7 @@ class InterviewRepository
   }
 
   async findApplicationByCandidateId(
-    candidateId: string,
+    candidateId: string
   ): Promise<IInterview[]> {
     return this.model.find({ candidateId }).exec();
   }
@@ -69,11 +69,15 @@ class InterviewRepository
   async addNextTest(
     interviewId: string,
     newTest: Partial<IRoundStatus>
-  ): Promise<void> {
+  ): Promise<any> {
     this.model
-      .findByIdAndUpdate(interviewId, {
-        $push: { state: newTest },
-      })
+      .findByIdAndUpdate(
+        interviewId,
+        {
+          $push: { state: newTest },
+        },
+        { new: true }
+      )
       .exec();
   }
 
@@ -93,19 +97,46 @@ class InterviewRepository
     if (!interview || !interview.state.length) {
       throw new Error("Interview not found or state array is empty");
     }
-  
+
     // Step 2: Update the last element using the specific index
     const lastIndex = interview.state.length - 1;
     const updateResult = await this.model
       .findByIdAndUpdate(
         interviewId,
-        { $set: { [`state.${lastIndex}`]: roundData } }, 
+        { $set: { [`state.${lastIndex}`]: roundData } },
         { new: true }
       )
       .exec();
-  
+
     console.log("Updated document:", updateResult);
     return updateResult;
+  }
+
+  async submitVideoInterview(
+    interviewId: string,
+    candidateId: string,
+    roundData: Partial<IInterview["state"][0]>
+  ): Promise<IInterview | null> {
+    const interview = await this.model
+      .findOne({ _id: interviewId, candidateId })
+      .exec();
+    if (!interview || !interview.state.length) {
+      throw new Error("Interview not found or state array is empty");
+    }
+
+    const lastIndex = interview.state.length - 1;
+    return this.model
+      .findOneAndUpdate(
+        { _id: interviewId, candidateId },
+        {
+          $set: {
+            [`state.${lastIndex}`]: roundData,
+            updatedAt: new Date(),
+          },
+        },
+        { new: true }
+      )
+      .exec();
   }
 
   // async getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string> {

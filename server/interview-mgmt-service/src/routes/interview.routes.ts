@@ -33,9 +33,11 @@ const interviewController = new InterviewController(
 
 router.get("/", interviewController.getApplicationsCandidate);
 router.post("/apply", interviewController.applyJob);
+router.get("/schedule", interviewController.fetchScheduleInterviews);
 router.post("/schedule", interviewController.scheduleInterview);
 router.get("/status/:id", interviewController.getApplicationStatus);
 router.get("/company-applications", interviewController.getAllApplications);
+router.post("/submit-video-call-interview", interviewController.submitVideoInterview);
 router.get("/:interviewId", interviewController.getInterview);
 
 

@@ -49,7 +49,6 @@ export function NavUser() {
     const fetchData = async () => {
       try {
         const data = await fetchJobSeekerMinimalProfile();
-        console.log(data);
         setUser(data);
       } catch (error) {
         console.error("Error fetching profile:", error);

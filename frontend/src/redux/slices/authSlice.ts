@@ -10,8 +10,6 @@ export const verifyAuth = createAsyncThunk(
         return rejectWithValue("No token found");
       }
 
-      console.log("@@ redux emitting who am i ");
-
       const response = await axiosInstance.get("/user-service/api/auth/who-am-i");
 
       return {

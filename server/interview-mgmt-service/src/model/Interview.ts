@@ -24,6 +24,8 @@ export interface IRoundStatus {
   status: RoundStatus;
   scheduledAt?: Date;
   completedAt?: Date;
+  scheduledInterviewId?:string;
+  videoCallLink?:string;
   remarks?: string;
   createdAt: Date;
   updatedAt: Date;

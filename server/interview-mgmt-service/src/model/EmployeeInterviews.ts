@@ -15,6 +15,7 @@ export interface IEmployeeInterviews extends Document {
 
 const ScheduledInterviewSchema: Schema = new Schema(
   {
+    scheduledInterviewId: { type: String, required: true }, 
     candidateId: { type: String, required: true }, 
     time: { type: Date, required: true },
     link: { type: String, required: true }

@@ -243,6 +243,7 @@ services:
       - MONGO_DB=db-mongo
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
+      - ACCESS_TOKEN_SECRET=your-access-token-secret
     networks:
       - app-network
 
@@ -257,6 +258,7 @@ services:
       - NEXT_PUBLIC_GATEWAY_URL=localhost
       # - NEXT_PUBLIC_GATEWAY_URL=172.16.2.54
       - NEXT_PUBLIC_CHAT_SERVER_URL=http://localhost:5009
+      - NEXT_PUBLIC_VIDEO_SERVER_URL=http://localhost:5013
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -302,7 +304,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/var/lib/mongo/data  
+      - mongo_data:/data/db 
     networks:
       - app-network    
 
