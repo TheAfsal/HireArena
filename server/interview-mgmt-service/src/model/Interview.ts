@@ -51,14 +51,16 @@ const RoundStatusSchema: Schema = new Schema(
       enum: Object.values(RoundStatus),
       required: true
     },
-    testResultId: { 
+    aptitudeTestResultId: { 
       type: Schema.Types.ObjectId, 
       ref: 'AptitudeTestResult',
       required: false 
     },
-    scheduledAt: { type: Date, required: true, default: Date.now  },
+    videoCallLink: { type: String, required: false }, 
+    remarks: { type: String, required: false },
+    scheduledInterviewId: { type: String },
+    scheduledAt: { type: Date, required: false, default: Date.now  },
     completedAt: { type: Date },
-    remarks: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
   },

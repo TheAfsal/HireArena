@@ -46,7 +46,7 @@ class InterviewRepository
     completed?: boolean
   ): Promise<void> {
     const update: any = {
-      "state.0.testResultId": testResultId,
+      "state.0.aptitudeTestResultId": testResultId,
     };
 
     if (completed) {
@@ -78,6 +78,30 @@ class InterviewRepository
       .exec();
   }
 
+  async addInterviewRound(
+    interviewId: string,
+    roundData: Partial<IInterview["state"][0]>
+  ): Promise<IInterview | null> {
+    // Step 1: Fetch the document to get the state array length
+    const interview = await this.model.findById(interviewId).exec();
+    if (!interview || !interview.state.length) {
+      throw new Error("Interview not found or state array is empty");
+    }
+  
+    // Step 2: Update the last element using the specific index
+    const lastIndex = interview.state.length - 1;
+    const updateResult = await this.model
+      .findByIdAndUpdate(
+        interviewId,
+        { $set: { [`state.${lastIndex}`]: roundData } }, 
+        { new: true }
+      )
+      .exec();
+  
+    console.log("Updated document:", updateResult);
+    return updateResult;
+  }
+  
   // async getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string> {
   //   const interview = await this.findById(interviewId);
   //   if (!interview) throw new Error("Interview not found");

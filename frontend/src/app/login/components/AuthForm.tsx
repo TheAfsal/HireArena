@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LoginCompany,
   LoginJobSeeker,
@@ -31,10 +31,25 @@ function AuthForm() {
   const [formState, setFormState] = useState<FormState>("signup");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formValues, setFormValues] = useState<FormValues>({
-    email: "",
-    password: "",
+    email: "afsal@gmail.com",
+    password: "123123",
     name: "",
   });
+
+  useEffect(()=>{
+    if(formType !== "job-seeker" )
+    setFormValues({
+      email: "alexander@gmail.com",
+      password: "123123",
+      name: "",
+    })
+    else
+      setFormValues({
+        email: "afsal@gmail.com",
+        password: "123123",
+        name: "",
+      })
+  },[formType])
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -81,7 +96,7 @@ function AuthForm() {
       if (formType === "job-seeker") {
         const response = await LoginJobSeeker(formValues);
         if (response.status === "success") {
-          const { accessToken } = response.data!.tokens ;
+          const { accessToken } = response.data!.tokens;
           const { user } = response.data!;
 
           if (accessToken) {

@@ -4,6 +4,8 @@ export enum RoundType {
   TechnicalInterview = "Technical Interview",
   BehavioralInterview = "Behavioral Interview",
   CodingChallenge = "Coding Challenge",
+  HrInterview = "Hr Interview",
+  ManagerInterview = "Manager Interview",
 }
 
 export enum RoundStatus {

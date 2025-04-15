@@ -3,6 +3,7 @@ import { IInterviewService } from "@core/interfaces/services/IInterviewService";
 import { IsJobExist } from "@config/grpcClient";
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
 import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
+import { RoundType } from "model/Interview";
 
 class InterviewController implements IInterviewController {
   constructor(
@@ -219,6 +220,48 @@ class InterviewController implements IInterviewController {
       return;
     }
   };
+
+  scheduleInterview = async (req: Request, res: Response)=> {
+    try {
+      const { interviewId, scheduledAt } = req.body.form;
+
+      const { userId, role } = req.headers["x-user"]
+      ? JSON.parse(req.headers["x-user"] as string)
+      : null;
+
+      console.log(interviewId,role,scheduledAt);
+      
+      
+      if (!interviewId || !role || !scheduledAt) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const scheduledDate = new Date(scheduledAt);
+      if (isNaN(scheduledDate.getTime())) {
+        return res.status(400).json({ message: "Invalid date format" });
+      }
+
+      const updatedInterview = await this.interviewService.scheduleInterview(
+        interviewId,
+        userId,
+        role as RoundType,
+        scheduledDate
+      );
+
+      res.status(200).json({
+        success: true,
+        data: updatedInterview,
+        message: "Interview scheduled successfully"
+      });
+    } catch (error) {
+      console.log(error);
+      
+      res.status(500).json({
+        success: false,
+        message: `Error scheduling interview: ${(error as Error).message}`
+      });
+    }
+  }
 
   //to delete upto -------
 

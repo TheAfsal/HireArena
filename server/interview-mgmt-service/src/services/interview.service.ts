@@ -1,10 +1,14 @@
 import { FindJobIdsByCompanyId } from "@config/grpcClient";
+import IEmployeeInterviewsRepository from "@core/interfaces/repository/IEmployeeInterviewsRepository";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
 import { IInterviewService } from "@core/interfaces/services/IInterviewService";
+import { IScheduledInterview } from "model/EmployeeInterviews";
 import { IInterview, RoundStatus, RoundType } from "model/Interview";
 
 export class InterviewService implements IInterviewService {
-  constructor(private interviewRepository: IInterviewRepository) {}
+  constructor(private interviewRepo: IInterviewRepository,
+    private employeeInterviewsRepo: IEmployeeInterviewsRepository
+  ) {}
 
   // async fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string> {
   //   return this.interviewRepository.getAptitudeQuestions(interviewId);
@@ -31,7 +35,7 @@ export class InterviewService implements IInterviewService {
     jobSeekerId: string,
     jobDetails: { id: string; testOptions: JSON; companyId: string }
   ): Promise<Partial<IInterview>> {
-    const existingApplication = await this.interviewRepository.findApplication(
+    const existingApplication = await this.interviewRepo.findApplication(
       jobId,
       jobSeekerId
     );
@@ -63,29 +67,32 @@ export class InterviewService implements IInterviewService {
           {
             roundType: RoundType[test],
             status: RoundStatus.Scheduled,
-            scheduledAt: now,
             createdAt: now,
             updatedAt: now,
           },
         ];
+        if(["Technical Interview", "Behavioral Interview", "Coding Challenge"].includes(test)){
+          applicationData.state[0].status = RoundStatus.Pending
+          applicationData.state[0].scheduledAt = now
+        }
         break;
       }
     }
 
-    return await this.interviewRepository.createApplication(applicationData);
+    return await this.interviewRepo.createApplication(applicationData);
   }
 
   async getApplicationsStatus(
     jobSeekerId: string,
     jobId: string
   ): Promise<IInterview | null> {
-    return await this.interviewRepository.findApplication(jobId, jobSeekerId);
+    return await this.interviewRepo.findApplication(jobId, jobSeekerId);
   }
 
   async findApplicationById(
     interviewId: string,
   ): Promise<IInterview | null> {
-    return await this.interviewRepository.findApplicationById(interviewId);
+    return await this.interviewRepo.findApplicationById(interviewId);
   }
 
   async getAllApplications(
@@ -99,7 +106,64 @@ export class InterviewService implements IInterviewService {
 
     console.log("@@ job ids from job-server ", jobs);
 
-    return await this.interviewRepository.findApplicationByJobId(jobs);
+    return await this.interviewRepo.findApplicationByJobId(jobs);
+  }
+
+  async scheduleInterview(
+    interviewId: string,
+    employeeId: string, 
+    roundType: RoundType,
+    scheduledAt: Date
+  ): Promise<IInterview> {
+
+    try {
+      const scheduledInterviewId = Math.random().toString(36).substring(2, 10);
+      // const scheduledInterviewId = uuidv4();
+      const videoCallLink = `https://zoom.us/j/scheduledInterviewId`;
+
+      const scheduledInterview: IScheduledInterview = {
+        scheduledInterviewId,
+        candidateId: "", 
+        time: scheduledAt,
+        link: videoCallLink
+      };
+
+      const interview = await this.interviewRepo.findApplicationById(interviewId);
+      if (!interview) {
+        throw new Error("Interview not found");
+      }
+      scheduledInterview.candidateId = interview.candidateId;
+
+      const updatedScheduledInterview = await this.employeeInterviewsRepo.addScheduledInterview(employeeId, scheduledInterview);
+
+      const schema = {
+        "INTERVIEWER":"Technical Interview"
+      } 
+
+      console.log(schema[roundType]);
+      
+      console.log("@@ updatedScheduledInterview: ", updatedScheduledInterview);
+
+      const roundData = {
+        roundType:schema[roundType],
+        status: RoundStatus.Scheduled,
+        scheduledAt,
+        scheduledInterviewId:updatedScheduledInterview.interviews[updatedScheduledInterview.interviews.length-1]["_id"],
+        videoCallLink
+      };
+      const updatedInterview = await this.interviewRepo.addInterviewRound(interviewId, roundData);
+
+
+      if (!updatedInterview) {
+        throw new Error("Failed to update interview");
+      }
+
+      return updatedInterview;
+    } catch (error) {
+      console.log(error);
+      
+      throw new Error(`Failed to schedule interview: ${(error as Error).message}`);
+    }
   }
 
 

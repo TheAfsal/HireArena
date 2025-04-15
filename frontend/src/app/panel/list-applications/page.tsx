@@ -178,7 +178,6 @@ const dummyInterviews: IInterview[] = [
 ];
 
 const Page: React.FC = () => {
-  const [interviews] = useState<IInterview[]>([]);
 
   const handleViewDetails = (interviewId: string) => {
     console.log("View details for interview:", interviewId);

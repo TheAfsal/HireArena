@@ -5,6 +5,7 @@ import InterviewRepository from "@repositories/interview.repository";
 import AptitudeService from "@services/aptitude.service";
 import QuestionRepository from "@repositories/questions.repository";
 import AptitudeTestResultRepository from "@repositories/aptitudeTestResult.repository";
+import EmployeeInterviewsRepository from "@repositories/EmployeeInterviewsRepository";
 // import CandidateResponseRepository from "@repositories/candidateResponse.repository";
 // import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
 
@@ -13,8 +14,9 @@ const router = express.Router();
 const interviewRepo = new InterviewRepository();
 const questionRepo = new QuestionRepository();
 const aptitudeResultRepo = new AptitudeTestResultRepository();
+const employeeInterviewsRepo = new EmployeeInterviewsRepository();
 
-const interviewServer = new InterviewService(interviewRepo);
+const interviewServer = new InterviewService(interviewRepo, employeeInterviewsRepo);
 const aptitudeServer = new AptitudeService(questionRepo, interviewRepo,aptitudeResultRepo);
 
 const interviewController = new InterviewController(
@@ -30,6 +32,7 @@ const interviewController = new InterviewController(
 // const aptitudeTestController = new AptitudeTestController(aptitudeTestService);
 
 router.post("/apply", interviewController.applyJob);
+router.post("/schedule", interviewController.scheduleInterview);
 router.get("/status/:id", interviewController.getApplicationStatus);
 router.get("/company-applications", interviewController.getAllApplications);
 router.get("/:interviewId", interviewController.getInterview);

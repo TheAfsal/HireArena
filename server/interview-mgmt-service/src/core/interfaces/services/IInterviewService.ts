@@ -1,4 +1,4 @@
-import { IInterview } from "model/Interview";
+import { IInterview, RoundType } from "model/Interview";
 
 export interface IInterviewService {
   applyForJob(
@@ -12,6 +12,7 @@ export interface IInterviewService {
   ): Promise<IInterview | null>;
   findApplicationById(interviewId: string): Promise<IInterview | null>;
   getAllApplications(userId: string, companyId: string ): Promise<IInterview[]>
+  scheduleInterview( interviewId: string, employeeId: string, roundType: RoundType, scheduledAt: Date): Promise<IInterview>
   // fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string>;
   // fetchAppliedJobStatus(jobId: string, userId: string): Promise<string>;
 }

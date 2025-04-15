@@ -1,6 +1,7 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { IInterview } from "@/Types/application.types";
+import { ScheduleForm } from "../panel/schedule/page";
 
 export async function fetchAptitudeQuestions(
   interviewId: string
@@ -142,11 +143,32 @@ export async function submitMachineTask(
 export async function fetchAllApplications(): Promise<IInterview[]> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/company-applications`,
+      `/interview-mgmt-service/api/interviews/company-applications`
     );
 
     console.log("@@ company all applications ", response.data);
-    
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function scheduleInterview(form: ScheduleForm): Promise<any> {
+  try {
+    console.log(form);
+
+    const response = await axiosInstance.post(
+      `/interview-mgmt-service/api/interviews/schedule`,
+      { form }
+    );
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
