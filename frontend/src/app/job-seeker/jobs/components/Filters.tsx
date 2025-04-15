@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown } from "lucide-react";
 import { fetchJobCategory } from "@/app/api/skills";
 import { CategoryType } from "@/app/admin/manage/components/category-type";
+import { Input } from "@/components/ui/input";
 
 function Filters({
   onApplyFilters,
@@ -16,10 +16,13 @@ function Filters({
   const [selectedFilters, setSelectedFilters] = useState({
     type: "",
     category: "",
+    location: "",
     level: "",
   });
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
     setSelectedFilters({ ...selectedFilters, [e.target.name]: e.target.value });
   };
 
@@ -31,12 +34,10 @@ function Filters({
     const getCategoryType = async () => {
       try {
         const response = await fetchJobCategory();
-        console.log(response);
-        
         setCategories(response);
       } catch (err) {
         //@ts-ignore
-        console.log(err.message);
+        console.error(err.message);
       }
     };
 
@@ -66,27 +67,24 @@ function Filters({
           onChange={handleFilterChange}
           className="w-full border rounded-md p-2"
         >
+          <option value="">All</option>
           {categories.map((c) => (
-            <option value={c.name}>{c.name}</option>
+            <option key={c.id} value={c.name}>
+              {c.name}
+            </option>
           ))}
-          {/* <option value="design">Design</option>
-          <option value="engineering">Engineering</option>
-          <option value="sales">Sales</option> */}
         </select>
       </FilterSection>
 
-      {/* <FilterSection title="Job Level">
-        <select
-          name="level"
+      <FilterSection title="Location">
+        <Input
+          name="location"
+          value={selectedFilters.location}
           onChange={handleFilterChange}
+          placeholder="Enter city or 'Remote'"
           className="w-full border rounded-md p-2"
-        >
-          <option value="">All</option>
-          <option value="entry">Entry Level</option>
-          <option value="mid">Mid Level</option>
-          <option value="senior">Senior Level</option>
-        </select>
-      </FilterSection> */}
+        />
+      </FilterSection>
 
       <Button onClick={applyFilters} className="bg-blue-500 text-white w-full">
         Apply Filters
@@ -116,6 +114,7 @@ function FilterSection({
 }
 
 export default Filters;
+
 
 // "use client";
 

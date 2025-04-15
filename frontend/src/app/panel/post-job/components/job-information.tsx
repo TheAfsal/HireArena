@@ -116,6 +116,24 @@ export default function JobInformation({
             </div>
 
             <Separator />
+            <div className="flex my-10">
+              <div className="w-3/12">
+                <Label htmlFor="jobTitle">Location</Label>
+                <p className="text-sm text-gray-500 mt-1">
+                  This information will be displayed publicly.
+                </p>
+              </div>
+              <div className="w-full">
+                <Input
+                  id="jobTitle"
+                  placeholder="e.g. Washington DC"
+                  value={formData.location}
+                  onChange={(e) => updateFormData({ location: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <Separator />
 
             <div className="flex my-10">
               <div className="w-3/12">
@@ -257,7 +275,9 @@ export default function JobInformation({
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-gray-500">No suggestions found</p>
+                    <p className="text-sm text-gray-500">
+                      No suggestions found
+                    </p>
                   )}
                 </div>
               )}

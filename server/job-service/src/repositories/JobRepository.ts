@@ -24,6 +24,7 @@ class JobRepository implements IJobRepository {
         salaryMin: jobData.salaryMin,
         salaryMax: jobData.salaryMax,
         jobDescription: jobData.jobDescription,
+        location: jobData.location,
         responsibilities: jobData.responsibilities,
         qualifications: jobData.qualifications,
         testOptions: jobData.testOptions ?? Prisma.JsonNull,
@@ -126,9 +127,11 @@ class JobRepository implements IJobRepository {
     type?: string;
     category?: string;
     level?: string;
+    location?: string;
   }): Promise<Omit<IJob, "applications">[]> {
     const whereClause: any = { AND: [] };
-
+  
+    // Search in job title or description
     if (filters.searchQuery) {
       whereClause.AND.push({
         OR: [
@@ -142,27 +145,40 @@ class JobRepository implements IJobRepository {
         ],
       });
     }
-
+  
+    // Filter by employment type
     if (filters.type) {
       whereClause.AND.push({
         employmentTypes: { some: { type: filters.type } },
       });
     }
-
+  
+    // Filter by category
     if (filters.category) {
       whereClause.AND.push({
         categories: { some: { name: filters.category } },
       });
     }
-
+  
+    // Filter by level (e.g. Junior, Mid, Senior)
     if (filters.level) {
       whereClause.AND.push({ level: filters.level });
     }
-
+  
+    // Filter by location (case-insensitive match)
+    if (filters.location) {
+      whereClause.AND.push({
+        location: {
+          contains: filters.location,
+          mode: "insensitive",
+        },
+      });
+    }
+  
     if (whereClause.AND.length === 0) {
       delete whereClause.AND;
     }
-
+  
     return await this.prisma.job.findMany({
       where: whereClause,
       include: {
@@ -172,6 +188,7 @@ class JobRepository implements IJobRepository {
       },
     });
   }
+  
 }
 
 export default JobRepository;

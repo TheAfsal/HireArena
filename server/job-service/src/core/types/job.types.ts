@@ -12,6 +12,7 @@ export interface IJobCreateInput {
   salaryMin: number;
   salaryMax: number;
   jobDescription: string;
+  location: string;
   responsibilities: string;
   qualifications: string;
   testOptions: Prisma.JsonValue;

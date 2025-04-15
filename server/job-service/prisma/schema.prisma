@@ -37,6 +37,7 @@ model Job {
   salaryMin        Int     
   salaryMax        Int     
   jobDescription   String  
+  location         String  
   responsibilities String   
   qualifications   String
   testOptions      Json  

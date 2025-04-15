@@ -53,6 +53,7 @@ class JobService implements IJobService {
       salaryMin: data.salaryRange?.min || 0,
       salaryMax: data.salaryRange?.max || 0,
       jobDescription: data.jobDescription,
+      location: data.location,
       responsibilities: data.responsibilities,
       qualifications: data.qualifications,
       niceToHave: data.niceToHave || "",

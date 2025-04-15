@@ -34,6 +34,7 @@ export interface JobFormData {
   };
   categories: string[];
   requiredSkills: string[];
+  location:string;
 
   // Step 2: Job Description
   jobDescription: string;
@@ -57,6 +58,7 @@ const INITIAL_FORM_DATA: JobFormData = {
     min: 5000,
     max: 22000,
   },
+  location:"",
   categories: [],
   requiredSkills: [],
   jobDescription: "",

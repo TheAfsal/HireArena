@@ -4,6 +4,7 @@ export interface IJob {
   salaryMin: number;
   salaryMax: number;
   jobDescription: string;
+  location:string;
   responsibilities: string;
   qualifications: string;
   testOptions: any; 

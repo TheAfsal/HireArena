@@ -13,6 +13,7 @@ import {
   BriefcaseIcon,
   DollarSign,
   CalendarDays,
+  LocateIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -29,6 +30,7 @@ export interface JobDetails {
   salaryMax: number;
   jobDescription: string;
   responsibilities: string;
+  location: string;
   qualifications: string;
   niceToHave: string;
   benefits: Array<{ title: string }>;
@@ -168,7 +170,9 @@ function Page() {
                 <div className="flex flex-wrap gap-2">
                   {statusDetails?.status === "scheduled" ? (
                     <Button
-                      onClick={() => router.push(`/job-seeker/machine-task/${jobId}`)}
+                      onClick={() =>
+                        router.push(`/job-seeker/machine-task/${jobId}`)
+                      }
                     >
                       Next Test Assigned ( Appear for Machine Task )
                     </Button>
@@ -188,7 +192,7 @@ function Page() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
           <div className="flex items-center gap-2">
             <BriefcaseIcon className="h-5 w-5 text-muted-foreground" />
             <div>
@@ -208,6 +212,13 @@ function Page() {
               <p className="font-medium">
                 {formatSalary(jobDetails!.salaryMin, jobDetails!.salaryMax)}
               </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <LocateIcon className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Location</p>
+              <p className="font-medium">{jobDetails!.location}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
