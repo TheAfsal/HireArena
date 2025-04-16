@@ -173,15 +173,15 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: Briefcase,
-    url: "#",
+    url: "/job-seeker",
     active: true,
   },
-  {
-    title: "Messages",
-    icon: MessageSquare,
-    url: "#",
-    badge: "1",
-  },
+  // {
+  //   title: "Messages",
+  //   icon: MessageSquare,
+  //   url: "#",
+  //   badge: "1",
+  // },
   {
     title: "My Applications",
     icon: Users,

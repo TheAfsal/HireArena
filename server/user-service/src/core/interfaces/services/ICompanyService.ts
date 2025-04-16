@@ -1,5 +1,5 @@
 import * as grpc from "@grpc/grpc-js";
-import { ICompany } from "@shared/types/user.types";
+import { ICompany, ICompanyEmployeeRole } from "@shared/types/user.types";
 
 export interface ICompanyService {
   getCompanyIdByUserId(
@@ -25,4 +25,6 @@ export interface ICompanyService {
     status: "Approved" | "Rejected",
     rejectReason?: string
   ): Promise<any>;
+
+  getEmployeesByCompanyId(companyId: string): Promise<Partial<ICompanyEmployeeRole>[]>
 }

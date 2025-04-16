@@ -15,6 +15,8 @@ const aptitudeServer = new AptitudeService(questionRepo,interviewRepo,aptitudeRe
 const aptitudeController = new AptitudeController(aptitudeServer);
 
 router.post("/submit", aptitudeController.submitTest);
+// router.get("/aptitude-result/:interviewId", aptitudeTestController.getAptitudeResult);
+
 
 
 export default router;

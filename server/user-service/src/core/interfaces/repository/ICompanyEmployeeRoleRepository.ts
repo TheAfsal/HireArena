@@ -30,4 +30,8 @@ export interface ICompanyEmployeeRoleRepository {
     companyId: string,
     role: CompanyRole
   ): Promise<ICompanyEmployeeRole>;
+
+  findEmployeesByCompanyId(
+    companyId: string
+  ): Promise<Partial<ICompanyEmployeeRole>[]>
 }

@@ -84,7 +84,6 @@ const ApplicationList: React.FC<{
   applications: IApplication[];
   onViewDetails: (application: IApplication) => void;
 }> = ({ applications, onViewDetails }) => {
-
   const router = useRouter();
 
   const getCurrentStatus = (state: IInterviewRound[]) =>
@@ -164,7 +163,9 @@ const ApplicationList: React.FC<{
                   {app.state[app.state.length - 1].roundType ===
                     "Machine Task" && (
                     <button
-                      onClick={() => router.push(`/job-seeker/machine-task/${app.jobId}`)}
+                      onClick={() =>
+                        router.push(`/job-seeker/machine-task/${app.jobId}`)
+                      }
                       className="text-indigo-600 hover:text-indigo-900 transition-colors"
                     >
                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;View Machine Task Details
@@ -301,14 +302,29 @@ const CandidateApplicationsPage: React.FC = () => {
   const [selectedApplication, setSelectedApplication] =
     useState<IApplication | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const handleViewDetails = (application: IApplication) => {
     setSelectedApplication(application);
     setIsModalOpen(true);
   };
 
+  // Pagination logic
+  const totalPages = applications
+    ? Math.ceil(applications.length / itemsPerPage)
+    : 1;
+  const paginatedApplications = applications
+    ? applications.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    : [];
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="">
+      <div>
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
           My Job Applications
         </h1>
@@ -323,11 +339,37 @@ const CandidateApplicationsPage: React.FC = () => {
             Failed to load applications: {(error as Error).message}
           </div>
         )}
+
         {!isLoading && !error && applications && (
-          <ApplicationList
-            applications={applications}
-            onViewDetails={handleViewDetails}
-          />
+          <>
+            <ApplicationList
+              applications={paginatedApplications}
+              onViewDetails={handleViewDetails}
+            />
+
+            {/* Pagination Controls */}
+            <div className="flex justify-end items-center mt-6 space-x-4">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-white border rounded shadow disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-gray-700">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-white border rounded shadow disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
 
         <ApplicationDetailsModal

@@ -18,7 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Clock, AlertCircle, ArrowLeft, ArrowRight, Flag } from "lucide-react";
+import { Clock, AlertCircle, ArrowLeft, ArrowRight, Flag, CheckCircle2, XCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAptitudeQuestions, submitAptitude } from "@/app/api/interview";
 
@@ -28,9 +28,142 @@ export interface AptitudeQuestion {
   options: Array<string>;
 }
 
+interface Result {
+  questionId: number;
+  isCorrect: boolean;
+}
+
+interface TestResult {
+  totalQuestions: number;
+  attemptedCount: number;
+  scorePercentage: number;
+  status: string;
+  results: Result[];
+}
+
+// Results Popup Component
+function ResultsPopup({
+  result,
+  onClose,
+}: {
+  result: TestResult;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [timeLeft, setTimeLeft] = useState(10);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push("/job-seeker"); 
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [router]);
+
+  const handleSkip = () => {
+    router.push("/job-seeker");
+  };
+
+  const correctAnswers = result.results.filter((r) => r.isCorrect).length;
+  const incorrectAnswers = result.attemptedCount - correctAnswers;
+
+  return (
+    <AlertDialog open={true}>
+      <AlertDialogContent className="max-w-2xl">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Test Results</AlertDialogTitle>
+          <AlertDialogDescription>
+            Here's a detailed report of your test performance
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="space-y-6">
+          {/* Summary Section */}
+          <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Total Questions</p>
+              <p className="text-2xl font-bold">{result.totalQuestions}</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Attempted</p>
+              <p className="text-2xl font-bold">{result.attemptedCount}</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Correct Answers</p>
+              <p className="text-2xl font-bold text-green-600">{correctAnswers}</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Incorrect Answers</p>
+              <p className="text-2xl font-bold text-red-600">{incorrectAnswers}</p>
+            </div>
+          </div>
+
+          {/* Score and Status */}
+          <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Score Percentage</p>
+              <p className="text-2xl font-bold">{result.scorePercentage}%</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Status</p>
+              <Badge
+                variant={result.status === "passed" ? "default" : "destructive"}
+                className="text-lg px-3 py-1"
+              >
+                {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Detailed Results */}
+          <div className="max-h-64 overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-2">Question Results</h3>
+            <div className="space-y-2">
+              {result.results.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                >
+                  <span>Question {item.questionId}</span>
+                  {item.isCorrect ? (
+                    <div className="flex items-center gap-2 text-green-600">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Correct</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <XCircle className="h-4 w-4" />
+                      <span>Incorrect</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <AlertDialogFooter className="mt-6">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Redirecting to home in {timeLeft} seconds...
+            </span>
+            <Button onClick={handleSkip}>Go to Home Now</Button>
+          </div>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 export default function TestPage() {
   const router = useRouter();
   const { interviewId } = useParams<{ interviewId: string }>();
+  const [testResult, setTestResult] = useState<TestResult | null>(null);
 
   const {
     data: questions,
@@ -40,10 +173,6 @@ export default function TestPage() {
     queryKey: ["aptitude_test_questions"],
     queryFn: () => fetchAptitudeQuestions(interviewId),
   });
-
-  console.log('====================================');
-  console.log(questions);
-  console.log('====================================');
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(
@@ -120,19 +249,20 @@ export default function TestPage() {
   };
 
   const submitTest = async () => {
-    console.log(answers);
     try {
-      let response = await submitAptitude(
+      const response = await submitAptitude(
         interviewId,
         answers.map((answer, i) => ({
           questionId: questions[i].q_id,
           selectedAnswer: answer === null ? null : answer.toString(),
         }))
       );
-      console.log(response);
-
-      router.push(`/job-seeker/aptitude/${interviewId}/results`);
-    } catch (error) {}
+      setTestResult(response);
+      setShowSubmitDialog(false);
+      setShowTimeUpDialog(false);
+    } catch (error) {
+      console.error("Submission failed:", error);
+    }
   };
 
   const getQuestionStatusClass = (index: number) => {
@@ -163,6 +293,14 @@ export default function TestPage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      {/* Results Popup */}
+      {testResult && (
+        <ResultsPopup
+          result={testResult}
+          onClose={() => setTestResult(null)}
+        />
+      )}
+
       {/* Header with timer and progress */}
       <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">

@@ -45,3 +45,24 @@ export async function fetchCompanies(
   }
 }
 
+export async function getEmployeesInCompany(): Promise<any> {
+  try {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
+    
+    const response = await axiosInstance.get(
+      `/user-service/api/company/employees`
+    );
+
+    console.log(response.data);
+
+    return response.data
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+    throw new Error("Unknown error occurred");
+  }
+}
+

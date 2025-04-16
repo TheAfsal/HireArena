@@ -332,9 +332,7 @@ export class InterviewService implements IInterviewService {
             throw new Error("No pending test found to schedule next.");
           }
           return await this.interviewRepo.addNextTest(interviewId, nextTest);
-          
         }
-
       }
 
       return updatedInterview;

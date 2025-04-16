@@ -1,9 +1,17 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { DataTable } from "../components/data-table";
+import { DataTable } from "./compnonets/data-table";
 import { fetchAllJobs } from "@/app/api/job";
 
-// Columns definition for the jobs table
+interface Job {
+  id: string;
+  jobTitle: string;
+  jobDescription: string;
+  status: string;
+  updatedAt: string;
+}
+
 const columns = [
   { key: "jobTitle", label: "Title" },
   { key: "jobDescription", label: "Job Description" },
@@ -13,41 +21,65 @@ const columns = [
 ];
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch all jobs from the API
+  // Fetch jobs with pagination and search
   useEffect(() => {
     const getJobs = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetchAllJobs();
-        console.log(response);
-        setJobs(response);
+        const response = await fetchAllJobs(page, pageSize, searchTerm);
+        setJobs(response.jobs);
+        setTotal(response.total);
       } catch (err) {
-        console.log((err as Error).message);
+        console.error("Error fetching jobs:", (err as Error).message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     getJobs();
-  }, []);
+  }, [page, pageSize, searchTerm]);
 
-  // Function to toggle the job status between "Active" and "Inactive"
-  const handleBlockUnblock = (jobTitle: string) => {
+  const handleBlockUnblock = (jobId: string) => {
     setJobs((prevJobs) =>
       prevJobs.map((job) =>
-        job.jobTitle === jobTitle
+        job.id === jobId
           ? { ...job, status: job.status === "Active" ? "Inactive" : "Active" }
           : job
       )
     );
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setPage(1); // Reset to first page on search
+  };
+
   return (
-    <DataTable
-      title="Jobs"
-      data={jobs}
-      columns={columns}
-      searchPlaceholder="Search jobs"
-      onBlockUnblock={handleBlockUnblock} 
-    />
+    <div className="min-h-screen bg-gray-100">
+      <DataTable
+        title="Jobs"
+        data={jobs}
+        columns={columns}
+        searchPlaceholder="Search jobs by title..."
+        onBlockUnblock={handleBlockUnblock}
+        page={page}
+        pageSize={pageSize}
+        total={total}
+        onPageChange={handlePageChange}
+        onSearch={handleSearch}
+        isLoading={isLoading}
+      />
+    </div>
   );
 }

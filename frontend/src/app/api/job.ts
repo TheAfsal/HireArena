@@ -4,7 +4,6 @@ import { JobFormData } from "../panel/post-job/components/job-posting-form";
 
 export async function createJob(formData: JobFormData): Promise<any> {
   try {
-    
     const response = await axiosInstance.post(
       `/job-service/api/jobs/`,
       formData
@@ -22,18 +21,29 @@ export async function createJob(formData: JobFormData): Promise<any> {
   }
 }
 
-export async function fetchAllJobs(): Promise<any> {
+export async function fetchAllJobs(
+  page: number = 1,
+  pageSize: number = 10,
+  search: string = ""
+): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs/`);
-
-    return response.data;
+    const response = await axiosInstance.get(`/job-service/api/jobs`, {
+      params: {
+        page,
+        pageSize,
+        search,
+      },
+    });
+    return {
+      jobs: response.data.jobs,
+      total: response.data.total,
+    };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
         error.response ? error.response.data.error : "Something went wrong"
       );
     }
-
     throw new Error("Unknown error occurred");
   }
 }
@@ -77,7 +87,7 @@ export async function fetchMyApplications(): Promise<any> {
     );
 
     console.log(response.data);
-    
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -91,11 +101,13 @@ export async function fetchMyApplications(): Promise<any> {
 }
 
 export async function applyJob(jobId: string): Promise<any> {
-  
   try {
-    const response = await axiosInstance.post(`/interview-mgmt-service/api/interviews/apply`, {
-      jobId,
-    });
+    const response = await axiosInstance.post(
+      `/interview-mgmt-service/api/interviews/apply`,
+      {
+        jobId,
+      }
+    );
 
     return response.data;
   } catch (error: unknown) {
@@ -111,8 +123,10 @@ export async function applyJob(jobId: string): Promise<any> {
 
 export async function fetchAppliedJobStatus(jobId: string): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/interview-mgmt-service/api/interviews/status/${jobId}`);
-    
+    const response = await axiosInstance.get(
+      `/interview-mgmt-service/api/interviews/status/${jobId}`
+    );
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -127,9 +141,7 @@ export async function fetchAppliedJobStatus(jobId: string): Promise<any> {
 
 export async function fetchPostedJobs(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/job-service/api/jobs/company`
-    );
+    const response = await axiosInstance.get(`/job-service/api/jobs/company`);
 
     return response.data.data;
   } catch (error: unknown) {

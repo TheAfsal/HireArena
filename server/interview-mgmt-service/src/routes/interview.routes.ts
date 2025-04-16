@@ -43,6 +43,5 @@ router.get("/:interviewId", interviewController.getInterview);
 
 // router.get("/status/:jobId", interviewController.fetchAppliedJobStatus);
 
-// router.get("/aptitude-result/:interviewId", aptitudeTestController.getAptitudeResult);
 
 export default router;

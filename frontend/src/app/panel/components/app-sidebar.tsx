@@ -172,7 +172,7 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: Briefcase,
-    url: "#",
+    url: "/panel",
     active: true,
   },
   {

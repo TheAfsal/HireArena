@@ -34,4 +34,5 @@ export interface IJobRepository {
   }): Promise<Omit<IJob, "applications">[]>;
 
   fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]>
+  getAllJobsForAdmin(skip: number, take: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
 }

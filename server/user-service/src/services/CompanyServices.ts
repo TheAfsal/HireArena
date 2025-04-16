@@ -104,6 +104,13 @@ class CompanyService implements ICompanyService {
     });
   }
 
+  async getEmployeesByCompanyId(companyId: string): Promise<Partial<ICompanyEmployeeRole>[]> {
+    if (!companyId) {
+      throw new Error('Company ID is required');
+    }
+    return this.companyEmployeeRoleRepository.findEmployeesByCompanyId(companyId);
+  }
+
   // getCompanyIdByUserId = (
   //   userId: string,
   //   callback: grpc.sendUnaryData<any>

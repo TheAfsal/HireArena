@@ -13,10 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const { setTheme } = useTheme();
   const router = useRouter();
+  const auth = useSelector((state: RootState) => state.auth);
 
   return (
     <nav className="w-full border-b z-10">
@@ -54,13 +57,15 @@ export default function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            size="sm"
-            className="bg-[#6366F1] hover:bg-[#4F46E5]"
-            onClick={()=>router.push("/panel/post-job")}
-          >
-            Post a job
-          </Button>
+          {auth.role === "OWNER" && (
+            <Button
+              size="sm"
+              className="bg-[#6366F1] hover:bg-[#4F46E5]"
+              onClick={() => router.push("/panel/post-job")}
+            >
+              Post a job
+            </Button>
+          )}
         </div>
       </div>
     </nav>

@@ -62,6 +62,36 @@ class JobRepository implements IJobRepository {
     });
   }
 
+  async getAllJobsForAdmin(skip: number, take: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }> {
+    const where = search
+      ? {
+          OR: [
+            { jobTitle: { contains: search, mode: "insensitive" } },
+            { jobDescription: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
+    const [jobs, total] = await Promise.all([
+      this.prisma.job.findMany({
+        skip,
+        take,
+        //@ts-ignore
+        where,
+        include: {
+          employmentTypes: true,
+          categories: true,
+          requiredSkills: true,
+        },
+      }),
+      //@ts-ignore
+      this.prisma.job.count({ where }),
+    ]);
+    
+    //@ts-ignore
+    return { jobs, total };
+  }
+
   async fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]> {
     const jobs = await this.prisma.job.findMany({
       where: {

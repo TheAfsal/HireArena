@@ -27,4 +27,5 @@ export interface IJobService {
   ): void;
 
   fetchJobDetails (ids: string[], callback: grpc.sendUnaryData< any >): void
+  getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
 }

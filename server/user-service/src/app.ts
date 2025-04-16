@@ -102,100 +102,100 @@ app.use((req, res, next) => {
 //   }
 // });
 
-// app.get(
-//   "/auth/google",
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
-// interface GoogleUser {
-//   displayName: string;
-//   emails: { value: string }[];
-//   photos: { value: string }[];
-// }
+interface GoogleUser {
+  displayName: string;
+  emails: { value: string }[];
+  photos: { value: string }[];
+}
 
-// app.get(
-//   "/auth/google/callback",
-//   passport.authenticate("google", {
-//     failureRedirect: "http://localhost:3000/login",
-//   }),
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000/login",
+  }),
 
-//   async (req, res) => {
-//     if (!req.user) {
-//       return res.redirect("http://localhost:3000/login");
-//     }
+  async (req, res) => {
+    if (!req.user) {
+      return res.redirect("http://localhost:3000/login");
+    }
 
-//     //@ts-ignore
-//     const userProfile = req.user as GoogleUser | null;
+    //@ts-ignore
+    const userProfile = req.user as GoogleUser | null;
 
-//     if (!userProfile) {
-//       return res.redirect("http://localhost:3000/login");
-//     }
+    if (!userProfile) {
+      return res.redirect("http://localhost:3000/login");
+    }
 
-//     const email = userProfile.emails[0].value;
-//     const name = userProfile.displayName;
+    const email = userProfile.emails[0].value;
+    const name = userProfile.displayName;
 
-//     const jobSeekerRepository = new JobSeekerRepository(prisma);
-//     const adminRepository = new AdminRepository(prisma);
-//     const companyRepository = new CompanyRepository(prisma);
-//     const employeeRepository = new EmployeeRepository(prisma);
-//     const redisService = new RedisService();
-//     const passwordService = new PasswordService();
-//     const tokenService = new TokenService();
-//     const emailService = new EmailService();
+    const jobSeekerRepository = new JobSeekerRepository(prisma);
+    const adminRepository = new AdminRepository(prisma);
+    const companyRepository = new CompanyRepository(prisma);
+    const employeeRepository = new EmployeeRepository(prisma);
+    const redisService = new RedisService();
+    const passwordService = new PasswordService();
+    const tokenService = new TokenService();
+    const emailService = new EmailService();
 
-//     const authService = new AuthService(
-//       jobSeekerRepository,
-//       adminRepository,
-//       companyRepository,
-//       employeeRepository,
-//       redisService,
-//       emailService,
-//       passwordService,
-//       tokenService
-//     );
+    const authService = new AuthService(
+      jobSeekerRepository,
+      adminRepository,
+      companyRepository,
+      employeeRepository,
+      redisService,
+      emailService,
+      passwordService,
+      tokenService
+    );
 
-//     const user = await authService.googleLogin({
-//       email,
-//       name,
-//       password: "123123",
-//     });
+    const user = await authService.googleLogin({
+      email,
+      name,
+      password: "123123",
+    });
 
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-//     const accessToken = jwt.sign(
-//       { userId: user.id },
-//       process.env.ACCESS_TOKEN_SECRET || "",
-//       {
-//         expiresIn: "100m",
-//       }
-//     );
-//     const refreshToken = jwt.sign(
-//       { userId: user.id, role: "HR" },
-//       process.env.REFRESH_TOKEN_SECRET || "",
-//       {
-//         expiresIn: "7d",
-//       }
-//     );
+    const accessToken = jwt.sign(
+      { userId: user.id },
+      process.env.ACCESS_TOKEN_SECRET || "",
+      {
+        expiresIn: "100m",
+      }
+    );
+    const refreshToken = jwt.sign(
+      { userId: user.id, role: "HR" },
+      process.env.REFRESH_TOKEN_SECRET || "",
+      {
+        expiresIn: "7d",
+      }
+    );
 
-//     res.cookie("refreshToken", refreshToken, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "strict",
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
-//     res.redirect(`http://localhost:3000/google-login?token=${accessToken}`);
-//   }
-// );
+    res.redirect(`http://localhost:3000/google-login?token=${accessToken}`);
+  }
+);
 
-// app.get("/auth/logout", (req, res) => {
-//   req.logout(() => {
-//     res.clearCookie("refreshToken");
-//     res.redirect("/");
-//   });
-// });
+app.get("/auth/logout", (req, res) => {
+  req.logout(() => {
+    res.clearCookie("refreshToken");
+    res.redirect("/");
+  });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/company", companyRoutes);

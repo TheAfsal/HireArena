@@ -17,7 +17,7 @@ const jobController = new JobController(jobService);
 
 router.get("/brief", jobController.getAllJobsBrief);
 // router.get("/", jobController.getFilteredJobs);
-// router.get("/", jobController.getAllJobs);
+router.get("/", jobController.getAllJobs);
 router.post("/", validateJob, jobController.createJob);
 router.get("/company", jobController.getCompanyJobs);
 

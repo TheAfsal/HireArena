@@ -14,8 +14,9 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { loginFailure, loginSuccess } from "@/redux/slices/authSlice";
-import { toast } from "sonner";
 import EmailPopup from "./EmailPopUp";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 type FormType = "job-seeker" | "company";
 type FormState = "login" | "signup";
@@ -28,10 +29,12 @@ interface FormValues {
 }
 
 function AuthForm() {
+  const [loading, setLoading] = useState<boolean>(false);
   const [formType, setFormType] = useState<FormType>("job-seeker");
   const [formState, setFormState] = useState<FormState>("signup");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [popupForgotPassword, setPopupForgotPassword] = useState<boolean>(false);
+  const [popupForgotPassword, setPopupForgotPassword] =
+    useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({
     email: "afsal@gmail.com",
     password: "123123",
@@ -64,7 +67,7 @@ function AuthForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoading(true);
     setErrorMessage(null);
 
     // Basic validation before submitting the form
@@ -120,6 +123,7 @@ function AuthForm() {
                 response?.error?.error || "Login failed";
           setErrorMessage(errorMessage);
           dispatch(loginFailure(errorMessage));
+          setLoading(false);
         }
       } else {
         const response = await LoginCompany(formValues);
@@ -145,15 +149,20 @@ function AuthForm() {
                 response?.error.error || "Login failed";
           setErrorMessage(errorMessage);
           dispatch(loginFailure(errorMessage));
+          // setLoading(false)
         }
       }
     } else if (formState === "signup") {
       let response;
       if (formType === "job-seeker") {
         response = await SignupJobSeeker(formValues);
+        setLoading(false);
         if (response.status === "success") {
-          //@ts-ignore
-          toast(response.message);
+          toast({
+            title: "Success",
+            //@ts-ignore
+            description: response.message,
+          });
         } else {
           const errorMessage =
             typeof response === "string"
@@ -165,7 +174,13 @@ function AuthForm() {
         }
       } else {
         response = await SignupCompany(formValues);
+        setLoading(false);
         if (response.status === "success") {
+          toast({
+            title: "Success",
+            //@ts-ignore
+            description: response.message,
+          });
           //   const { accessToken } = response.data!.tokens;
           //   const { user } = response.data!;
           //   if (accessToken) {
@@ -223,6 +238,17 @@ function AuthForm() {
   const googleLogin = () => {
     window.open("http://localhost:5000/auth/google", "_self");
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center z-50">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+          <p className="mt-4 text-lg text-gray-700">Loading applications...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -358,7 +384,7 @@ function AuthForm() {
             <p className="flex justify-center text-sm text-gray-600">
               <button
                 type="button"
-                onClick={() =>setPopupForgotPassword(true)}
+                onClick={() => setPopupForgotPassword(true)}
                 className="text-primary font-medium"
               >
                 forgot paasword?

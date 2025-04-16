@@ -64,4 +64,7 @@ router.put("/profile", upload.any(), companyController.updateProfile);
 router.get("/media-links", companyController.fetchMediaLinks);
 router.put("/media-links", companyController.updateMediaLinks);
 
+router.get("/employees", companyController.getEmployeesByCompany);
+
+
 export default router;

@@ -85,6 +85,43 @@ class CompanyEmployeeRoleRepository implements ICompanyEmployeeRoleRepository {
       },
     });
   }
+
+  async findEmployeesByCompanyId(
+    companyId: string
+  ): Promise<Partial<ICompanyEmployeeRole>[]> {
+    return this.prisma.employee
+      .findMany({
+        where: {
+          companyAssociations: {
+            some: {
+              companyId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          companyAssociations: {
+            select: {
+              role: true,
+            },
+            where: {
+              companyId,
+            },
+            take: 1,
+          },
+        },
+      })
+      .then((employees) =>
+        employees.map((emp) => ({
+          id: emp.id,
+          name: emp.name,
+          email: emp.email,
+          role: emp.companyAssociations[0]?.role,
+        }))
+      );
+  }
 }
 
 export default CompanyEmployeeRoleRepository;

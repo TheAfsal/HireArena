@@ -143,7 +143,7 @@ class AptitudeService implements IAptitudeService {
         return await this.interviewRepo.addNextTest(interviewId, nextTest);
       }
 
-      return { success: true, message: "Submission accepted." };
+      return result;
     } else {
       throw new Error(
         "Submission failed: Test window expired or invalid attempt."

@@ -25,4 +25,5 @@ export interface ICompanyController {
     call: grpc.ServerUnaryCall<any, any>,
     callback: grpc.sendUnaryData<any>
   ): void;
+  getEmployeesByCompany (req: Request, res: Response): Promise<void>
 }

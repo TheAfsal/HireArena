@@ -107,6 +107,11 @@ class JobService implements IJobService {
     return job;
   }
 
+  async getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }> {
+    const skip = (page - 1) * pageSize;
+    return await this.jobRepository.getAllJobsForAdmin(skip, pageSize, search);
+  }
+
   async getAllJobs(jobSeekerId: string): Promise<Omit<IJob, "applications">[]> {
     const jobs = await this.jobRepository.getAllJobs();
     const appliedJobs = await this.jobApplicationRepository.findAppliedJobs(

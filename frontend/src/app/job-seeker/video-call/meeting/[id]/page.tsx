@@ -135,7 +135,7 @@ export default function VideoCall() {
       screenStream.current.getTracks().forEach((track) => track.stop());
     }
     calls.current.forEach((call) => call.close());
-    window.location.href = "/login";
+    window.location.href = "/job-seeker";
   };
 
   useEffect(() => {

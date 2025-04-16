@@ -52,7 +52,7 @@ export default class AptitudeController implements IAptitudeController {
   // getAptitudeResult = async (req: Request, res: Response) => {
   //   try {
   //     const { interviewId } = req.params;
-  //     const result = await this.aptitudeTestService.getAptitudeResult(
+  //     const result = await this.aptitudeService.getAptitudeResult(
   //       interviewId
   //     );
   //     res.status(200).json({ success: true, result });
