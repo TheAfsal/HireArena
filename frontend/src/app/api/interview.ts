@@ -120,12 +120,13 @@ export async function startMachineTask(taskId: string): Promise<any> {
 
 export async function submitMachineTask(
   taskId: string,
-  repoUrl: string
+  repoUrl: string,
+  jobId: string
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
       `/interview-mgmt-service/api/machine-task/submit`,
-      { taskId, repoUrl }
+      { taskId, repoUrl,jobId }
     );
 
     return response.data.task;

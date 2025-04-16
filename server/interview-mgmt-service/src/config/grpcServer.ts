@@ -7,6 +7,9 @@ import QuestionRepository from "@repositories/questions.repository";
 import AptitudeService from "@services/aptitude.service";
 import InterviewRepository from "@repositories/interview.repository";
 import AptitudeTestResultRepository from "@repositories/aptitudeTestResult.repository";
+import MachineTaskController from "@controllers/machineTask.controller";
+import MachineTaskService from "@services/machineTask.service";
+import MachineTaskRepository from "@repositories/machineTask.repository";
 
 dotenv.config();
 
@@ -17,24 +20,19 @@ const interviewProto = grpc.loadPackageDefinition(packageDefinition).interview;
 const questionRepo = new QuestionRepository();
 const interviewRepo = new InterviewRepository();
 const aptitudeResultRepo = new AptitudeTestResultRepository();
+const machineTaskRepo = new MachineTaskRepository();
 
 const aptitudeServer = new AptitudeService(
   questionRepo,
   interviewRepo,
   aptitudeResultRepo
 );
-const aptitudeController = new AptitudeController(aptitudeServer);
 
-// const interviewService = {
-// CreateAptitudeTest: async (call: any, callback: any) => {
-//   try {
-//     const { jobId, companyId } = call.request;
-//     const result = await createAptitudeTest(jobId);
-//     callback(null, result);
-//   } catch (error) {
-//     callback(error, null);
-//   }
-// },
+const machineTaskServer = new MachineTaskService(machineTaskRepo,interviewRepo);
+
+const aptitudeController = new AptitudeController(aptitudeServer);
+const machineTaskController = new MachineTaskController(machineTaskServer);
+
 // CreateMachineTask: async (call: any, callback: any) => {
 //   try {
 //     const { jobId, companyId } = call.request;
@@ -44,13 +42,13 @@ const aptitudeController = new AptitudeController(aptitudeServer);
 //     callback(error, null);
 //   }
 // },
-// };
 
 const server = new grpc.Server();
 
 //@ts-ignore
 server.addService(interviewProto.InterviewService.service, {
   CreateAptitudeTest: aptitudeController.CreateAptitudeTest,
+  CreateMachineTask: machineTaskController.CreateMachineTask,
 });
 
 export default server;

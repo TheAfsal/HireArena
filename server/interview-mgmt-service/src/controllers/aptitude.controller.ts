@@ -17,16 +17,9 @@ export default class AptitudeController implements IAptitudeController {
 
       console.log(`Generating aptitude test for job ${jobId}...`);
 
-      let aptitudeTest = await this.aptitudeService.createAptitudeTest(jobId);
+      await this.aptitudeService.createAptitudeTest(jobId);
 
-      console.log("@@ aptitudeTest : ", aptitudeTest);
-
-      if (!aptitudeTest?._id)
-        callback({
-          code: grpc.status.INTERNAL,
-        });
-
-      return { success: true, testId: aptitudeTest?._id };
+      return callback(null, { success: true });
     } catch (error) {
       console.error("Error creating aptitude test:", error);
       callback({
@@ -34,8 +27,6 @@ export default class AptitudeController implements IAptitudeController {
       });
     }
   };
-
-  
 
   submitTest = async (req: Request, res: Response) => {
     try {
@@ -48,10 +39,7 @@ export default class AptitudeController implements IAptitudeController {
         return;
       }
 
-      const result = await this.aptitudeService.submitTest(
-        interviewId,
-        data
-      );
+      const result = await this.aptitudeService.submitTest(interviewId, data);
       res.status(200).json(result);
       return;
     } catch (error: any) {

@@ -139,6 +139,34 @@ class InterviewRepository
       .exec();
   }
 
+  async updateMachineTaskStatus(
+    candidateId: string,
+    jobId: string,
+    taskId: string,
+    status: RoundStatus
+  ): Promise<any> {
+
+    const interview = await this.model
+      .findOne({ jobId, candidateId })
+      .exec();
+    if (!interview || !interview.state.length) {
+      throw new Error("Interview not found or state array is empty");
+    }
+
+    const lastIndex = interview.state.length - 1;
+
+    return await this.model.findOneAndUpdate(
+      { candidateId, jobId },
+      {
+        $set: {
+          [`state.${lastIndex}.status`]: status,
+          updatedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+  }
+
   // async getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string> {
   //   const interview = await this.findById(interviewId);
   //   if (!interview) throw new Error("Interview not found");

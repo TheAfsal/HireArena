@@ -1,70 +1,150 @@
+import GeminiHelper from "utils/gemini.helper";
 import { evaluateRepository } from "../utils/evaluateTask";
 import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
+import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTaskRepository";
+import { IMachineTask } from "model/MachineTask";
+import { IRoundStatus, RoundStatus, RoundType } from "model/Interview";
+import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
+import { IsJobExist } from "@config/grpcClient";
 
+class MachineTaskService implements IMachineTaskService {
+  constructor(
+    private machineTaskRepo: IMachineTaskRepository,
+    private interviewRepo: IInterviewRepository
+  ) {}
 
-class MachineTaskService {
-  // constructor(private machineTaskRepository: IMachineTaskRepository) {}
+  async createMachineTest(jobId: string, companyId: string): Promise<any> {
+    const task = await GeminiHelper.generateMachineTask();
 
-  // async fetchMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial> {
-  //   const task = await this.machineTaskRepository.getMachineTaskByJobId(jobId);
-  //   if (!task) throw new Error("No machine task found for this job");
-  //   return task;
-  // }
+    console.log("@@ task: ", task);
 
-  // async fetchMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails> {
-  //   const task = await this.machineTaskRepository.getMachineTaskDetails(taskId);
-  //   if (!task) throw new Error("Machine task not found");
-  //   return task;
-  // }
+    const savedTask: Partial<IMachineTask> = {
+      jobId,
+      companyId,
+      title: task.title,
+      description: task.description,
+      hoursToComplete: task.hoursToComplete,
+      requirements: task.requirements.map((r: string) => ({ requirement: r })),
+      evaluationCriteria: task.evaluationCriteria.map((c: string) => ({
+        criteria: c,
+      })),
+      createdAt: new Date(),
+    };
 
-  // async startMachineTask(taskId: string): Promise<{ startTime: Date }> {
-  //   const task = await this.machineTaskRepository.findTaskById(taskId);
-  //   if (!task) throw new Error("Task not found");
+    return await this.machineTaskRepo.createMachineTask(savedTask);
+  }
 
-  //   if (task.startTime) return { startTime: task.startTime };
+  async fetchMachineTaskByJobId(jobId: string): Promise<Partial<IMachineTask>> {
+    const task = await this.machineTaskRepo.getMachineTaskByJobId(jobId);
+    if (!task) throw new Error("No machine task found for this job");
+    return task;
+  }
 
-  //   const newStartTime = new Date();
-  //   await this.machineTaskRepository.updateStartTime(taskId, newStartTime);
+  async fetchMachineTaskDetails(taskId: string): Promise<Partial<IMachineTask>> {
+    const task = await this.machineTaskRepo.getMachineTaskDetails(taskId);
+    if (!task) throw new Error("Machine task not found");
+    return task;
+  }
 
-  //   return { startTime: newStartTime };
-  // }
+  async startMachineTask(taskId: string): Promise<{ startTime: Date }> {
+    const task = await this.machineTaskRepo.findTaskById(taskId);
+    if (!task) throw new Error("Task not found");
 
-  // async isSubmissionAllowed(taskId: string): Promise<boolean> {
-  //   const task = await this.machineTaskRepository.findTaskById(taskId);
-  //   if (!task || !task.startTime) return false;
+    if (task.startTime) return { startTime: task.startTime };
 
-  //   const deadline = new Date(task.startTime);
-  //   deadline.setHours(deadline.getHours() + task.hoursToComplete);
+    const newStartTime = new Date();
+    await this.machineTaskRepo.updateStartTime(taskId, newStartTime);
 
-  //   return new Date() <= deadline;
-  // }
+    return { startTime: newStartTime };
+  }
 
-  // async submitMachineTask(
-  //   candidateId: string,
-  //   taskId: string,
-  //   repoUrl: string
-  // ): Promise<{ status: InterviewStatus; evaluationScore: number }> {
-  //   // const machineTask = await this.machineTaskRepository.getTaskById(taskId);
-  //   // if (!machineTask) throw new Error("Machine Task not found");
+  async isSubmissionAllowed(taskId: string): Promise<boolean> {
+    const task = await this.machineTaskRepo.findTaskById(taskId);
+    if (!task || !task.startTime) return false;
 
-  //   // console.log("!!!");
-  //   // const evaluationScore = await evaluateRepository(repoUrl);
+    const deadline = new Date(task.startTime);
+    deadline.setHours(deadline.getHours() + task.hoursToComplete);
 
-  //   // console.log("evaluationScore", evaluationScore);
+    return new Date() <= deadline;
+  }
 
-  //   // const status =
-  //   //   evaluationScore >= 70
-  //   //     ? InterviewStatus.completed
-  //   //     : InterviewStatus.failed;
+  async submitMachineTask(
+    candidateId: string,
+    taskId: string,
+    repoUrl: string,
+    jobId: string,
+  ): Promise<{ status: RoundStatus; evaluationScore: number }> {
+    const machineTask = await this.machineTaskRepo.getTaskById(taskId);
+    if (!machineTask) throw new Error("Machine Task not found");
 
-  //   // await this.machineTaskRepository.updateCandidateTaskStatus(
-  //   //   candidateId,
-  //   //   taskId,
-  //   //   status
-  //   // );
+    const evaluationScore = await evaluateRepository(repoUrl);
 
-  //   // return { status, evaluationScore };
-  // }
+    console.log("evaluationScore", evaluationScore);
+
+    const status =
+      evaluationScore >= 70 ? RoundStatus.Completed : RoundStatus.Failed;
+
+    const updatedInterview = await this.interviewRepo.updateMachineTaskStatus(
+      candidateId,
+      jobId,
+      taskId,
+      status
+    );
+
+    if(status === RoundStatus.Completed){
+      const testOptions: Array<string> = [
+        "Technical Interview",
+        "Behavioral Interview",
+        "HR Interview",
+      ];
+
+      const jobDetails = await IsJobExist(jobId);
+
+      const tests = JSON.parse(jobDetails.job.testOptions);
+
+      if (!jobDetails) throw new Error("Job not found");
+
+      const priorityOrder = [
+        "Aptitude Test",
+        "Machine Task",
+        "Coding Challenge",
+        "Technical Interview",
+        "Behavioral Interview",
+        "HR Interview",
+        "CEO Interview",
+      ];
+
+      const filteredArr = priorityOrder.filter(
+        (task) => tests[task] === true
+      );
+
+      console.log("@@filteredArr ", filteredArr);
+
+      let nextTest: Partial<IRoundStatus> | null = null;
+      const now = new Date();
+
+      if((updatedInterview.state.length-1)===filteredArr.length){
+        console.log("Interview Completed"); 
+        return updatedInterview
+      }else{
+        nextTest = {
+          roundType: RoundType[filteredArr[updatedInterview.state.length]],
+          status: RoundStatus.Pending,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        console.log(nextTest);
+        if (!nextTest) {
+          throw new Error("No pending test found to schedule next.");
+        }
+        return await this.interviewRepo.addNextTest(updatedInterview._id, nextTest);
+        
+      }
+    }
+
+    return { status, evaluationScore };
+  }
 }
 
 export default MachineTaskService;

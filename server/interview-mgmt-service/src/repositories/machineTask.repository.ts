@@ -4,59 +4,69 @@
 // import InterviewModel, { InterviewStatus } from "model/Interview";
 // import BaseRepository from "./base.repository";
 
-// class MachineTaskRepository 
-//   extends BaseRepository<IMachineTask, string> 
-//   implements IMachineTaskRepository {
+import MachineTaskModel,{ IMachineTask } from "model/MachineTask";
+import BaseRepository from "./base.repository";
+import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTaskRepository";
+import { RoundStatus } from "model/Interview";
+
+class MachineTaskRepository 
+  extends BaseRepository<IMachineTask, string> 
+  implements IMachineTaskRepository {
   
-//   constructor() {
-//     super(MachineTaskModel);
-//   }
+  constructor() {
+    super(MachineTaskModel);
+  }
 
-//   async getMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial | null> {
-//     return this.model
-//       .findOne({ jobId })
-//       .select("id title description hoursToComplete")
-//       .lean() 
-//       .exec() as Promise<IMachineTaskPartial | null>;
-//   }
+  async createMachineTask(machinetask: Partial<IMachineTask>): Promise<Partial<IMachineTask>> {
+    return await this.save(machinetask);  
+  }
 
-//   async getMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails | null> {
-//     return this.model
-//       .findById(taskId)
-//       .populate("requirements")
-//       .populate("evaluationCriteria")
-//       .lean() 
-//       .exec() as Promise<IMachineTaskDetails | null>;
-//   }
+  async getMachineTaskByJobId(jobId: string): Promise<Partial<IMachineTask> | null> {
+    return this.model
+      .findOne({ jobId })
+      .select("id title description hoursToComplete")
+      .lean() 
+      .exec() as Promise<Partial<IMachineTask> | null>;
+  }
 
-//   async findTaskById(taskId: string): Promise<IMachineTask | null> {
-//     return this.findById(taskId);
-//   }
+  async getMachineTaskDetails(taskId: string): Promise<Partial<IMachineTask> | null> {
+    return this.model
+      .findById(taskId)
+      .populate("requirements")
+      .populate("evaluationCriteria")
+      .lean() 
+      .exec() as Promise<Partial<IMachineTask> | null>;
+  }
 
-//   async updateStartTime(taskId: string, startTime: Date): Promise<IMachineTask> {
-//     const updated = await this.update(taskId, { startTime });
-//     if (!updated) throw new Error("Task not found");
-//     return updated;
-//   }
+  async findTaskById(taskId: string): Promise<IMachineTask | null> {
+    return this.model.findById(taskId);
+  }
 
-//   async getTaskById(taskId: string): Promise<IMachineTask | null> {
-//     return this.findById(taskId);
-//   }
+  async updateStartTime(taskId: string, startTime: Date): Promise<IMachineTask> {
+    const updated = await this.model.findByIdAndUpdate(taskId, { startTime });
+    if (!updated) throw new Error("Task not found");
+    return updated;
+  }
 
-//   async updateCandidateTaskStatus(
-//     candidateId: string,
-//     taskId: string,
-//     status: InterviewStatus
-//   ): Promise<IUpdateManyResult> {
-//     const result = await InterviewModel.updateMany(
-//       { candidateId, jobId: taskId },
-//       { status }
-//     );
-//     return { count: result.modifiedCount };
-//   }
-// }
+  async getTaskById(taskId: string): Promise<IMachineTask | null> {
+    return this.findById(taskId);
+  }
 
-// export default MachineTaskRepository;
+  async updateCandidateTaskStatus(
+    candidateId: string,
+    jobId: string,
+    taskId: string,
+    status: RoundStatus
+  ): Promise<any> {
+    const result = await this.model.updateMany(
+      { candidateId, jobId },
+      { status }
+    );
+    return { count: result.modifiedCount };
+  }
+}
+
+export default MachineTaskRepository;
 
 
 

@@ -1,7 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+interface Requirement {
+  requirement: string;
+}
+
+interface EvaluationCriteria {
+  criteria: string;
+}
+
 export interface IMachineTask extends Document {
-  id: string; 
   jobId: string;
   companyId: string;
   title: string;
@@ -9,13 +16,26 @@ export interface IMachineTask extends Document {
   hoursToComplete: number;
   createdAt: Date;
   startTime?: Date;
-  requirements?: any[]; 
-  evaluationCriteria?: any[];
+  requirements: Requirement[];
+  evaluationCriteria: EvaluationCriteria[];
 }
 
-const MachineTaskSchema: Schema = new Schema(
+const RequirementSchema = new Schema<Requirement>(
   {
-    _id: { type: Schema.Types.ObjectId, auto: true },
+    requirement: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const EvaluationSchema = new Schema<EvaluationCriteria>(
+  {
+    criteria: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const MachineTaskSchema = new Schema<IMachineTask>(
+  {
     jobId: { type: String, required: true },
     companyId: { type: String, required: true },
     title: { type: String, required: true },
@@ -23,8 +43,8 @@ const MachineTaskSchema: Schema = new Schema(
     hoursToComplete: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
     startTime: { type: Date },
-    requirements: [{ type: Schema.Types.ObjectId, ref: "MachineTaskRequirement" }],
-    evaluationCriteria: [{ type: Schema.Types.ObjectId, ref: "MachineTaskEvaluation" }],
+    requirements: [RequirementSchema],
+    evaluationCriteria: [EvaluationSchema],
   },
   { timestamps: false }
 );

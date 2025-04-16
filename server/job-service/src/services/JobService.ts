@@ -81,19 +81,28 @@ class JobService implements IJobService {
           job.id,
           companyId
         );
-        console.log("Aptitude Test Created:", interviewServerResponse);
+        console.log("Aptitude Test Created: -----------");
       }
 
-      // if (testOptions["Machine Task"]) {
-      //   const interviewServerResponse = await createMachineTask(
-      //     job.id,
-      //     companyId
-      //   );
-      //   console.log("Machine Task Created:", interviewServerResponse);
-      // }
+      console.log("@@ testOptions: ", testOptions);
+      console.log("@@ testOptions['Machine Task']: ", testOptions["Machine Task"]);
+      
+
+      if (testOptions["Machine Task"]) {
+        console.log("123");
+        
+        const interviewServerResponse = await createMachineTask(
+          job.id,
+          companyId
+        );
+        console.log("Machine Task Created:", interviewServerResponse);
+      }
     } catch (error) {
-      console.error("Test creation failed:", error);
+      console.log("Test creation failed:", error);
     }
+
+    console.log(4);
+    
 
     return job;
   }

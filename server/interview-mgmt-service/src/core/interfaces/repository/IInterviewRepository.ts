@@ -1,7 +1,7 @@
 // import { IInterviewRounds, IInterviewStatus } from "@core/types/interview.types";
 // import { AptitudeTestQuestion, Interview, InterviewStatus } from "@prisma/client";
 
-import { IInterview, IRoundStatus } from "model/Interview";
+import { IInterview, IRoundStatus, RoundStatus } from "model/Interview";
 
 // export interface IInterviewRepository {
 //   getAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string>;
@@ -38,6 +38,7 @@ export interface IInterviewRepository {
   findApplicationByJobId(jobs: string[]): Promise<IInterview[]> 
   addInterviewRound( interviewId: string, roundData: Partial<IInterview["state"][0]>): Promise<IInterview | null> 
   submitVideoInterview( interviewId: string, candidateId: string, roundData: Partial<IInterview["state"][0]>): Promise<IInterview | null>
+  updateMachineTaskStatus( candidateId: string, jobId: string, taskId: string, status: RoundStatus): Promise<any>
   // getAptitudeQuestions(interviewId: string): Promise<IAptitudeTestQuestion[] | string>;
   // getQuestionsByInterviewId(interviewId: string): Promise<IAptitudeTestQuestion[]>;
   // progressToNextRound(interviewId: string): Promise<IInterview>;

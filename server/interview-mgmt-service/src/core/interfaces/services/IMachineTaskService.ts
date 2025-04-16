@@ -1,14 +1,16 @@
-import { IMachineTaskDetails, IMachineTaskPartial } from "@core/types/interview.types";
-import { InterviewStatus } from "@prisma/client";
+import { RoundStatus } from "model/Interview";
+import { IMachineTask } from "model/MachineTask";
 
 export interface IMachineTaskService {
-  fetchMachineTaskByJobId(jobId: string): Promise<IMachineTaskPartial>;
-  fetchMachineTaskDetails(taskId: string): Promise<IMachineTaskDetails>;
+  createMachineTest(jobId: string, companyId:string): Promise<any>
+  fetchMachineTaskByJobId(jobId: string): Promise<Partial<IMachineTask>>;
+  fetchMachineTaskDetails(taskId: string): Promise<Partial<IMachineTask>>;
   startMachineTask(taskId: string): Promise<{ startTime: Date }>;
   isSubmissionAllowed(taskId: string): Promise<boolean>;
   submitMachineTask(
     candidateId: string,
     taskId: string,
-    repoUrl: string
-  ): Promise<{ status: InterviewStatus; evaluationScore: number }>;
+    repoUrl: string,
+    jobId: string
+  ): Promise<{ status: RoundStatus; evaluationScore: number }>;
 }

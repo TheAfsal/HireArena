@@ -59,7 +59,6 @@ message AptitudeTestRequest {
 
 message AptitudeTestResponse {
   bool success = 1;
-  string testId = 2;
 }
 
 message MachineTaskRequest {
@@ -69,7 +68,6 @@ message MachineTaskRequest {
 
 message MachineTaskResponse {
   bool success = 1;
-  string testId = 2;
 }
 
 message JobDetails {

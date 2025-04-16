@@ -325,7 +325,7 @@ function SubmissionForm({ taskId, jobId }: { taskId: string; jobId: string }) {
 
     setIsSubmitting(true);
 
-    let response = await submitMachineTask(taskId, githubUrl);
+    let response = await submitMachineTask(taskId, githubUrl, jobId);
     console.log(response);
     toast({
       title: "Success",

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMyApplications } from "@/app/api/job";
+import { useRouter } from "next/navigation";
 
 enum RoundType {
   TechnicalInterview = "Technical Interview",
@@ -83,7 +84,12 @@ const ApplicationList: React.FC<{
   applications: IApplication[];
   onViewDetails: (application: IApplication) => void;
 }> = ({ applications, onViewDetails }) => {
-  const getCurrentStatus = (state: IInterviewRound[]) => state[state.length - 1]?.status || "Pending";
+
+  const router = useRouter();
+
+  const getCurrentStatus = (state: IInterviewRound[]) =>
+    state[state.length - 1]?.status || "Pending";
+
   const getNextStep = (state: IInterviewRound[], testOptions: string) => {
     const tests = JSON.parse(testOptions) as Record<string, boolean>;
     const completedRounds = state.map((r) => r.roundType);
@@ -92,6 +98,8 @@ const ApplicationList: React.FC<{
     );
     return nextTest || "Completed";
   };
+
+  console.log("@@", applications);
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -109,8 +117,11 @@ const ApplicationList: React.FC<{
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Next Step
+                Current Step
               </th>
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                Next Step
+              </th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Action
               </th>
@@ -138,8 +149,11 @@ const ApplicationList: React.FC<{
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {getNextStep(app.state, app.jobDetails.testOptions)}
+                  {app.state[app.state.length - 1].roundType}
                 </td>
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {getNextStep(app.state, app.jobDetails.testOptions)}
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => onViewDetails(app)}
@@ -147,6 +161,15 @@ const ApplicationList: React.FC<{
                   >
                     View Details
                   </button>
+                  {app.state[app.state.length - 1].roundType ===
+                    "Machine Task" && (
+                    <button
+                      onClick={() => router.push(`/job-seeker/machine-task/${app.jobId}`)}
+                      className="text-indigo-600 hover:text-indigo-900 transition-colors"
+                    >
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;View Machine Task Details
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -154,7 +177,9 @@ const ApplicationList: React.FC<{
         </table>
       </div>
       {applications.length === 0 && (
-        <div className="text-center py-10 text-gray-500">No applications found.</div>
+        <div className="text-center py-10 text-gray-500">
+          No applications found.
+        </div>
       )}
     </div>
   );
@@ -167,8 +192,13 @@ const ApplicationDetailsModal: React.FC<{
 }> = ({ isOpen, onClose, application }) => {
   if (!isOpen || !application) return null;
 
-  const tests = JSON.parse(application.jobDetails.testOptions) as Record<string, boolean>;
-  const allRounds = Object.keys(tests).filter((test) => tests[test]) as RoundType[];
+  const tests = JSON.parse(application.jobDetails.testOptions) as Record<
+    string,
+    boolean
+  >;
+  const allRounds = Object.keys(tests).filter(
+    (test) => tests[test]
+  ) as RoundType[];
   const completedRounds = application.state.map((r) => r.roundType);
 
   return (
@@ -182,7 +212,9 @@ const ApplicationDetailsModal: React.FC<{
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300"></div>
             {allRounds.map((round, idx) => {
-              const roundData = application.state.find((r) => r.roundType === round);
+              const roundData = application.state.find(
+                (r) => r.roundType === round
+              );
               const isCompleted = completedRounds.includes(round);
               const isCurrent = roundData && !completedRounds[idx + 1];
 
@@ -207,7 +239,10 @@ const ApplicationDetailsModal: React.FC<{
                       <div className="text-sm text-gray-600">
                         <p>Status: {roundData.status}</p>
                         {roundData.scheduledAt && (
-                          <p>Scheduled: {new Date(roundData.scheduledAt).toLocaleString()}</p>
+                          <p>
+                            Scheduled:{" "}
+                            {new Date(roundData.scheduledAt).toLocaleString()}
+                          </p>
                         )}
                         {roundData.videoCallLink && (
                           <p>
@@ -221,8 +256,14 @@ const ApplicationDetailsModal: React.FC<{
                             </a>
                           </p>
                         )}
-                        <p>Created: {new Date(roundData.createdAt).toLocaleString()}</p>
-                        <p>Updated: {new Date(roundData.updatedAt).toLocaleString()}</p>
+                        <p>
+                          Created:{" "}
+                          {new Date(roundData.createdAt).toLocaleString()}
+                        </p>
+                        <p>
+                          Updated:{" "}
+                          {new Date(roundData.updatedAt).toLocaleString()}
+                        </p>
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500">Pending</p>
@@ -257,7 +298,8 @@ const CandidateApplicationsPage: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedApplication, setSelectedApplication] = useState<IApplication | null>(null);
+  const [selectedApplication, setSelectedApplication] =
+    useState<IApplication | null>(null);
 
   const handleViewDetails = (application: IApplication) => {
     setSelectedApplication(application);
@@ -267,10 +309,14 @@ const CandidateApplicationsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">My Job Applications</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          My Job Applications
+        </h1>
 
         {isLoading && (
-          <div className="text-center text-gray-600 py-10">Loading applications...</div>
+          <div className="text-center text-gray-600 py-10">
+            Loading applications...
+          </div>
         )}
         {error && (
           <div className="text-center text-red-500 py-10">
@@ -278,7 +324,10 @@ const CandidateApplicationsPage: React.FC = () => {
           </div>
         )}
         {!isLoading && !error && applications && (
-          <ApplicationList applications={applications} onViewDetails={handleViewDetails} />
+          <ApplicationList
+            applications={applications}
+            onViewDetails={handleViewDetails}
+          />
         )}
 
         <ApplicationDetailsModal
@@ -293,8 +342,7 @@ const CandidateApplicationsPage: React.FC = () => {
 
 export default CandidateApplicationsPage;
 
-
-// original 
+// original
 // import React from "react";
 // import { Separator } from "@/components/ui/separator";
 // import JobList from "./components/JobList";

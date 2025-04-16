@@ -1,9 +1,34 @@
 import { Request, Response } from "express";
+import * as grpc from "@grpc/grpc-js";
 import { IMachineTaskController } from "@core/interfaces/controllers/IMachineTaskController";
 import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
 
 class MachineTaskController implements IMachineTaskController{
   constructor(private machineTaskService: IMachineTaskService) {}
+
+  CreateMachineTask = async (
+      call: grpc.ServerUnaryCall<any, any>,
+      callback: grpc.sendUnaryData<any>
+    ) => {
+      try {
+        const { jobId, companyId } = call.request;
+  
+        if (!jobId || !companyId) throw new Error("Missing job id");
+  
+        console.log(`Generating machine test for job ${jobId}...`);
+  
+        let machineTest = await this.machineTaskService.createMachineTest(jobId, companyId);
+  
+        console.log("@@ machineTest : ", machineTest);
+  
+          return callback(null, { success: true });
+      } catch (error) {
+        console.log("Error creating aptitude test:", error);
+        callback({
+          code: grpc.status.INTERNAL,
+        });
+      }
+    };
 
   getMachineTaskByJobId = async (req: Request, res: Response) => {
     try {
@@ -39,6 +64,12 @@ class MachineTaskController implements IMachineTaskController{
       const taskDetails = await this.machineTaskService.fetchMachineTaskDetails(
         taskId
       );
+
+      console.log("@@ taskDetails : ", taskDetails);
+      
+      //@ts-ignore
+      await this.machineTaskService.startMachineTask(taskDetails?._id);
+      
       res.json({ success: true, task: taskDetails });
     } catch (error) {
       res
@@ -82,7 +113,7 @@ class MachineTaskController implements IMachineTaskController{
 
   submitProject = async (req: Request, res: Response) => {
     try {
-      const { taskId, repoUrl } = req.body;
+      const { taskId, repoUrl, jobId } = req.body;
 
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
@@ -96,7 +127,8 @@ class MachineTaskController implements IMachineTaskController{
       const result = await this.machineTaskService.submitMachineTask(
         userId,
         taskId,
-        repoUrl
+        repoUrl,
+        jobId
       );
 
       res.json(result);

@@ -75,7 +75,7 @@ export default function Home() {
             </CardContent>
             <CardFooter>
               <Link
-                href={`/job-seeker/machine-task/${jobId}/task/${task.id}`}
+                href={`/job-seeker/machine-task/${jobId}/task/${task._id}`}
                 className="w-full"
               >
                 <Button className="w-full">View Task Details</Button>
