@@ -36,6 +36,7 @@ const chatController: {
     chatService
     .startConversation(participants, jobId, companyName, logo)
     .then((conversation) => {
+      console.log("@@ &&&&&&&&&&&&&", companyName, logo)
       callback(null, {
         conversationId: conversation.id,
         message: "Conversation created successfully",

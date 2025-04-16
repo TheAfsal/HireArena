@@ -134,6 +134,8 @@ services:
       - MONGO_DB=db-mongo
       - DATABASE_URL=postgresql://postgres:root@db-postgres:5432/interview-mgmt
       - JOB_SERVER_URL=job-service:5015
+      - USER_SERVER_URL=user-service:5051
+      - CHAT_SERVER_URL=chat-service:5010
     networks:
       - app-network
 

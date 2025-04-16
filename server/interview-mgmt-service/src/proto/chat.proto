@@ -8,9 +8,9 @@ service ChatService {
 
 message CreateConversationRequest {
   repeated string participants = 1;
-  string jobId = 2;   
+  string jobId = 2;      
   string companyName = 3;
-  string logo = 4 ;         
+  string logo = 4 ;   
 }
 
 message CreateConversationResponse {

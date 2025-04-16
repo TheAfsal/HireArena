@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IInterviewService } from "@core/interfaces/services/IInterviewService";
-import { IsJobExist } from "@config/grpcClient";
+import { createConversation, GetCompaniesDetails, IsJobExist } from "@config/grpcClient";
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
 import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
 import { RoundStatus, RoundType } from "model/Interview";
@@ -79,10 +79,16 @@ class InterviewController implements IInterviewController {
         return;
       }
 
+      console.log(1);
+      
+      
       const jobDetails = await IsJobExist(jobId);
-
+      console.log(2);
+      
       if (!jobDetails) throw new Error("Job not found");
-
+      console.log(jobDetails);
+      console.log(3);
+      
       const application = await this.interviewService.applyForJob(
         jobId,
         userId,
@@ -91,18 +97,25 @@ class InterviewController implements IInterviewController {
           testOptions: JSON.parse(jobDetails.job.testOptions),
         }
       );
+      console.log(4);
+      
+      const companyId = jobDetails.job.companyId;
+      
+      const companyDetails = await GetCompaniesDetails([companyId]);
+      
+      console.log(5);
+      console.log(companyDetails);
+      console.log(6);
+      
+      await createConversation(
+        [userId, companyId],
+        jobId,
+        companyDetails[0].companyName,
+        companyDetails[0].logo
+      );
 
-      // const companyId = jobDetails.companyId;
-
-      // const companyDetails = await getCompaniesDetails([companyId]);
-
-      // await createConversation(
-      //   [userId, companyId],
-      //   jobId,
-      //   companyDetails[0].companyName,
-      //   companyDetails[0].logo
-      // );
-
+      console.log(6);
+      
       if (!application.state) {
         throw new Error("Job application failed");
       }

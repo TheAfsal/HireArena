@@ -38,12 +38,18 @@ export default function ChatApp() {
   };
 
   useEffect(() => {
+    console.log("@@ chat");
+    
     const newSocket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`, {
       auth: { token: getAuthToken() },
     });
 
     setSocket(newSocket);
 
+    newSocket.on("connect", () => {
+      console.log("Connected to chat server");
+    });
+    
     const fetchUsers = async () => {
       const response = await fetchMyChats();
       console.log("user chats", response.conversations);
@@ -54,9 +60,6 @@ export default function ChatApp() {
     };
     fetchUsers();
 
-    newSocket.on("connect", () => {
-      console.log("Connected to chat server");
-    });
 
     newSocket.on("newMessage", (message: Message) => {
       setMessages((prev) => ({

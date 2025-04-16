@@ -60,26 +60,34 @@ class CompanyService implements ICompanyService {
     companyIds: string[],
     callback: grpc.sendUnaryData<{ companies: any[] }>
   ): Promise<void> {
-    this.companyRepository
-      .findByIds(companyIds)
-      .then((details: ICompany[]) => {
-        if (details.length) {
-          console.log(details);
-          callback(null, { companies: details });
-        } else {
-          callback({
-            code: grpc.status.NOT_FOUND,
-            details: "Companies not found",
-          });
-        }
-      })
-      .catch((err: Error) => {
-        callback({
-          code: grpc.status.INTERNAL,
-          details: err.message,
+    try {
+      const details = await this.companyRepository.findByIds(companyIds);
+  
+      console.log("@@ ********************", details);
+  
+      if (!details.length) {
+        return callback({
+          code: grpc.status.NOT_FOUND,
+          details: "Companies not found",
         });
+      }
+  
+      const companies = details.map((company) => ({
+        id: company.id,
+        companyName: company.companyName,
+        location: company.location,
+        logo: company.logo,
+      }));
+  
+      callback(null, { companies });
+    } catch (err: any) {
+      callback({
+        code: grpc.status.INTERNAL,
+        details: err.message,
       });
+    }
   }
+  
 
   async verifyCompanyProfile(
     companyId: string,
