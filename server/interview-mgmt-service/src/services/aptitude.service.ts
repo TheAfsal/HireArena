@@ -71,6 +71,9 @@ class AptitudeService implements IAptitudeService {
 
     const lastState = application.state[application.state.length - 1];
 
+    console.log("@@lastState",lastState);
+    
+
     const isAptitudeRound =
       lastState?.roundType === "Aptitude Test" &&
       lastState.status === RoundStatus.Failed;
@@ -81,6 +84,9 @@ class AptitudeService implements IAptitudeService {
 
     const isWithinTimeLimit = diffInMinutes <= 31;
 
+    console.log(isAptitudeRound ,isWithinTimeLimit);
+    
+
     if (isAptitudeRound && isWithinTimeLimit) {
       const submit = new SubmitTest(this.questionsRepo, this.interviewRepo);
       let result = await submit.submitAptitudeTest(
@@ -90,8 +96,10 @@ class AptitudeService implements IAptitudeService {
       );
 
       console.log("@@ test result", result);
-
+      
       const storedResult = await this.aptitudeResultRepo.saveResults(result);
+      
+      console.log("@@ storedResult", storedResult);
 
       if (storedResult.status === RoundStatus.Completed)
         await this.interviewRepo.addAptitudeTestId(
@@ -140,7 +148,8 @@ class AptitudeService implements IAptitudeService {
           throw new Error("No pending test found to schedule next.");
         }
 
-        return await this.interviewRepo.addNextTest(interviewId, nextTest);
+        await this.interviewRepo.addNextTest(interviewId, nextTest);
+        return result;
       }
 
       return result;

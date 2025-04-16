@@ -1,5 +1,8 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { fetchPostedJobs } from "./job";
+import { fetchAllApplications } from "./interview";
+import { Job } from "../dashboard/components/types/job";
 
 // export async function fetchCompanies(): Promise<any> {
 //   try {
@@ -47,15 +50,13 @@ export async function fetchCompanies(
 
 export async function getEmployeesInCompany(): Promise<any> {
   try {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!");
-    
     const response = await axiosInstance.get(
       `/user-service/api/company/employees`
     );
 
     console.log(response.data);
 
-    return response.data
+    return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(
@@ -66,3 +67,30 @@ export async function getEmployeesInCompany(): Promise<any> {
   }
 }
 
+// export async function fetchDashboardData(): Promise<any> {
+//   return new Promise((res,rej)=>{
+//     Promise.all([fetchPostedJobs(),fetchAllApplications()]).then((response)=>{
+//       res(response);
+//     })
+//   })
+// }
+
+interface Application {
+  _id: string;
+  candidateId: string;
+  jobId: string;
+  state: { status: string; updatedAt: string }[];
+}
+
+export async function fetchDashboardData(): Promise<[Job[], Application[]]> {
+  try {
+    const [jobs, applications] = await Promise.all([
+      fetchPostedJobs(),
+      fetchAllApplications(),
+    ]);
+    //@ts-ignore
+    return [jobs, applications];
+  } catch (error) {
+    throw new Error("Failed to fetch dashboard data");
+  }
+}

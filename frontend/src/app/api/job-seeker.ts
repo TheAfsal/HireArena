@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { fetchMyApplications } from "./job";
 
 export async function fetchCandidates(): Promise<any> {
   try {
@@ -35,5 +36,32 @@ export async function updateJobSeekerStatus(id: string): Promise<any> {
     }
 
     throw new Error("Unknown error occurred");
+  }
+}
+
+// export async function fetchDashboardDataForCandidate(): Promise<any> {
+//   try {
+//     let response =  await fetchMyApplications();
+//     console.log(response);
+    
+//   } catch (error) {
+//     throw new Error("Failed to fetch dashboard data");
+//   }
+// }
+
+export async function fetchDashboardDataForCandidate(): Promise<any[]> {
+  try {
+    const response = await fetchMyApplications();
+    console.log(response);
+    
+    const data = response;
+    if (!Array.isArray(data)) {
+      console.warn("API response is not an array:", data);
+      return [];
+    }
+    return data;
+  } catch (error: unknown) {
+    console.error("Error fetching candidate applications:", error);
+    throw new Error("Failed to fetch candidate dashboard data");
   }
 }
