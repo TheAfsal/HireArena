@@ -316,7 +316,7 @@ export class InterviewService implements IInterviewService {
         let nextTest: Partial<IRoundStatus> | null = null;
         const now = new Date();
 
-        if((updatedInterview.state.length-1)===filteredArr.length){
+        if(updatedInterview.state.length===filteredArr.length){
           console.log("Interview Completed"); 
           return updatedInterview
         }else{
@@ -334,8 +334,6 @@ export class InterviewService implements IInterviewService {
           return await this.interviewRepo.addNextTest(interviewId, nextTest);
           
         }
-
-
 
       }
 

@@ -64,7 +64,6 @@ export default function ChatApp() {
     });
 
     newSocket.on("newMessage", (message: Message) => {
-      console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
       console.log(message);
       setMessages((prev) => ({
         ...prev,
