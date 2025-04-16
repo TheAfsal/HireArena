@@ -48,96 +48,120 @@ export class SocketManager {
         }
       });
 
-    this.io.on("connection", (socket: Socket) => {
-
-      socket.on("joinRoom", (roomId: string) => {
-        console.log(roomId + " joined");
-        console.log("socket.id : ", socket.id);
-
-        socket.join(roomId);
-        console.log(`${socket.id} joined room ${roomId}`);
-      });
-
-      socket.on(
-        "message",
-        async (data: { roomId: string; content: string }) => {
+      this.io.on("connection", (socket: Socket) => {
+        console.log(`User ${socket.userId} connected`);
+  
+        // Join a personal room for the user to receive notifications
+        socket.join(`user:${socket.userId}`);
+  
+        socket.on("joinRoom", (roomId: string) => {
+          console.log(`${socket.userId} joined room ${roomId}`);
+          socket.join(roomId);
+        });
+  
+        socket.on("message", async (data: { roomId: string; content: string }) => {
           const { roomId, content } = data;
-
-         try {
+  
+          try {
             const conversation = await this.chatService.getConversation(roomId);
-            
             if (!conversation) {
-                socket.emit("error", "Conversation not found");
-                return;
+              socket.emit("error", "Conversation not found");
+              return;
             }
-
-            
-            if (!socket.userId) return socket.emit("error", "Invalid user");
-            
+  
+            if (!socket.userId) {
+              socket.emit("error", "Invalid user");
+              return;
+            }
+  
             const message: IMessageDTO = {
-                conversationId: roomId,
-                senderId: socket.userId,
-                receiverId:
-                conversation.participants.find((m) => m !== socket.userId) ?? "",
-                content,
+              conversationId: roomId,
+              senderId: socket.userId,
+              receiverId: conversation.participants.find((m) => m !== socket.userId) ?? "",
+              content,
             };
   
             const savedMessage = await this.chatService.sendMessage(message);
-            console.log(savedMessage);
-            console.log(this.io);
-            this.io.to(roomId).emit("newMessage", savedMessage, (response) => {
-              console.log(response);
   
-              if (response === "success") {
-                console.log("Message was successfully sent to the room");
-              } else {
-                console.error("Failed to send message to the room");
+            // Emit to the conversation room (for users who have joined the room)
+            this.io.to(roomId).emit("newMessage", savedMessage);
+  
+            // Send notifications to both participants
+            const participants = conversation.participants;
+            participants.forEach((participantId) => {
+              if (participantId !== socket.userId) {
+                this.io.to(`user:${participantId}`).emit("notification", {
+                  conversationId: roomId,
+                  message: savedMessage,
+                  senderId: socket.userId,
+                });
               }
             });
-         } catch (error) {
-            console.log(error);
-            
-         }
-        }
-      );
-
-      socket.on(
-        "messageCompany",
-        async (data: { roomId: string; content: string }) => {
-          const { roomId, content } = data;
-
-          const conversation = await this.chatService.getConversation(roomId);
-          if (!conversation) {
-            socket.emit("error", "Conversation not found");
-            return;
+          } catch (error) {
+            console.error(error);
+            socket.emit("error", "Failed to send message");
           }
-
-          if (!socket.userId) return socket.emit("error", "Invalid user");
-
-          const companyId = await getCompanyIdByUserId(socket.userId);
-
-          const message: IMessageDTO = {
-            conversationId: roomId,
-            senderId: companyId,
-            receiverId:
-              conversation.participants.find((m) => m !== socket.userId) ?? "",
-            content,
-          };
-
-          const savedMessage = await this.chatService.sendMessage(message);
-          console.log(roomId);
-          this.io.to(roomId).emit("newMessage", savedMessage);
-        }
-      );
-
-      socket.on("chatHistory", async (roomId: string) => {
-        const messages = await this.chatService.getChatHistory(roomId);
-        socket.emit("chatHistory", messages);
-      });
-
-      socket.on("disconnect", () => {
-        console.log(`${socket.data.userId} disconnected`);
-      });
+        });
+  
+        socket.on("messageCompany", async (data: { roomId: string; content: string }) => {
+          const { roomId, content } = data;
+  
+          try {
+            const conversation = await this.chatService.getConversation(roomId);
+            if (!conversation) {
+              socket.emit("error", "Conversation not found");
+              return;
+            }
+  
+            if (!socket.userId) {
+              socket.emit("error", "Invalid user");
+              return;
+            }
+  
+            const companyId = await getCompanyIdByUserId(socket.userId);
+  
+            const message: IMessageDTO = {
+              conversationId: roomId,
+              senderId: companyId,
+              receiverId: conversation.participants.find((m) => m !== socket.userId) ?? "",
+              content,
+            };
+  
+            const savedMessage = await this.chatService.sendMessage(message);
+  
+            // Emit to the conversation room
+            this.io.to(roomId).emit("newMessage", savedMessage);
+  
+            // Send notifications to participants
+            const participants = conversation.participants;
+            participants.forEach((participantId) => {
+              if (participantId !== socket.userId) {
+                this.io.to(`user:${participantId}`).emit("notification", {
+                  conversationId: roomId,
+                  message: savedMessage,
+                  senderId: companyId,
+                });
+              }
+            });
+          } catch (error) {
+            console.error(error);
+            socket.emit("error", "Failed to send company message");
+          }
+        });
+  
+        socket.on("chatHistory", async (roomId: string) => {
+          try {
+            const messages = await this.chatService.getChatHistory(roomId);
+            socket.emit("chatHistory", messages);
+          } catch (error) {
+            console.error(error);
+            socket.emit("error", "Failed to fetch chat history");
+          }
+        });
+  
+        socket.on("disconnect", () => {
+          console.log(`User ${socket.userId} disconnected`);
+        });
     });
   }
 }
