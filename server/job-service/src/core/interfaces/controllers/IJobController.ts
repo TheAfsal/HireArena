@@ -7,6 +7,7 @@ export interface IJobController {
   getAllJobs(req: Request, res: Response): Promise<void>;
   getJob(req: Request, res: Response): Promise<void>;
   getAllJobsBrief(req: Request, res: Response): Promise<void>;
+  updateJob(req: Request, res: Response): Promise<void>;
   // applyJob(req: Request, res: Response): Promise<void>;
   // getAllApplications(req: Request, res: Response): Promise<void>;
   // getApplicationStatus(req: Request, res: Response): Promise<void>;

@@ -1,5 +1,6 @@
 import { IJob } from "@shared/types/job.types";
 import * as grpc from "@grpc/grpc-js";
+import { ServerJobData } from "@core/types/job.types";
 export interface IJobService {
   createJob(data: any, userId: string): Promise<any>;
 
@@ -28,4 +29,6 @@ export interface IJobService {
 
   fetchJobDetails (ids: string[], callback: grpc.sendUnaryData< any >): void
   getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
+
+  updateJob(id: string, data: Partial<ServerJobData>): Promise<Partial<IJob>>
 }

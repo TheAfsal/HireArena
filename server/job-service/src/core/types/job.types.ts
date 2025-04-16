@@ -50,3 +50,20 @@ export interface IJobResponse {
     name: string;
   }[];
 }
+
+export interface ServerJobData {
+  id?: string;
+  jobTitle?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  jobDescription?: string;
+  location?: string;
+  responsibilities?: string;
+  qualifications?: string;
+  niceToHave?: string;
+  benefits?: { title: string; description: string; icon: string }[];
+  employmentTypes?: { type: string }[];
+  categories?: { id: string }[];
+  requiredSkills?: { id: string }[];
+  testOptions?: { [key: string]: boolean };
+}

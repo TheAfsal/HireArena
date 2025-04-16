@@ -35,4 +35,9 @@ export interface IJobRepository {
 
   fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]>
   getAllJobsForAdmin(skip: number, take: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
+  update(id: string, data: Partial<IJob & {
+    employmentTypes?: { type: string }[];
+    categories?: { id: string }[];
+    requiredSkills?: { id: string }[];
+  }>): Promise<Partial<IJob>> 
 }

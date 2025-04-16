@@ -22,6 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import MainContent from "./components/mainContent";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 export interface JobDetails {
   id: string;
@@ -55,6 +57,7 @@ function Page() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const auth = useSelector((state: RootState) => state.auth);
 
   const {
     data: jobDetails,
@@ -125,6 +128,9 @@ function Page() {
     return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
   };
 
+  console.log("@ statusDetails", statusDetails);
+  console.log("@ {auth.role}", auth.role);
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 lg:py-12">
       {/* Header */}
@@ -164,7 +170,7 @@ function Page() {
             >
               <Share2 className="h-4 w-4" />
             </Button>
-            {jobDetails?.isApplied ? (
+            {statusDetails?.status !== false ? (
               <>
                 <Button disabled>Applied</Button>
                 <div className="flex flex-wrap gap-2">
@@ -181,13 +187,17 @@ function Page() {
                       variant="secondary"
                       className={getBadgeClass(statusDetails?.status)}
                     >
-                      {statusDetails?.status}
+                      {statusDetails?.state[
+                        statusDetails?.state.length - 1
+                      ]?.status?.toUpperCase()}
                     </Badge>
                   )}
                 </div>
               </>
             ) : (
-              <Button onClick={handleJobApply}>Apply Now</Button>
+              statusDetails?.message !== "not a job-seeker" && (
+                <Button onClick={handleJobApply}>Apply Now</Button>
+              )
             )}
           </div>
         </div>

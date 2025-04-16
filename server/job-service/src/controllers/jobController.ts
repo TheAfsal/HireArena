@@ -40,6 +40,16 @@ class JobController implements IJobController {
     }
   };
 
+  updateJob = async (req: Request, res: Response) => {
+    try {
+      const updatedJob = await this.jobService.updateJob(req.params.id, req.body);
+      res.json(updatedJob);
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+
   // getJobById = async (req: Request, res: Response) => {
   //   try {
   //     const job = await this.jobService.getJobById(req.params.id);

@@ -32,6 +32,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPostedJobs } from "@/app/api/job";
+import { useRouter } from "next/navigation";
 
 export type JobStatus = "Live" | "Closed";
 export type JobType = "Fulltime" | "Freelance";
@@ -78,22 +79,16 @@ export const columns: ColumnDef<Job>[] = [
       return <div>{categories[0].name}</div>;
     },
   },
-  // {
-  //   accessorKey: "skills",
-  //   header: "Skills",
-  //   cell: ({ row }) => {
-  //     //@ts-ignore
-  //     const skills = row.getValue("skills");
-  //     return <div>{requiredSkills[0].name}</div>;
-  //   },
-  // },
   {
     accessorKey: "createdAt",
     header: "Created At",
   },
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
+      const router = useRouter();
+      const jobId = row.original.id;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -102,8 +97,19 @@ export const columns: ColumnDef<Job>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Edit job</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push(`/jobs/${jobId}`)}
+            >
+              View details
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log("Editing job:", jobId);
+                router.push(`/panel/edit-job/${jobId}`);
+              }}
+            >
+              Edit job
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -158,13 +164,6 @@ export function JobList() {
     <div className="w-full">
       <div className="flex items-center justify-between px-10 pt-10">
         <h2 className="text-2xl font-bold">Job List</h2>
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-2 border rounded-lg p-2">
-            <Calendar className="h-4 w-4" />
-            <span>Jul 19 - Jul 25</span>
-          </div>
-          <Button variant="outline">Filters</Button>
-        </div>
       </div>
       <div className="rounded-md p-10">
         <Table>

@@ -185,9 +185,15 @@ class InterviewController implements IInterviewController {
 
   getApplicationStatus = async (req: Request, res: Response) => {
     try {
-      const { userId } = req.headers["x-user"]
+      const { userId,companyId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
+
+      if(companyId){
+        return res
+          .status(200)
+          .json({ status: false, message: "not a job-seeker" });
+      }  
 
       const jobId = req.params.id;
 

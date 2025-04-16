@@ -218,6 +218,44 @@ class JobRepository implements IJobRepository {
       },
     });
   }
+
+  async update(id: string, data: Partial<IJob & {
+    employmentTypes?: { type: string }[];
+    categories?: { id: string }[];
+    requiredSkills?: { id: string }[];
+  }>): Promise<Partial<IJob>> {
+    return this.prisma.job.update({
+      where: { id },
+      data: {
+        jobTitle: data.jobTitle,
+        salaryMin: data.salaryMin,
+        salaryMax: data.salaryMax,
+        location: data.location,
+        jobDescription: data.jobDescription,
+        responsibilities: data.responsibilities,
+        qualifications: data.qualifications,
+        niceToHave: data.niceToHave,
+        benefits: data.benefits,
+        testOptions: data.testOptions,
+        //@ts-ignore
+        employmentTypes: data.employmentTypes ? {
+          deleteMany: {},
+          create: data.employmentTypes.map((et) => ({ type: et.type })),
+        } : undefined,
+        categories: data.categories ? {
+          set: data.categories.map((cat) => ({ id: cat.id })),
+        } : undefined,
+        requiredSkills: data.requiredSkills ? {
+          set: data.requiredSkills.map((skill) => ({ id: skill.id })),
+        } : undefined,
+      },
+      include: {
+        employmentTypes: true,
+        categories: true,
+        requiredSkills: true,
+      },
+    });
+  }
   
 }
 

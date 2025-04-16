@@ -181,3 +181,34 @@ export async function fetchJobsFiltered(filters: any) {
 
   return response.data;
 }
+
+
+export async function fetchJobById(id: string): Promise<JobFormData> {
+  try {
+    const response = await axiosInstance.get(`/job-service/api/jobs/${id}`);
+    console.log("#", response.data);
+    
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Failed to fetch job"
+      );
+    }
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function updateJob(id: string, data: Partial<JobFormData>): Promise<void> {
+  try {
+    console.log(data);
+    await axiosInstance.patch(`/job-service/api/jobs/${id}`, data);
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Failed to update job"
+      );
+    }
+    throw new Error("Unknown error occurred");
+  }
+}

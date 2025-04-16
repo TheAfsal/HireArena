@@ -27,6 +27,7 @@ router.get("/filter", jobController.getFilteredJobs);
 // router.get("/apply/:id", jobController.getApplicationStatus);
 // router.get("/my-applications", jobController.getAllApplications);
 
+router.patch("/:id", jobController.updateJob);
 router.get("/:id", jobController.getJob);
 
 export default router;

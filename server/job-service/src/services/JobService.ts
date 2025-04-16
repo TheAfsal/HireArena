@@ -9,7 +9,7 @@ import { IJobService } from "@core/interfaces/services/IJobService";
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
 import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
 import { IJob, IJobApplication } from "@shared/types/job.types";
-import { IJobResponse } from "@core/types/job.types";
+import { IJobResponse, ServerJobData } from "@core/types/job.types";
 
 class JobService implements IJobService {
   private jobRepository: IJobRepository;
@@ -105,6 +105,12 @@ class JobService implements IJobService {
     
 
     return job;
+  }
+
+  async updateJob(id: string, data: Partial<ServerJobData>): Promise<Partial<IJob>> {
+    //@ts-ignore
+    const updatedJob = await this.jobRepository.update(id, data);
+    return updatedJob;
   }
 
   async getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }> {
