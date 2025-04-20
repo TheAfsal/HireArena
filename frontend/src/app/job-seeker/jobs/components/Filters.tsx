@@ -75,6 +75,20 @@ function Filters({
           ))}
         </select>
       </FilterSection>
+      
+      <FilterSection title="Skill">
+        <select
+          name="skill"
+          onChange={handleFilterChange}
+          className="w-full border rounded-md p-2"
+        >
+          <option value="">All</option>
+          <option value="Adobe">Adobe</option>
+          <option value="Figma">Figma</option>
+          <option value="React">React</option>
+          <option value="NodeJs">NodeJs</option>
+        </select>
+      </FilterSection>
 
       <FilterSection title="Location">
         <Input

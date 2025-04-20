@@ -157,6 +157,7 @@ class JobRepository implements IJobRepository {
     type?: string;
     category?: string;
     level?: string;
+    skill?: string;
     location?: string;
   }): Promise<Omit<IJob, "applications">[]> {
     const whereClause: any = { AND: [] };
@@ -187,6 +188,12 @@ class JobRepository implements IJobRepository {
     if (filters.category) {
       whereClause.AND.push({
         categories: { some: { name: filters.category } },
+      });
+    }
+
+    if (filters.skill) {
+      whereClause.AND.push({
+        requiredSkills: { some: { name: filters.skill } },
       });
     }
   
