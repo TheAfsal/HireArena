@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { IChatController } from "@core/interfaces/controllers/IVideoController";
-import { IChatService } from "@core/interfaces/services/IChatService";
 // import { IMessageDTO } from "@core/types/video.types";
 import { IUser } from "@core/types/IUser";
 import { TYPES } from "di/types";
@@ -18,7 +17,7 @@ declare global {
 
 @injectable()
 export class ChatController implements IChatController {
-  constructor(@inject(TYPES.VideoService) private VideoService: IChatService) {}
+  constructor(@inject(TYPES.VideoService) private VideoService) {}
 
   getUserConversations = async (req: Request, res: Response) => {
     try {

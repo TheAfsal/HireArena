@@ -3,7 +3,7 @@ import { IMessageRepository } from "@core/interfaces/repository/IMessageReposito
 import { IUserConversationsRepository } from "@core/interfaces/repository/IUserConversationRepository";
 import { IChatService } from "@core/interfaces/services/IChatService";
 import { IConversation, IMessage, IMessageDTO } from "@core/types/chat.types";
-import { TYPES } from "di/types";
+import { TYPES } from "@di/types";
 import { inject, injectable } from "inversify";
 
 @injectable()

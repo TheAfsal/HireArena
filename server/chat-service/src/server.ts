@@ -4,6 +4,9 @@ import { connectDB } from "@config/db";
 import server from "@config/grpc.server";
 import * as grpc from "@grpc/grpc-js";
 
+console.log(process.env.PORT);
+
+
 const PORT = process.env.PORT || 5009;
 
 app.listen(PORT, () => {

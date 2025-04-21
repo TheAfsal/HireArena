@@ -1,6 +1,6 @@
-import { IMessage } from "@core/types/video.types";
+// import { IMessage } from "@core/types/video.types";
 
-export interface IMessageRepository {
-  saveMessage(message: IMessage): Promise<IMessage>;
-  getMessagesByConversationId(conversationId: string): Promise<IMessage[]>;
-}
+// export interface IMessageRepository {
+//   saveMessage(message: IMessage): Promise<IMessage>;
+//   getMessagesByConversationId(conversationId: string): Promise<IMessage[]>;
+// }

@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const inversify_1 = require("inversify");
+const types_1 = require("./types");
+const subscription_controller_1 = __importDefault(require("../controllers/subscription.controller"));
+const subscription_service_1 = __importDefault(require("../services/subscription.service"));
+const subscription_repository_1 = __importDefault(require("../repositories/subscription.repository"));
+const admin_repository_1 = __importDefault(require("../repositories/admin.repository"));
+const admin_controller_1 = __importDefault(require("../controllers/admin.controller"));
+const jobSeeker_service_1 = __importDefault(require("../services/jobSeeker.service"));
+const prismaClient_1 = __importDefault(require("../config/prismaClient"));
+const container = new inversify_1.Container();
+container.bind(types_1.TYPES.AdminController).to(admin_controller_1.default);
+container.bind(types_1.TYPES.JobSeekerService).to(jobSeeker_service_1.default);
+container.bind(types_1.TYPES.AdminRepository).to(admin_repository_1.default);
+container.bind(types_1.TYPES.SubscriptionController).to(subscription_controller_1.default);
+container.bind(types_1.TYPES.SubscriptionService).to(subscription_service_1.default);
+container.bind(types_1.TYPES.SubscriptionRepository).to(subscription_repository_1.default);
+container.bind(types_1.TYPES.PrismaClient).toConstantValue(prismaClient_1.default);
+exports.default = container;

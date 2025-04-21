@@ -3,7 +3,7 @@ import { IChatController } from "@core/interfaces/controllers/IChatController";
 import { IChatService } from "@core/interfaces/services/IChatService";
 import { IMessageDTO } from "@core/types/chat.types";
 import { IUser } from "@core/types/IUser";
-import { TYPES } from "di/types";
+import { TYPES } from "@di/types";
 import { inject, injectable } from "inversify";
 import { Server, Socket } from "socket.io";
 import { getCompanyIdByUserId } from "@config/grpc.client";

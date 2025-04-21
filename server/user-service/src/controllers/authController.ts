@@ -399,10 +399,7 @@ class AuthController implements IAuthController {
     }
   };
 
-  whoAmI = async (
-    req: Request,
-    res: Response<IGenericResponse<{ role: string } | IError>>
-  ) => {
+  whoAmI = async (req: Request, res: Response) => {
     try {
       const { userId, role } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
@@ -410,9 +407,8 @@ class AuthController implements IAuthController {
 
       let details;
       console.log(role);
-      
-      if (!role) {
 
+      if (!role) {
         details = await this.profileService.getProfile(userId);
         console.log("@@ who am i: ", details);
         res.status(200).json({
@@ -426,7 +422,6 @@ class AuthController implements IAuthController {
           },
         });
       } else {
-
         details = await this.profileService.fetchEmployeeProfile(userId);
         console.log("@@ who am i - : ", details);
         res.status(200).json({
@@ -441,13 +436,13 @@ class AuthController implements IAuthController {
         });
       }
 
-      if (!details)
-        return res.status(500).json({
+      if (!details) {
+        res.status(500).json({
           status: "error",
           message: "User failed during identification",
         });
-
-
+        return;
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json({
@@ -458,10 +453,7 @@ class AuthController implements IAuthController {
     }
   };
 
-  forgotPassword = async (
-    req: Request,
-    res: Response
-  ) => {
+  forgotPassword = async (req: Request, res: Response) => {
     try {
       const { email } = req.body;
       console.log(email);
@@ -476,8 +468,8 @@ class AuthController implements IAuthController {
         return;
       }
 
-       await this.authService.forgotPassword(email);
-       res.status(200).json({
+      await this.authService.forgotPassword(email);
+      res.status(200).json({
         status: "success",
         message: "Email sent successfully",
       });
@@ -492,16 +484,13 @@ class AuthController implements IAuthController {
     }
   };
 
-  forgotPasswordUsingToken = async (
-    req: Request,
-    res: Response
-  ) => {
+  forgotPasswordUsingToken = async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
       const { newPassword } = req.body;
 
-       await this.authService.forgotPasswordUsingToken(token,newPassword);
-       res.status(200).json({
+      await this.authService.forgotPasswordUsingToken(token, newPassword);
+      res.status(200).json({
         status: "success",
         message: "Password updated successfully",
       });

@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const questions_repository_1 = __importDefault(require("../repositories/questions.repository"));
+const aptitude_service_1 = __importDefault(require("../services/aptitude.service"));
+const aptitude_controller_1 = __importDefault(require("../controllers/aptitude.controller"));
+const interview_repository_1 = __importDefault(require("../repositories/interview.repository"));
+const aptitudeTestResult_repository_1 = __importDefault(require("../repositories/aptitudeTestResult.repository"));
+const router = express_1.default.Router();
+const interviewRepo = new interview_repository_1.default();
+const questionRepo = new questions_repository_1.default();
+const aptitudeResultRepo = new aptitudeTestResult_repository_1.default();
+const aptitudeServer = new aptitude_service_1.default(questionRepo, interviewRepo, aptitudeResultRepo);
+const aptitudeController = new aptitude_controller_1.default(aptitudeServer);
+router.post("/submit", aptitudeController.submitTest);
+// router.get("/aptitude-result/:interviewId", aptitudeTestController.getAptitudeResult);
+exports.default = router;

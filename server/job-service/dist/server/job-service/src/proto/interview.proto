@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package interview;
+
+service InterviewService {
+  rpc CreateInterview (InterviewRequest) returns (InterviewResponse);
+  rpc CreateAptitudeTest (AptitudeTestRequest) returns (AptitudeTestResponse);
+  rpc CreateMachineTask (MachineTaskRequest) returns (MachineTaskResponse);
+  rpc IsJobExist (JobExistRequest) returns (JobExistResponse);
+  rpc FindJobIdsByCompanyId (FindJobsRequest) returns (FindJobsResponse);
+  rpc FetchJobDetailsById (FetchJobsRequest) returns (FetchJobsResponse);
+}
+
+message FetchJobsRequest {
+  repeated string jobIds = 1;
+}
+
+message FetchJobsResponse {
+  repeated JobDetails jobs = 1;
+}
+
+message FindJobsRequest {
+  string companyId = 1;
+}
+
+message FindJobsResponse {
+  repeated string jobIds = 1;
+}
+
+message JobExistRequest {
+  string jobId = 1;
+}
+
+message JobExistResponse {
+  Job job = 1;
+}
+
+message Job {
+  string id = 1;
+  string testOptions = 8;
+  string companyId = 11;
+}
+
+message InterviewRequest {
+  string applicationId = 1;
+  string jobId = 2;
+  string jobSeekerId = 3;
+}
+
+message InterviewResponse {
+  string interviewId = 1;
+  string status = 2;
+}
+
+message AptitudeTestRequest {
+  string jobId = 1;
+  string companyId = 2;
+}
+
+message AptitudeTestResponse {
+  bool success = 1;
+}
+
+message MachineTaskRequest {
+  string jobId = 1;
+  string companyId = 2;
+}
+
+message MachineTaskResponse {
+  bool success = 1;
+}
+
+message JobDetails {
+  string id = 1;
+  string jobTitle = 2;
+  int32 salaryMin = 3;
+  int32 salaryMax = 4;
+  string jobDescription = 5;
+  string responsibilities = 6;
+  string qualifications = 7;
+  string testOptions = 8; 
+  string niceToHave = 9;
+  string benefits = 10;   
+  string companyId = 11;
+  string createdAt = 12;  
+  string updatedAt = 13;  
+}

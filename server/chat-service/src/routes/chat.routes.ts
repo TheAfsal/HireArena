@@ -1,6 +1,6 @@
 import { IChatController } from "@core/interfaces/controllers/IChatController";
 import container from "di/container";
-import { TYPES } from "di/types";
+import { TYPES } from "@di/types";
 import express from "express";
 
 const router = express.Router();

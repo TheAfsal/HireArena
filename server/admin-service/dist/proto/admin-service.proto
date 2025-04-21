@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package adminService;
+
+service AdminService {
+  rpc GetSubscriptionPlanById(GetPlanRequest) returns (PlanResponse);
+}
+
+message GetPlanRequest {
+  string planId = 1;
+}
+
+message PlanResponse {
+  string id = 1;
+  string name = 2;
+  string price = 3;
+  int32 duration = 4;
+  string features = 5;
+}

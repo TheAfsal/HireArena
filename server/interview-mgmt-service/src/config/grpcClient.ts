@@ -1,6 +1,8 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
 const PROTO_PATH = path.join(__dirname, "../proto/interview.proto");
 const USER_PROTO_PATH = path.join(__dirname, "../proto/user.proto");

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package chat;
+
+service ChatService {
+  rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
+}
+
+message CreateConversationRequest {
+  repeated string participants = 1;
+  string jobId = 2;   
+  string companyName = 3;
+  string logo = 4 ;         
+}
+
+message CreateConversationResponse {
+  string conversationId = 1; 
+  string message = 2;
+}

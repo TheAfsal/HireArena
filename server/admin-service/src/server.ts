@@ -15,6 +15,6 @@ server.bindAsync(
   grpc.ServerCredentials.createInsecure(),
   () => {
     console.log(`🚀 gRPC Server running at port ${GRPC_PORT}`);
-    server.start();
+    // server.start();
   }
 );

@@ -1,26 +1,25 @@
-import { PrismaClient } from "@prisma/client";
-import { IDatabaseClient } from "../interfaces/IDatabaseClient";
+// import { PrismaClient } from "@prisma/client";
 
-class PrismaDatabaseClient implements IDatabaseClient {
-  private prisma: PrismaClient;
+// class PrismaDatabaseClient {
+//   private prisma: PrismaClient;
 
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
+//   constructor() {
+//     this.prisma = new PrismaClient();
+//   }
 
-  async findUnique(query: any): Promise<any> {
-    return await this.prisma.jobSeeker.findUnique(query);
-  }
+//   async findUnique(query: any): Promise<any> {
+//     return await this.prisma.jobSeeker.findUnique(query);
+//   }
 
-  async create(data: any): Promise<any> {
-    return await this.prisma.jobSeeker.create(data);
-  }
+//   async create(data: any): Promise<any> {
+//     return await this.prisma.jobSeeker.create(data);
+//   }
 
-  async findMany(query: any): Promise<any> {
-    return await this.prisma.jobSeeker.findMany(query);
-  }
+//   async findMany(query: any): Promise<any> {
+//     return await this.prisma.jobSeeker.findMany(query);
+//   }
 
-  // Add other methods as needed
-}
+//   // Add other methods as needed
+// }
 
-export default PrismaDatabaseClient;
+// export default PrismaDatabaseClient;

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc GetCompanyIdByUserId (GetCompanyIdRequest) returns (GetCompanyIdResponse);
+  rpc GetAllJobSeekers (Empty) returns (JobSeekerList);
+  rpc GetCompaniesDetails (CompaniesRequest) returns (CompaniesResponse);
+}
+
+message GetCompanyIdRequest {
+  string userId = 1; 
+}
+
+message GetCompanyIdResponse {
+  string companyId = 1; 
+}
+
+message Empty {}
+
+message JobSeeker {
+  string id = 1;
+  string fullName = 2;
+  string email = 3;
+  string image = 4;
+  bool status = 5;
+  string createdAt = 6;
+}
+
+message JobSeekerList {
+  repeated JobSeeker jobSeekers = 1;
+}
+
+message CompaniesRequest {
+  repeated string companyIds = 1;  
+}
+
+message CompanyDetails {
+  string id = 1;
+  string companyName = 2;
+  string location = 3;
+  string logo = 4;
+}
+
+message CompaniesResponse {
+  repeated CompanyDetails companies = 1;  
+}
+

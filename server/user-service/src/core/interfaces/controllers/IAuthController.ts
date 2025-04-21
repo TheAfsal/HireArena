@@ -44,7 +44,7 @@ export interface IAuthController {
   ): Promise<void>;
   whoAmI(
     req: Request,
-    res: Response<IGenericResponse<{ role: string } | IError>>
+    res: Response
   ): Promise<void>;
   forgotPasswordUsingToken (
     req: Request,

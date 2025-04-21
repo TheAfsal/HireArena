@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { Server, Socket } from "socket.io";
-import { TYPES } from "di/types";
+import { TYPES } from "@di/types";
 import { IChatService } from "@core/interfaces/services/IChatService";
 import { IMessageDTO } from "@core/types/chat.types";
 import { getCompanyIdByUserId } from "@config/grpc.client";

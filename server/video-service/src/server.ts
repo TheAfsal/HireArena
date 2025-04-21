@@ -1,9 +1,9 @@
 import express from "express";
 import http from "http";
 import { Server as SocketServer, Socket } from "socket.io";
-import { TYPES } from "./di/types";
-import container from "di/container";
-import { VideoCallService } from "@services/videoCall.service";
+// import { TYPES } from "./di/types";
+// import container from "di/container";
+// import { VideoCallService } from "@services/videoCall.service";
 import { connectDB } from "@config/db";
 import jwt from "jsonwebtoken";
 
@@ -13,9 +13,9 @@ const io = new SocketServer(httpServer, { cors: { origin: "*" } });
 
 const rooms = new Map();
 
-const videoCallService = container.get<VideoCallService>(
-  TYPES.VideoCallService
-);
+// const videoCallService = container.get<VideoCallService>(
+//   TYPES.VideoCallService
+// );
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -131,9 +131,9 @@ io.on("connection", (socket: Socket) => {
   // });
 // });
 
-const startServer = async () => {
-  await connectDB();
-  httpServer.listen(5013, () => {
+const startServer =  () => {
+  httpServer.listen(5013, async() => {
+    await connectDB();
     console.log("video-service running on port 5013");
   });
 };

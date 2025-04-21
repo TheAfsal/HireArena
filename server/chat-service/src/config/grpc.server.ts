@@ -1,11 +1,10 @@
 import { IChatService } from "@core/interfaces/services/IChatService";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { Request, Response } from "@workspace/proto/chatProto/chat.types";
 import container from "di/container";
 import { TYPES } from "di/types";
 
-const PROTO_PATH = require.resolve("@workspace/proto/chatProto/chat.proto");
+const PROTO_PATH = require.resolve("../proto/chat.proto");
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -21,13 +20,13 @@ const chatService = container.get<IChatService>(TYPES.ChatService);
 
 const chatController: {
   CreateConversation: (
-    call: grpc.ServerUnaryCall<Request, Response>,
-    callback: grpc.sendUnaryData<Response>
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
   ) => void;
 } = {
   CreateConversation: (
-    call: grpc.ServerUnaryCall<Request, Response>,
-    callback: grpc.sendUnaryData<Response>
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
   ) => {
     const { participants, jobId, companyName, logo } = call.request;
 

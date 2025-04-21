@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { Container } from "inversify";
 
-import { TYPES } from "./types";
+import { TYPES } from "@di/types";
 
 import { ChatController } from "@controllers/chat.controller";
 

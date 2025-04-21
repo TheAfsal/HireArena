@@ -1,13 +1,11 @@
-import "reflect-metadata";
 import express, { Application } from "express";
-import { Server } from "socket.io";
 import http from "http";
-import { IChatController } from "@core/interfaces/controllers/IChatController";
-import { TYPES } from "di/types";
-import jwt from "jsonwebtoken";
 import container from "di/container";
 import chatRoutes from "@routes/chat.routes";
 import { SocketManager } from "@services/socket.service";
+import { TYPES } from "@di/types";
+
+
 
 const app: Application = express();
 const server = http.createServer(app);
