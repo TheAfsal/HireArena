@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-service
+  template:
+    metadata:
+      labels:
+        app: file-service
+    spec:
+      containers:
+        - name: file-service
+          image: file-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5004
+          env:
+            - name: PORT
+              value: "5004"
+            - name: AWS_ACCESS_KEY
+              value: "AKIAUW4RBCVVXJIICSPE"
+            - name: AWS_SECRET_KEY
+              value: "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"
+            - name: AWS_REGION
+              value: "eu-north-1"
+            - name: AWS_BUCKET_NAME
+              value: "bucket-hirearena"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-service
+spec:
+  selector:
+    app: file-service
+  ports:
+    - name: grpc
+      port: 5004
+      targetPort: 5004

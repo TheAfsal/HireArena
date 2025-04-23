@@ -1,0 +1,24 @@
+{
+  "name": "@workspace/proto",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "exports": {
+    "./chatProto/chat.proto": "./src/chatProto/chat.proto",
+    "./chatProto/chat.types": "./src/chatProto/chat.types.ts",
+    "./jobProto/job.proto": "./src/jobProto/job.proto",
+    "./jobProto/job.types": "./src/jobProto/job.types.ts"
+  },
+  "files": [
+    "src/chatProto/chat.proto",
+    "src/chatProto/chat.types.ts",
+    "src/jobProto/job.proto",
+    "src/jobProto/job.types.ts"
+  ],
+  "types": "./src/chatProto/chat.types.ts"
+}

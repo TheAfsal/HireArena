@@ -1,0 +1,82 @@
+kubectl delete pod -l app=video-service
+Delete Images:
+bash
+
+Copy
+minikube image rm docker.io/library/video-service-image:latest
+minikube image rm docker.io/library/video-service:latest
+minikube image rm docker.io/library/hire_arena-video-service:latest
+If it fails:
+bash
+
+Copy
+eval $(minikube docker-env)
+docker rmi -f docker.io/library/video-service-image:latest
+docker rmi -f docker.io/library/video-service:latest
+docker rmi -f docker.io/library/hire_arena-video-service:latest
+eval $(minikube docker-env -u)
+Verify Deletion:
+bash
+
+Copy
+minikube image ls | grep video-service
+Expect no output.
+6. Rebuild video-service Image
+Build the correct video-service:latest image.
+
+Actions:
+
+Rebuild:
+bash
+
+Copy
+cd ~/web_dev/brototype/hire_arena
+eval $(minikube docker-env)
+docker-compose build video-service --no-cache
+eval $(minikube docker-env -u)
+Verify Image:
+bash
+
+Copy
+minikube image ls | grep video-service
+Expected:
+text
+
+Copy
+docker.io/library/video-service:latest
+7. Redeploy video-service
+Apply the deployment to use the new image.
+
+Actions:
+
+Redeploy:
+bash
+
+Copy
+kubectl delete -f video-service-deployment.yaml
+kubectl apply -f video-service-deployment.yaml
+Verify Pod:
+bash
+
+Copy
+kubectl get pods | grep video-service
+Expected:
+text
+
+Copy
+video-service-6fc5f54765-<new-hash>            1/1     Running   0          1m
+8. Check Logs
+Verify the env change and MongoDB connection.
+
+Actions:
+
+bash
+
+Copy
+kubectl logs video-service-6fc5f54765-<new-hash>
+Expected:
+text
+
+Copy
+MongoDB connected
+video-service running on port 5013

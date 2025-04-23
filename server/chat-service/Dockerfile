@@ -1,18 +1,36 @@
-FROM node:22-alpine
+# FROM node:22-alpine
+
+# WORKDIR /app
+
+# RUN corepack enable
+
+# COPY package*.json ./
+
+# COPY pnpm*.yaml ./
+
+# COPY ./server/chat-service/package.json /app/server/chat-service/package.json 
+
+# COPY ./shared/ /app/shared
+
+# RUN pnpm install
+
+FROM node:22
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-RUN corepack enable
-
 COPY package*.json ./
 
-COPY pnpm*.yaml ./
+RUN pnpm install 
 
-COPY ./server/chat-service/package.json /app/server/chat-service/package.json 
+COPY . .
 
-COPY ./shared/ /app/shared
+EXPOSE 5009
 
-RUN pnpm install
+EXPOSE 5010
+
+CMD ["npm", "run", "dev"]
 
 
 # FROM node:22-alpine AS build

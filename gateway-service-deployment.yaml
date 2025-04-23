@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: gateway-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: CLIENT_URL
+              value: "http://localhost:3000"
+            - name: USER_SERVER_URL
+              value: "user-service"
+            - name: JOB_SERVER_URL
+              value: "job-service"
+            - name: ADMIN_SERVER_URL
+              value: "admin-service"
+            - name: INTERVIEW_SERVER_URL
+              value: "interview-management-service"
+            - name: CHAT_SERVER_URL
+              value: "chat-service"
+            - name: ACCESS_TOKEN_SECRET
+              value: "your-access-token-secret"
+            - name: REFRESH_TOKEN_SECRET
+              value: "your-refresh-token-secret"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  type: NodePort
+  selector:
+    app: gateway-service
+  ports:
+    - port: 4000
+      targetPort: 4000
+      nodePort: 30080

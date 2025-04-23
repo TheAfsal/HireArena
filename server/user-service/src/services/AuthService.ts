@@ -12,7 +12,6 @@ import { IAdminRepository } from "@core/interfaces/repository/IAdminRepository";
 import { IEmployeeRepository } from "@core/interfaces/repository/IEmployeeRepository";
 import {
   IAdmin,
-  ICompany,
   IEmployee,
   IJobSeeker,
 } from "@shared/types/user.types";

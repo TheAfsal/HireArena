@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5000
+            - containerPort: 5051
+          env:
+            - name: PORT
+              value: "5000"
+            - name: FRONT_END_URL
+              value: "http://localhost:3000"
+            - name: DATABASE_URL
+              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer:true"
+            - name: DIRECT_URL
+              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+            - name: VERIFICATION_TOKEN_SECRET
+              value: "d13d23qwe341r342e23eqe32"
+            - name: ACCESS_TOKEN_SECRET
+              value: "your-access-token-secret"
+            - name: REFRESH_TOKEN_SECRET
+              value: "your-refresh-token-secret"
+            - name: GOOGLE_CLIENT_ID
+              value: "892370541918-tpo69pcvf47h0k3r5i2tm6mbj31t3vup.apps.googleusercontent.com"
+            - name: GOOGLE_CLIENT_SECRET
+              value: "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"
+            - name: GOOGLE_CALLBACK_URL
+              value: "http://localhost:5000/auth/google/callback"
+            - name: SESSION_SECRET
+              value: "your_secret_key"
+            - name: CLIENT_URL
+              value: "localhost"
+            - name: GATEWAY_URL
+              value: "gateway-service"
+            - name: FILE_SERVER_URL
+              value: "file-service"
+            - name: ADMIN_SERVER_URL
+              value: "admin-service"
+            - name: STRIPE_PUBLISH_KEY
+              value: "pk_test_51QsD8pJtvAld9KrEaCGt4OohObgN59tumaWYrxBhenHHJzguKP2n4bcKk2Q0xJRkBoLCG4OspvSDgtVQUhkfSPTV00zfNEiSSb"
+            - name: STRIPE_SECRET_KEY
+              value: "sk_test_51QsD8pJtvAld9KrEzbzfrvAvoMRYhUtAHznZmdggraojmTXGyAxPqkY34z4qNMBhRj78ValWRTCMBIVM1LnHa7Wm00rNDZpwy9"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+    - name: grpc
+      port: 5051
+      targetPort: 5051

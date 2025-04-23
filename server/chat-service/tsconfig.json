@@ -29,7 +29,8 @@
   "include": [
     "src/**/*.ts",
     "src/app.ts",
-    "src/server.ts"
+    "src/server.ts",
+    "src/core/types/socket.d.ts"
   ],
   "exclude": [
     "node_modules",

@@ -11,6 +11,7 @@ class CategoryRepository implements ICategoryRepository {
   }
 
   async create(data: ICategoryTypeInput): Promise<ICategoryType> {
+    console.log("@@ data while creating: ", data);
     return await this.prisma.categoryType.create({
       data,
     });

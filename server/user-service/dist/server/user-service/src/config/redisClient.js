@@ -4,10 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ioredis_1 = __importDefault(require("ioredis"));
-const redisClient = new ioredis_1.default({
-    host: 'redis',
-    port: 6379,
-});
+const redisClient = new ioredis_1.default('redis://default:g4VIKOlYMy1OzlxqvjwB4hSovk8gPY4p@redis-12701.crce179.ap-south-1-1.ec2.redns.redis-cloud.com:12701');
 // Check the connection to Redis
 redisClient.on('connect', () => {
     console.log('Connected to Redis!');

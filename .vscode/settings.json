@@ -12,5 +12,8 @@
             "--proto_path=${env.GOPATH}/src",
             "--java_out=gen/java"
         ]
-    }
+    },
+    "terminal.explorerKind": "external",
+    "terminal.integrated.defaultProfile.osx": "",
+    "terminal.integrated.defaultProfile.linux": null
 }

@@ -22,7 +22,7 @@ const refreshToken = async () => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: `http://${process.env.NEXT_PUBLIC_GATEWAY_URL}:4000`,
+  baseURL: `http://${process.env.NEXT_PUBLIC_GATEWAY_URL}`,
   headers: {
     "Content-Type": "application/json",
   },

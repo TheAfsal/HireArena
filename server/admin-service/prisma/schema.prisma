@@ -1,12 +1,127 @@
-datasource db {
-  provider = "postgresql" 
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id        String   @id
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+model Company {
+  id                  String                @id
+  companyName         String                @unique
+  website             String?
+  location            String?
+  employeeCount       String?
+  industry            String?
+  foundingDay         String?
+  foundingMonth       String?
+  foundingYear        String?
+  aboutCompany        String?
+  jobCategories       String[]
+  logo                String?
+  status              String
+  reject_reason       String?
+  Youtube             String?
+  LinkedIn            String?
+  Facebook            String?
+  Twitter             String?
+  Instagram           String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  CompanyEmployeeRole CompanyEmployeeRole[]
+  Invitation          Invitation[]
+}
+
+model CompanyEmployeeRole {
+  id        String      @id
+  userId    String      @unique
+  companyId String
+  role      CompanyRole
+  createdAt DateTime    @default(now())
+  updatedAt DateTime
+  Company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Employee  Employee    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
+
+model Employee {
+  id                  String               @id
+  name                String
+  email               String               @unique
+  password            String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime
+  CompanyEmployeeRole CompanyEmployeeRole?
+}
+
+model Invitation {
+  id        String      @id
+  email     String      @unique
+  companyId String
+  role      CompanyRole
+  token     String      @unique
+  message   String
+  expiredAt DateTime
+  createdAt DateTime    @default(now())
+  updatedAt DateTime
+  Company   Company     @relation(fields: [companyId], references: [id])
+}
+
+model JobSeeker {
+  id               String             @id
+  fullName         String
+  email            String             @unique
+  password         String
+  phone            String?
+  dob              DateTime?
+  gender           String?
+  image            String?
+  status           Boolean
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  UserSubscription UserSubscription[]
+}
+
+model Transaction {
+  id            String   @id
+  userId        String
+  amount        Float
+  status        String
+  paymentMethod String
+  paymentId     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@index([userId])
+}
+
+model UserSubscription {
+  id            String    @id
+  userId        String
+  planId        String
+  features      Json
+  startDate     DateTime  @default(now())
+  expiryDate    DateTime
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  transactionId String?
+  JobSeeker     JobSeeker @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
 
 model SubscriptionPlan {
   id        String   @id @default(uuid()) 
@@ -17,4 +132,13 @@ model SubscriptionPlan {
   status    String   @default("active") 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+enum CompanyRole {
+  OWNER
+  HR
+  MANAGER
+  INTERVIEWER
+  EMPLOYEE
 }

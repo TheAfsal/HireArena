@@ -1,5 +1,6 @@
 import express from "express";
 import http from "http";
+import dotenv from 'dotenv'
 import { Server as SocketServer, Socket } from "socket.io";
 // import { TYPES } from "./di/types";
 // import container from "di/container";
@@ -12,6 +13,7 @@ const httpServer = http.createServer(app);
 const io = new SocketServer(httpServer, { cors: { origin: "*" } });
 
 const rooms = new Map();
+dotenv.config()
 
 // const videoCallService = container.get<VideoCallService>(
 //   TYPES.VideoCallService
@@ -139,3 +141,4 @@ const startServer =  () => {
 };
 
 startServer();
+

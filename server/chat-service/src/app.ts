@@ -2,16 +2,21 @@ import express, { Application } from "express";
 import http from "http";
 import container from "di/container";
 import chatRoutes from "@routes/chat.routes";
+import dotenv from 'dotenv';
 import { SocketManager } from "@services/socket.service";
 import { TYPES } from "@di/types";
 
 
-
 const app: Application = express();
 const server = http.createServer(app);
-
+dotenv.config()
 const socketManager = container.get<SocketManager>(TYPES.SocketManager);
 socketManager.setupSocket(server);
+
+app.use("/api/chats", chatRoutes);
+
+export default server;
+
 
 // const io = new Server(server, {
 //   cors: {
@@ -49,13 +54,7 @@ socketManager.setupSocket(server);
 //     next(new Error("Invalid token"));
 //   }
 // });
-
-app.use("/api/chats", chatRoutes);
-
-
 // io.on("connection", (socket) => {
 //   console.log("New user connected: ----------------------------------------------", socket.id);
 //   chatController.registerEvents(socket);
 // });
-
-export default server;

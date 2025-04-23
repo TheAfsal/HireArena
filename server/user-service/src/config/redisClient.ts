@@ -1,9 +1,6 @@
 import Redis from 'ioredis';
 
-const redisClient = new Redis({
-  host: 'redis', 
-  port: 6379,        
-});
+const redisClient = new Redis('redis://default:g4VIKOlYMy1OzlxqvjwB4hSovk8gPY4p@redis-12701.crce179.ap-south-1-1.ec2.redns.redis-cloud.com:12701');
 
 // Check the connection to Redis
 redisClient.on('connect', () => {

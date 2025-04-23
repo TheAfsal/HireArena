@@ -1,15 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export async function connectDB() {
   try {
-    await mongoose.connect(`mongodb://${process.env.MONGO_DB}:27017/chat-app`, {
-      authSource: 'admin',
-      user: process.env.MONGO_INITDB_ROOT_USERNAME || 'root',
-      pass: process.env.MONGO_INITDB_ROOT_PASSWORD || 'root',
-    });
-    console.log('MongoDB connected');
+    console.log(process.env.MONGO_DB);
+    await mongoose.connect(process.env.MONGO_DB || "");
+    console.log("MongoDB connected");
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error("MongoDB connection error:", error);
     process.exit(1);
   }
 }
