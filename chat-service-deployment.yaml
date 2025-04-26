@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: chat-service
-          image: chat-service:latest
-          imagePullPolicy: Never
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/chat-service
+          imagePullPolicy: Always
           ports:
             - containerPort: 5009
             - containerPort: 5010

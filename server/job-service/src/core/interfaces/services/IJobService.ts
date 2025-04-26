@@ -20,7 +20,13 @@ export interface IJobService {
 
   getCompanyJobs(companyId: string): Promise<any[]>;
 
-  fetchFilteredJobs(filters: any): Promise<any[]>;
+  // fetchFilteredJobs(filters: any): Promise<any[]>;
+  fetchFilteredJobs(filters: any): Promise<{
+    jobs: Omit<IJob, "applications">[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }>
 
   isJobExist(
     id: string,

@@ -1,14 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import JobList from "./components/JobList";
 import { Separator } from "@/components/ui/separator";
 import SearchBar from "./components/SearchBar";
 import Filters from "./components/Filters";
 
 const Page = () => {
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({}); // Base filters from Filters component
   const [searchQuery, setSearchQuery] = useState("");
+  const [combinedFilters, setCombinedFilters] = useState({}); // Filters + searchQuery
+
+  // Update combinedFilters whenever filters or searchQuery changes
+  useEffect(() => {
+    setCombinedFilters({ ...filters, searchQuery });
+  }, [filters, searchQuery]);
 
   const handleApplyFilters = (selectedFilters: any) => {
     setFilters(selectedFilters);
@@ -23,7 +29,7 @@ const Page = () => {
       <SearchBar onSearch={(query) => setSearchQuery(query)} />
       <div className="py-8 flex gap-8">
         <Filters onApplyFilters={handleApplyFilters} />
-        <JobList filters={{ ...filters, searchQuery }} />
+        <JobList filters={combinedFilters} />
       </div>
     </div>
   );

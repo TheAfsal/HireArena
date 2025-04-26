@@ -67,3 +67,14 @@ export interface ServerJobData {
   requiredSkills?: { id: string }[];
   testOptions?: { [key: string]: boolean };
 }
+
+export interface JobFilters {
+  searchQuery?: string;
+  type?: EmploymentType; // Use enum instead of string
+  category?: string;
+  level?: string;
+  skill?: string;
+  location?: string;
+  page?: string;
+  pageSize?: string;
+}

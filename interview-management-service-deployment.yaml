@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: interview-management-service
-          image: interview-management-service:latest
-          imagePullPolicy: Never
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service
+          imagePullPolicy: Always
           ports:
             - containerPort: 5006
             - containerPort: 5007

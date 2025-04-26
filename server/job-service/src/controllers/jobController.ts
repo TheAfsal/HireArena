@@ -238,12 +238,29 @@ class JobController implements IJobController {
   getFilteredJobs = async (req: Request, res: Response) => {
     try {
       const filters = req.query;
-      const jobs = await this.jobService.fetchFilteredJobs(filters);
-      res.json(jobs);
+      const result = await this.jobService.fetchFilteredJobs(filters);
+      res.json({
+        success: true,
+        data: result.jobs,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: Math.ceil(result.total / result.pageSize)
+        }
+      });
     } catch (error) {
       console.error("Error fetching jobs:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
+    // try {
+    //   const filters = req.query;
+    //   const jobs = await this.jobService.fetchFilteredJobs(filters);
+    //   res.json(jobs);
+    // } catch (error) {
+    //   console.error("Error fetching jobs:", error);
+    //   res.status(500).json({ message: "Internal Server Error" });
+    // }
   };
 
   getCompanyJobs = async (req: Request, res: Response) => {

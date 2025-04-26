@@ -23,6 +23,12 @@ const NavigationBar = () => {
     console.log(auth.token);
   }, [auth]);
 
+  const handleLogout = () => {
+    setLoadingState(true)
+    dispatch(logout());
+    router.push("/login")
+  };
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4">
@@ -47,7 +53,7 @@ const NavigationBar = () => {
             {loadingState ? (
               <div>Loading...</div>
             ) : auth.token ? (
-              <Button onClick={() => dispatch(logout())}>Log out</Button>
+              <Button onClick={handleLogout}>Log out</Button>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => router.push("/login")}>

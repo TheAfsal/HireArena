@@ -1,40 +1,40 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: hirearena-ingress
-  annotations:
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-    ingressClassName: nginx
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: hirearena.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: gateway-service
-                port:
-                  number: 4000
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: hirearena-ingress
+#   annotations:
+#     # nginx.ingress.kubernetes.io/rewrite-target: /
+#     ingressClassName: nginx
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: hirearena.local
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: gateway-service
+#                 port:
+#                   number: 4000
 
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: hello-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: hello.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: hello-service
-            port:
-              number: 80
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: hello-ingress
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   rules:
+#   - host: hello.local
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: hello-service
+#             port:
+#               number: 80

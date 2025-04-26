@@ -240,6 +240,24 @@ class InterviewController implements IInterviewController {
     }
   };
 
+  getJobApplications = async (req: Request, res: Response) => {
+    try {
+
+      const { id } = req.query
+      
+      const applications = await this.interviewService.getJobApplications( id );
+
+      console.log("@@ companies all application", applications);
+
+      res.status(200).json(applications);
+      return;
+    } catch (error) {
+      console.log("@@ Error fetching job applications by Company:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+      return;
+    }
+  };
+
   getApplicationsCandidate = async (req: Request, res: Response) => {
     try {
       const { userId } = req.headers["x-user"]

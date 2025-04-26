@@ -25,26 +25,6 @@ export class InterviewService implements IInterviewService {
     private employeeInterviewsRepo: IEmployeeInterviewsRepository
   ) {}
 
-  // async fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string> {
-  //   return this.interviewRepository.getAptitudeQuestions(interviewId);
-  // }
-
-  // async fetchAppliedJobStatus(jobId: string, userId: string): Promise<string> {
-  //   const interview =
-  //     await this.interviewRepository.getInterviewStatusByApplication(
-  //       jobId,
-  //       userId
-  //     );
-
-  //   if (!interview) {
-  //     throw new Error("No interview found for this application.");
-  //   }
-
-  //   return interview.status;
-  // }
-
-  // Making changes
-
   async applyForJob(
     jobId: string,
     jobSeekerId: string,
@@ -126,6 +106,14 @@ export class InterviewService implements IInterviewService {
     console.log("@@ job ids from job-server ", jobs);
 
     return await this.interviewRepo.findApplicationByJobId(jobs);
+  }
+
+  async getJobApplications(
+    jobId: string
+  ): Promise<IInterview[]> {
+    console.log("@@ ",jobId);
+    
+    return await this.interviewRepo.findApplicationByJobId([jobId]);
   }
 
   async getApplicationsCandidate(userId: string): Promise<IInterviewWithJob[]> {
@@ -342,31 +330,6 @@ export class InterviewService implements IInterviewService {
         `Failed to submit video interview: ${(error as Error).message}`
       );
     }
-
-    // async getCompanyDetailsById(
-    //   companyIds: string[],
-    //   callback: grpc.sendUnaryData<{ companies: any[] }>
-    // ): Promise<void> {
-    //   this.companyRepository
-    //     .findByIds(companyIds)
-    //     .then((details: ICompany[]) => {
-    //       if (details.length) {
-    //         console.log(details);
-    //         callback(null, { companies: details });
-    //       } else {
-    //         callback({
-    //           code: grpc.status.NOT_FOUND,
-    //           details: "Companies not found",
-    //         });
-    //       }
-    //     })
-    //     .catch((err: Error) => {
-    //       callback({
-    //         code: grpc.status.INTERNAL,
-    //         details: err.message,
-    //       });
-    //     });
-    // }
   }
 }
 

@@ -251,8 +251,17 @@ class JobService implements IJobService {
     return await this.jobRepository.getJobsByCompany(companyId);
   }
 
-  async fetchFilteredJobs(filters: any): Promise<Omit<IJob, "applications">[]> {
-    return await this.jobRepository.getFilteredJobs(filters);
+  // async fetchFilteredJobs(filters: any): Promise<Omit<IJob, "applications">[]> {
+  //   return await this.jobRepository.getFilteredJobs(filters);
+  // }
+
+  async fetchFilteredJobs(filters: any): Promise<{
+    jobs: Omit<IJob, "applications">[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> {
+    return this.jobRepository.getFilteredJobs(filters);
   }
 
   // async getCompanyByJobId(jobId: string): JobDetails {

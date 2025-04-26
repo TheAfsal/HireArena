@@ -17,6 +17,5 @@ export interface IInterviewService {
   getApplicationsCandidate( userId: string ): Promise<IInterview[]>
   getScheduleInterviews(userId: string): Promise<IScheduledInterview[]>
   submitVideoInterview( interviewId: string, candidateId: string, employeeId: string, remarks: string, status: RoundStatus ): Promise<IInterview>
-  // fetchAptitudeQuestions(interviewId: string): Promise<AptitudeTestQuestion[] | string>;
-  // fetchAppliedJobStatus(jobId: string, userId: string): Promise<string>;
+  getJobApplications( jobId: string ): Promise<IInterview[]>
 }

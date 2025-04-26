@@ -41,7 +41,6 @@ interface TestResult {
   results: Result[];
 }
 
-// Results Popup Component
 function ResultsPopup({
   result,
   onClose,
@@ -62,7 +61,7 @@ function ResultsPopup({
         }
         return prev - 1;
       });
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(timer);
   }, [router]);
@@ -149,9 +148,9 @@ function ResultsPopup({
         </div>
         <AlertDialogFooter className="mt-6">
           <div className="flex w-full items-center justify-between">
-            <span className="text-sm text-muted-foreground">
+            {/* <span className="text-sm text-muted-foreground">
               Redirecting to home in {timeLeft} seconds...
-            </span>
+            </span> */}
             <Button onClick={handleSkip}>Go to Home Now</Button>
           </div>
         </AlertDialogFooter>

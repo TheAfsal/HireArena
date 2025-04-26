@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { fetchJobCategory } from "@/app/api/skills";
 import { CategoryType } from "@/app/admin/manage/components/category-type";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 function Filters({
   onApplyFilters,
@@ -18,6 +19,7 @@ function Filters({
     category: "",
     location: "",
     level: "",
+    skill: ""
   });
 
   const handleFilterChange = (
@@ -27,7 +29,7 @@ function Filters({
   };
 
   const applyFilters = () => {
-    onApplyFilters(selectedFilters);
+    onApplyFilters(selectedFilters ); 
   };
 
   useEffect(() => {
@@ -36,8 +38,7 @@ function Filters({
         const response = await fetchJobCategory();
         setCategories(response);
       } catch (err) {
-        //@ts-ignore
-        console.error(err.message);
+        console.error((err as Error).message);
       }
     };
 
@@ -75,7 +76,7 @@ function Filters({
           ))}
         </select>
       </FilterSection>
-      
+
       <FilterSection title="Skill">
         <select
           name="skill"
@@ -86,7 +87,7 @@ function Filters({
           <option value="Adobe">Adobe</option>
           <option value="Figma">Figma</option>
           <option value="React">React</option>
-          <option value="NodeJs">NodeJs</option>
+          <option value="Node">NodeJs</option>
         </select>
       </FilterSection>
 
@@ -100,7 +101,10 @@ function Filters({
         />
       </FilterSection>
 
-      <Button onClick={applyFilters} className="bg-blue-500 text-white w-full">
+      <Button
+        onClick={applyFilters}
+        className="bg-blue-500 text-white w-full"
+      >
         Apply Filters
       </Button>
     </div>
@@ -128,6 +132,25 @@ function FilterSection({
 }
 
 export default Filters;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // "use client";

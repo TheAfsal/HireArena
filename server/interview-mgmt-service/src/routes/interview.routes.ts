@@ -6,8 +6,6 @@ import AptitudeService from "@services/aptitude.service";
 import QuestionRepository from "@repositories/questions.repository";
 import AptitudeTestResultRepository from "@repositories/aptitudeTestResult.repository";
 import EmployeeInterviewsRepository from "@repositories/EmployeeInterviewsRepository";
-// import CandidateResponseRepository from "@repositories/candidateResponse.repository";
-// import { InterviewRoundRepository } from "@repositories/interviewRound.repository";
 
 const router = express.Router();
 
@@ -24,24 +22,15 @@ const interviewController = new InterviewController(
   aptitudeServer
 );
 
-// const responseRepo = new CandidateResponseRepository();
-// const interviewRoundRepo = new InterviewRoundRepository();
-// const submitAptitudeTest = new SubmitAptitudeTest(interviewRepo, responseRepo,interviewRoundRepo);
-
-// const aptitudeTestService = new AptitudeTestService(submitAptitudeTest,responseRepo,interviewRepo,interviewRoundRepo);
-// const aptitudeTestController = new AptitudeTestController(aptitudeTestService);
-
 router.get("/", interviewController.getApplicationsCandidate);
 router.post("/apply", interviewController.applyJob);
 router.get("/schedule", interviewController.fetchScheduleInterviews);
 router.post("/schedule", interviewController.scheduleInterview);
 router.get("/status/:id", interviewController.getApplicationStatus);
 router.get("/company-applications", interviewController.getAllApplications);
+router.get("/job-applications", interviewController.getJobApplications);
 router.post("/submit-video-call-interview", interviewController.submitVideoInterview);
 router.get("/:interviewId", interviewController.getInterview);
-
-
-// router.get("/status/:jobId", interviewController.fetchAppliedJobStatus);
 
 
 export default router;

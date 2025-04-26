@@ -1,5 +1,5 @@
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
-import { IJobCreateInput, IJobResponse } from "@core/types/job.types";
+import { IJobCreateInput, IJobResponse, JobFilters } from "@core/types/job.types";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { IJob } from "@shared/types/job.types";
 
@@ -62,7 +62,11 @@ class JobRepository implements IJobRepository {
     });
   }
 
-  async getAllJobsForAdmin(skip: number, take: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }> {
+  async getAllJobsForAdmin(
+    skip: number,
+    take: number,
+    search: string
+  ): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }> {
     const where = search
       ? {
           OR: [
@@ -87,12 +91,14 @@ class JobRepository implements IJobRepository {
       //@ts-ignore
       this.prisma.job.count({ where }),
     ]);
-    
+
     //@ts-ignore
     return { jobs, total };
   }
 
-  async fetchJobsByIds(jobIds: string[]): Promise<Omit<IJob, "applications">[]> {
+  async fetchJobsByIds(
+    jobIds: string[]
+  ): Promise<Omit<IJob, "applications">[]> {
     const jobs = await this.prisma.job.findMany({
       where: {
         id: {
@@ -105,7 +111,7 @@ class JobRepository implements IJobRepository {
         requiredSkills: true,
       },
     });
-  
+
     return jobs;
   }
 
@@ -152,85 +158,190 @@ class JobRepository implements IJobRepository {
     });
   }
 
-  async getFilteredJobs(filters: {
-    searchQuery?: string;
-    type?: string;
-    category?: string;
-    level?: string;
-    skill?: string;
-    location?: string;
-  }): Promise<Omit<IJob, "applications">[]> {
-    const whereClause: any = { AND: [] };
-  
-    // Search in job title or description
-    if (filters.searchQuery) {
-      whereClause.AND.push({
-        OR: [
-          { jobTitle: { contains: filters.searchQuery, mode: "insensitive" } },
-          {
-            jobDescription: {
-              contains: filters.searchQuery,
-              mode: "insensitive",
-            },
-          },
-        ],
-      });
-    }
-  
-    // Filter by employment type
-    if (filters.type) {
-      whereClause.AND.push({
-        employmentTypes: { some: { type: filters.type } },
-      });
-    }
-  
-    // Filter by category
-    if (filters.category) {
-      whereClause.AND.push({
-        categories: { some: { name: filters.category } },
-      });
+  async getFilteredJobs(filters: JobFilters): Promise<{
+    jobs: Omit<IJob, "applications">[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> {
+    const {
+      searchQuery,
+      type,
+      category,
+      level,
+      skill,
+      location,
+      page = "1",
+      pageSize = "10"
+    } = filters;
+
+    // Parse pagination parameters
+    const pageNum = parseInt(page, 10) || 1;
+    const pageSizeNum = parseInt(pageSize, 10) || 10;
+    const skip = (pageNum - 1) * pageSizeNum;
+
+    // Build where clause
+    const where: Prisma.JobWhereInput = {};
+
+    if (searchQuery) {
+      where.OR = [
+        { jobTitle: { contains: searchQuery, mode: "insensitive" } },
+        { jobDescription: { contains: searchQuery, mode: "insensitive" } }
+      ];
     }
 
-    if (filters.skill) {
-      whereClause.AND.push({
-        requiredSkills: { some: { name: filters.skill } },
-      });
+    if (type) {
+      where.employmentTypes = { some: { type: { equals: type } } }; // Use enum filter
     }
-  
-    // Filter by level (e.g. Junior, Mid, Senior)
-    if (filters.level) {
-      whereClause.AND.push({ level: filters.level });
+
+    if (category) {
+      where.categories = { some: { name: { equals: category } } };
     }
-  
-    // Filter by location (case-insensitive match)
-    if (filters.location) {
-      whereClause.AND.push({
-        location: {
-          contains: filters.location,
-          mode: "insensitive",
+
+    if (skill) {
+      where.requiredSkills = { some: { name: { equals: skill } } };
+    }
+
+    if (level) {
+      where.qualifications = { contains: level, mode: "insensitive" };
+    }
+
+    if (location) {
+      where.location = { contains: location, mode: "insensitive" };
+    }
+
+    console.log("@@ whereClause:", JSON.stringify(where, null, 2));
+
+    // Fetch jobs and total count
+    const [jobs, total] = await Promise.all([
+      this.prisma.job.findMany({
+        where,
+        select: {
+          id: true,
+          jobTitle: true,
+          salaryMin: true,
+          salaryMax: true,
+          jobDescription: true,
+          location: true,
+          responsibilities: true,
+          qualifications: true,
+          testOptions: true,
+          niceToHave: true,
+          benefits: true,
+          companyId: true,
+          createdAt: true,
+          updatedAt: true,
+          employmentTypes: {
+            select: { type: true }
+          },
+          categories: {
+            select: { name: true }
+          },
+          requiredSkills: {
+            select: { name: true }
+          }
         },
-      });
-    }
-  
-    if (whereClause.AND.length === 0) {
-      delete whereClause.AND;
-    }
-  
-    return await this.prisma.job.findMany({
-      where: whereClause,
-      include: {
-        employmentTypes: true,
-        categories: true,
-        requiredSkills: true,
-      },
-    });
+        skip,
+        take: pageSizeNum
+      }),
+      this.prisma.job.count({ where })
+    ]);
+
+    return {
+      //@ts-ignore
+      jobs,
+      total,
+      page: pageNum,
+      pageSize: pageSizeNum
+    };
   }
 
-  async update(id: string, data: Partial<IJob & {
-    employmentTypes?: { type: string }[];
-    categories?: { id: string }[];
-    requiredSkills?: { id: string }[];
-  }>): Promise<Partial<IJob>> {
+  // async getFilteredJobs(filters: {
+  //   searchQuery?: string;
+  //   type?: string;
+  //   category?: string;
+  //   level?: string;
+  //   skill?: string;
+  //   location?: string;
+  // }): Promise<Omit<IJob, "applications">[]> {
+  //   const whereClause: any = { AND: [] };
+
+  //   // Search in job title or description
+  //   if (filters.searchQuery) {
+  //     whereClause.AND.push({
+  //       OR: [
+  //         { jobTitle: { contains: filters.searchQuery, mode: "insensitive" } },
+  //         {
+  //           jobDescription: {
+  //             contains: filters.searchQuery,
+  //             mode: "insensitive",
+  //           },
+  //         },
+  //       ],
+  //     });
+  //   }
+
+  //   // Filter by employment type
+  //   if (filters.type) {
+  //     whereClause.AND.push({
+  //       employmentTypes: { some: { type: filters.type } },
+  //     });
+  //   }
+
+  //   // Filter by category
+  //   if (filters.category) {
+  //     whereClause.AND.push({
+  //       categories: { some: { name: filters.category } },
+  //     });
+  //   }
+
+  //   if (filters.skill) {
+  //     whereClause.AND.push({
+  //       requiredSkills: { some: { name: filters.skill } },
+  //     });
+  //   }
+
+  //   // Filter by level (e.g. Junior, Mid, Senior)
+  //   if (filters.level) {
+  //     whereClause.AND.push({ level: filters.level });
+  //   }
+
+  //   // Filter by location (case-insensitive match)
+  //   if (filters.location) {
+  //     whereClause.AND.push({
+  //       location: {
+  //         contains: filters.location,
+  //         mode: "insensitive",
+  //       },
+  //     });
+  //   }
+
+  //   console.log("@@ whereClause: ", whereClause);
+
+  //   if (whereClause.AND.length === 0) {
+  //     delete whereClause.AND;
+  //   }
+
+  //   return await this.prisma.job.findMany({
+  //     where: whereClause,
+  //     include: {
+  //       employmentTypes: true,
+  //       categories: true,
+  //       requiredSkills: true,
+  //     },
+  //   });
+  // }
+
+  async update(
+    id: string,
+    data: Partial<
+      IJob & {
+        employmentTypes?: { type: string }[];
+        categories?: { id: string }[];
+        requiredSkills?: { id: string }[];
+      }
+    >
+  ): Promise<Partial<IJob>> {
     return this.prisma.job.update({
       where: { id },
       data: {
@@ -245,16 +356,22 @@ class JobRepository implements IJobRepository {
         benefits: data.benefits,
         testOptions: data.testOptions,
         //@ts-ignore
-        employmentTypes: data.employmentTypes ? {
-          deleteMany: {},
-          create: data.employmentTypes.map((et) => ({ type: et.type })),
-        } : undefined,
-        categories: data.categories ? {
-          set: data.categories.map((cat) => ({ id: cat.id })),
-        } : undefined,
-        requiredSkills: data.requiredSkills ? {
-          set: data.requiredSkills.map((skill) => ({ id: skill.id })),
-        } : undefined,
+        employmentTypes: data.employmentTypes
+          ? {
+              deleteMany: {},
+              create: data.employmentTypes.map((et) => ({ type: et.type })),
+            }
+          : undefined,
+        categories: data.categories
+          ? {
+              set: data.categories.map((cat) => ({ id: cat.id })),
+            }
+          : undefined,
+        requiredSkills: data.requiredSkills
+          ? {
+              set: data.requiredSkills.map((skill) => ({ id: skill.id })),
+            }
+          : undefined,
       },
       include: {
         employmentTypes: true,
@@ -263,7 +380,6 @@ class JobRepository implements IJobRepository {
       },
     });
   }
-  
 }
 
 export default JobRepository;

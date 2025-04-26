@@ -161,6 +161,26 @@ export async function fetchAllApplications(): Promise<IInterview[]> {
   }
 }
 
+export async function fetchJobApplications(jobId:string): Promise<IInterview[]> {
+  try {
+    const response = await axiosInstance.get(
+      `/interview-mgmt-service/api/interviews/job-applications?id=${jobId}`
+    );
+
+    console.log("@@ company all applications ", response.data);
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
 export async function scheduleInterview(form: ScheduleForm): Promise<any> {
   try {
     console.log(form);

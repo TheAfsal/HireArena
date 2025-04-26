@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
   const [query, setQuery] = useState("");
@@ -22,9 +23,18 @@ function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
             className="pl-10"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
           />
         </div>
-        <Button size="sm" className="px-8" onClick={handleSearch}>
+        <Button
+          size="sm"
+          className="px-8"
+          onClick={handleSearch}
+        >
           Search
         </Button>
       </div>

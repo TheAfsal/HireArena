@@ -1,0 +1,279 @@
+aws ec2 create-vpc --cidr-block 10.0.0.0/16
+{
+    "Vpc": {
+        "OwnerId": "324037317995",
+        "InstanceTenancy": "default",
+        "Ipv6CidrBlockAssociationSet": [],
+        "CidrBlockAssociationSet": [
+            {
+                "AssociationId": "vpc-cidr-assoc-00128168f0fda2e11",
+                "CidrBlock": "10.0.0.0/16",
+                "CidrBlockState": {
+                    "State": "associated"
+                }
+            }
+        ],
+        "IsDefault": false,
+        "VpcId": "vpc-0712b11c9d1f9233f",
+        "State": "pending",
+        "CidrBlock": "10.0.0.0/16",
+        "DhcpOptionsId": "dopt-0134c3853bf4b391a"
+    }
+}
+
+
+aws ec2 create-subnet --vpc-id vpc-0712b11c9d1f9233f --cidr-block 10.0.1.0/24 --availability-zone us-east-1a
+
+{
+    "Subnet": {
+        "AvailabilityZoneId": "use1-az1",
+        "OwnerId": "324037317995",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:us-east-1:324037317995:subnet/subnet-0ad52de408154f32d",
+        "EnableDns64": false,
+        "Ipv6Native": false,
+        "PrivateDnsNameOptionsOnLaunch": {
+            "HostnameType": "ip-name",
+            "EnableResourceNameDnsARecord": false,
+            "EnableResourceNameDnsAAAARecord": false
+        },
+        "SubnetId": "subnet-0ad52de408154f32d",
+        "State": "available",
+        "VpcId": "vpc-0712b11c9d1f9233f",
+        "CidrBlock": "10.0.1.0/24",
+        "AvailableIpAddressCount": 251,
+        "AvailabilityZone": "us-east-1a",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false
+    }
+}
+
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 create-security-group --group-name eks-node-group --description "EKS Node Group" --vpc-id vpc-0712b11c9d1f9233f
+{
+    "GroupId": "sg-0555691dca27165cf",
+    "SecurityGroupArn": "arn:aws:ec2:us-east-1:324037317995:security-group/sg-0555691dca27165cf"
+}
+
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 authorize-security-group-ingress --group-id sg-0555691dca27165cf --protocol tcp --port 22 --cidr 0.0.0.0/0
+{
+    "Return": true,
+    "SecurityGroupRules": [
+        {
+            "SecurityGroupRuleId": "sgr-0cf1844408c5bb50b",
+            "GroupId": "sg-0555691dca27165cf",
+            "GroupOwnerId": "324037317995",
+            "IsEgress": false,
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIpv4": "0.0.0.0/0",
+            "SecurityGroupRuleArn": "arn:aws:ec2:us-east-1:324037317995:security-group-rule/sgr-0cf1844408c5bb50b"
+        }
+    ]
+}
+
+
+aws eks create-cluster --name eks-demo --role-arn arn:aws:iam::324037317995:role/eksRole=1 --resources-vpc-config subnetIds=subnet-0f521f5a6e46d08bd,subnet-0657d75afd23850af,securityGroupIds=sg-0555691dca27165cf
+
+
+subnet-03aae2fdd1109cf01 
+subnet-034709a76a70aec14 
+subnet-0b3f5b42c47ddccee 
+subnet-0bbdc803ebd605aa0 
+subnet-0b7db040b414265e7 
+
+
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 create-subnet --vpc-id vpc-0712b11c9d1f9233f --cidr-block 10.0.1.0/24 --availability-zone us-east-1a
+{
+    "Subnet": {
+        "AvailabilityZoneId": "use1-az1",
+        "OwnerId": "324037317995",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:us-east-1:324037317995:subnet/subnet-0f521f5a6e46d08bd",
+        "EnableDns64": false,
+        "Ipv6Native": false,
+        "PrivateDnsNameOptionsOnLaunch": {
+            "HostnameType": "ip-name",
+            "EnableResourceNameDnsARecord": false,
+            "EnableResourceNameDnsAAAARecord": false
+        },
+        "SubnetId": "subnet-0f521f5a6e46d08bd",
+        "State": "available",
+        "VpcId": "vpc-0712b11c9d1f9233f",
+        "CidrBlock": "10.0.1.0/24",
+        "AvailableIpAddressCount": 251,
+        "AvailabilityZone": "us-east-1a",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false
+    }
+}
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 create-subnet --vpc-id vpc-0712b11c9d1f9233f --cidr-block 10.0.1.0/24 --availability-zone us-east-1b
+
+An error occurred (InvalidSubnet.Conflict) when calling the CreateSubnet operation: The CIDR '10.0.1.0/24' conflicts with another subnet
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 create-subnet --vpc-id vpc-0712b11c9d1f9233f --cidr-block 10.0.1.0/24 --availability-zone us-east-1c
+
+An error occurred (InvalidSubnet.Conflict) when calling the CreateSubnet operation: The CIDR '10.0.1.0/24' conflicts with another subnet
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~$ aws ec2 create-subnet --vpc-id vpc-0712b11c9d1f9233f --cidr-block 10.0.2.0/24 --availability-zone us-east-1b
+{
+    "Subnet": {
+        "AvailabilityZoneId": "use1-az2",
+        "OwnerId": "324037317995",
+        "AssignIpv6AddressOnCreation": false,
+        "Ipv6CidrBlockAssociationSet": [],
+        "SubnetArn": "arn:aws:ec2:us-east-1:324037317995:subnet/subnet-0657d75afd23850af",
+        "EnableDns64": false,
+        "Ipv6Native": false,
+        "PrivateDnsNameOptionsOnLaunch": {
+            "HostnameType": "ip-name",
+            "EnableResourceNameDnsARecord": false,
+            "EnableResourceNameDnsAAAARecord": false
+        },
+        "SubnetId": "subnet-0657d75afd23850af",
+        "State": "available",
+        "VpcId": "vpc-0712b11c9d1f9233f",
+        "CidrBlock": "10.0.2.0/24",
+        "AvailableIpAddressCount": 251,
+        "AvailabilityZone": "us-east-1b",
+        "DefaultForAz": false,
+        "MapPublicIpOnLaunch": false
+    }
+}
+
+aws eks create-cluster --name eks-demo --role-arn arn:aws:iam::324037317995:role/eksRole=1 --resources-vpc-config subnetIds=subnet-0f521f5a6e46d08bd,subnet-0657d75afd23850af,securityGroupIds=sg-0555691dca27165cf
+{
+    "cluster": {
+        "name": "eks-demo",
+        "arn": "arn:aws:eks:us-east-1:324037317995:cluster/eks-demo",
+        "createdAt": "2025-04-24T01:14:17.980000+05:30",
+        "version": "1.32",
+        "roleArn": "arn:aws:iam::324037317995:role/eksRole=1",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-0f521f5a6e46d08bd",
+                "subnet-0657d75afd23850af"
+            ],
+            "securityGroupIds": [
+                "sg-0555691dca27165cf"
+            ],
+            "vpcId": "vpc-0712b11c9d1f9233f",
+            "endpointPublicAccess": true,
+            "endpointPrivateAccess": false,
+            "publicAccessCidrs": [
+                "0.0.0.0/0"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "172.20.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator",
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": false
+                }
+            ]
+        },
+        "status": "CREATING",
+        "certificateAuthority": {},
+        "platformVersion": "eks.8",
+        "tags": {},
+        "accessConfig": {
+            "bootstrapClusterCreatorAdminPermissions": true,
+            "authenticationMode": "CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        }
+    }
+}
+
+
+provider "aws" {
+    region = "us-east-1"
+  }
+  
+  resource "aws_ecr_repository" "docker_image" {
+    name = "docker_image"
+  }
+
+
+  Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_ecr_repository.docker_image will be created
+  + resource "aws_ecr_repository" "docker_image" {
+      + arn                  = (known after apply)
+      + id                   = (known after apply)
+      + image_tag_mutability = "MUTABLE"
+      + name                 = "docker_image"
+      + registry_id          = (known after apply)
+      + repository_url       = (known after apply)
+      + tags_all             = (known after apply)
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+
+aws eks create-nodegroup --cluster-name hirearena --nodegroup-name eks-demo-node-group --node-role arn:aws:iam::324037317995:role/eksRole --subnets subnet-0f521f5a6e46d08bd --scaling-config minSize=2,maxSize=2,desiredSize=2 --instance-types t3.medium --ami-type AL2_x86_64
+
+
+aws eks create-nodegroup \
+  --cluster-name eks-demo \
+  --nodegroup-name eks-demo-node-group \
+  --node-role arn:aws:iam::324037317995:role/eksNodeRole \
+  --subnets subnet-0f521f5a6e46d08bd \
+  --scaling-config minSize=2,maxSize=2,desiredSize=2 \
+  --instance-types t3.medium \
+  --ami-type AL2_x86_64
+
+
+
+afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~/web_dev/brototype/hire_arena$ aws eks create-nodegroup --cluster-name hirearena --nodegroup-name hirearena-node-group --node-role arn:aws:iam::324037317995:role/eksRole --subnets subnet-0f521f5a6e46d08bd --scaling-config minSize=2,maxSize=2,desiredSize=2 --instance-types t3.medium --ami-type AL2_x86_64
+{
+    "nodegroup": {
+        "nodegroupName": "hirearena-node-group",
+        "nodegroupArn": "arn:aws:eks:us-east-1:324037317995:nodegroup/hirearena/hirearena-node-group/eacb3256-ce76-ec46-eafd-6641bfad2a09",
+        "clusterName": "hirearena",
+        "version": "1.32",
+        "releaseVersion": "1.32.1-20250419",
+        "createdAt": "2025-04-24T03:33:42.653000+05:30",
+        "modifiedAt": "2025-04-24T03:33:42.653000+05:30",
+        "status": "CREATING",
+        "capacityType": "ON_DEMAND",
+        "scalingConfig": {
+            "minSize": 2,
+            "maxSize": 2,
+            "desiredSize": 2
+        },
+        "instanceTypes": [
+            "t3.medium"
+        ],
+        "subnets": [
+            "subnet-0f521f5a6e46d08bd"
+        ],
+        "amiType": "AL2_x86_64",
+        "nodeRole": "arn:aws:iam::324037317995:role/eksRole",
+        "diskSize": 20,
+        "health": {
+            "issues": []
+        },
+        "updateConfig": {
+            "maxUnavailable": 1
+        },
+        "tags": {}
+    }
+}

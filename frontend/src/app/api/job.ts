@@ -173,15 +173,16 @@ export interface JobFilterParams {
   keyword?: string;
 }
 
-export async function fetchJobsFiltered(filters: any) {
-  const queryParams = new URLSearchParams(filters).toString();
-  const response = await axiosInstance.get(
-    `/job-service/api/jobs/filter?${queryParams}`
-  );
+export async function fetchJobsFiltered(filters: any, page: number = 1, pageSize: number = 10) {
+  const queryParams = new URLSearchParams({
+    ...filters,
+    page: page.toString(),
+    pageSize: pageSize.toString()
+  }).toString();
 
-  return response.data;
+  const response = await axiosInstance.get(`/job-service/api/jobs/filter?${queryParams}`);
+  return response.data; 
 }
-
 
 export async function fetchJobById(id: string): Promise<JobFormData> {
   try {

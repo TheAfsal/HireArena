@@ -155,7 +155,7 @@ services:
       - ./shared:/shared    
     command: npm run dev  
     environment:
-      - PORT = 5004
+      - PORT=5004
       - AWS_ACCESS_KEY=AKIAUW4RBCVVXJIICSPE
       - AWS_SECRET_KEY=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
       - AWS_REGION=eu-north-1
@@ -244,8 +244,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # - NEXT_PUBLIC_GATEWAY_URL=localhost:4000
-      - NEXT_PUBLIC_GATEWAY_URL=127.0.0.1:4000
+      - NEXT_PUBLIC_GATEWAY_URL=54.160.248.96:30080
+      # - NEXT_PUBLIC_GATEWAY_URL=localhost
       - NEXT_PUBLIC_CHAT_SERVER_URL=http://localhost:5009
       - NEXT_PUBLIC_VIDEO_SERVER_URL=http://localhost:5013
     volumes:
