@@ -19,8 +19,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { fetchPostedJobs } from "@/app/api/job";
+import { JobStatus, JobType } from "@/Types/job.types";
 
-// Job types
 export interface IJob {
   id: string;
   jobTitle: string;
@@ -42,19 +42,6 @@ export interface IJob {
   updatedAt: Date;
 }
 
-export enum JobType {
-  FullTime = "Full Time",
-  PartTime = "Part Time",
-  Contract = "Contract",
-  Internship = "Internship",
-  Remote = "Remote",
-}
-
-export enum JobStatus {
-  Open = "open",
-  Closed = "closed",
-  Draft = "draft",
-}
 
 const JobsPage: React.FC = () => {
   const router = useRouter();

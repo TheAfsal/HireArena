@@ -20,7 +20,7 @@ export function SubscriptionDialog({ mode, plan, trigger }: SubscriptionDialogPr
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      {/* <DialogTrigger asChild>
         {trigger || (
           <Button className="bg-amber-400">
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -33,7 +33,7 @@ export function SubscriptionDialog({ mode, plan, trigger }: SubscriptionDialogPr
           <DialogTitle>{mode === "create" ? "Create New Plan" : "Edit Plan"}</DialogTitle>
         </DialogHeader>
         <SubscriptionForm mode={mode} plan={plan} onSuccess={() => setOpen(false)} />
-      </DialogContent>
+      </DialogContent> */}
     </Dialog>
   )
 }

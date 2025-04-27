@@ -2,9 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { MyApplications } from "./JobList";
-import { Badge } from "@/components/ui/badge";
-import { getBadgeClass } from "@/app/jobs/[jobId]/page";
-
 function JobCard({ job }: { job: MyApplications }) {
   return (
     <Link

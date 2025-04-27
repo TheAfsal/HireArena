@@ -28,7 +28,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { type IJob, JobStatus, JobType } from "../page";
+import { type IJob } from "../page";
 
 import {
   ChartContainer,
@@ -69,57 +69,7 @@ import { cn } from "@/lib/utils";
 import { error } from "console";
 import { fetchJobDetails } from "@/app/api/job";
 import { fetchJobApplications } from "@/app/api/interview";
-
-// Reusing the interview types from the original code
-export interface IRoundStatus {
-  roundType: RoundType;
-  status: RoundStatus;
-  scheduledAt?: Date;
-  completedAt?: Date;
-  remarks?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export enum RoundType {
-  AptitudeTest = "Aptitude Test",
-  MachineTask = "Machine Task",
-  TechnicalInterview = "Technical Interview",
-  BehavioralInterview = "Behavioral Interview",
-  CodingChallenge = "Coding Challenge",
-  HrInterview = "Hr Interview",
-  ManagerInterview = "Manager Interview",
-}
-
-export interface IInterview {
-  _id: string;
-  jobId: string;
-  candidateId: string;
-  state: IRoundStatus[];
-  scheduledAt?: Date;
-  completedAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export enum RoundStatus {
-  Scheduled = "scheduled",
-  Completed = "completed",
-  Canceled = "canceled",
-  Pending = "pending",
-  Failed = "failed",
-}
-
-// Additional type for candidate details
-interface ICandidate {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  resume: string;
-  experience: string;
-  skills: string[];
-}
+import { ICandidate, IInterview, RoundType, RoundStatus, JobStatus } from "@/Types/job.types";
 
 const JobDashboardPage: React.FC = () => {
   const { jobId } = useParams();
@@ -535,7 +485,7 @@ const JobDashboardPage: React.FC = () => {
                               <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                           </Pie>
-                          <ChartTooltip content={<ChartTooltipContent />} />
+                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </PieChart>
                       </ResponsiveContainer>
                       <ChartLegend className="mt-4 flex justify-center gap-4">
@@ -570,7 +520,7 @@ const JobDashboardPage: React.FC = () => {
                             fill="#8884d8"
                             fillOpacity={0.3}
                           />
-                          <ChartTooltip content={<ChartTooltipContent />} />
+                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </AreaChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -592,7 +542,7 @@ const JobDashboardPage: React.FC = () => {
                           <Bar dataKey="completed" fill="#4ade80" />
                           <Bar dataKey="failed" fill="#f87171" />
                           <Bar dataKey="pending" fill="#facc15" />
-                          <ChartTooltip content={<ChartTooltipContent />} />
+                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </BarChart>
                       </ResponsiveContainer>
                       <ChartLegend className="mt-4 flex justify-center gap-4">
@@ -617,7 +567,7 @@ const JobDashboardPage: React.FC = () => {
                           <XAxis type="number" />
                           <YAxis dataKey="name" type="category" width={100} />
                           <Bar dataKey="count" fill="#60a5fa" />
-                          <ChartTooltip content={<ChartTooltipContent />} />
+                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
@@ -911,7 +861,7 @@ const JobDashboardPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none">
-                  <p>{job.jobDescription}</p>
+                  {/* <p>{job.jobDescription}</p> */}
 
                   <h3 className="text-lg font-medium mt-6">Requirements</h3>
                   {/* <ul className="mt-2 space-y-1">
