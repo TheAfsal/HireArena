@@ -3,7 +3,7 @@ import SuccessPage from "./components/successPage";
 
 export default function GoogleLoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div> Loading...</div>}>
       <SuccessPage />
     </Suspense>
   );
