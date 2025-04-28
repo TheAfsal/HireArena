@@ -11,6 +11,7 @@ declare global {
         password?: string;
         status?: boolean;
       };
+      requestId?:string
     }
   }
 }
