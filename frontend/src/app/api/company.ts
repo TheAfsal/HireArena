@@ -1,7 +1,7 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { fetchPostedJobs } from "./job";
-import { fetchAllApplications } from "./interview";
+import { fetchAllApplicationsForDashboard } from "./interview";
 import { Job } from "../dashboard/components/types/job";
 import { COMPANY_ROUTES } from "@/constants/apiRoutes";
 
@@ -61,7 +61,7 @@ export async function fetchDashboardData(): Promise<[Job[], Application[]]> {
   try {
     const [jobs, applications] = await Promise.all([
       fetchPostedJobs(),
-      fetchAllApplications(),
+      fetchAllApplicationsForDashboard(),
     ]);
     //@ts-ignore
     return [jobs, applications];

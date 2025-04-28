@@ -1,6 +1,7 @@
 // import { IInterviewRounds, IInterviewStatus } from "@core/types/interview.types";
 // import { AptitudeTestQuestion, Interview, InterviewStatus } from "@prisma/client";
 
+import { PaginationOptions } from "@services/interview.service";
 import { IInterview, IRoundStatus, RoundStatus } from "model/Interview";
 
 // export interface IInterviewRepository {
@@ -35,7 +36,13 @@ export interface IInterviewRepository {
   updateAptitudeTestById(interviewId: string, state: IRoundStatus): Promise<void>;
   addAptitudeTestId( interviewId: string, testResultId: string, completed?: boolean): Promise<void>;
   addNextTest(interviewId: string, newTest: Partial<IRoundStatus>): Promise<any>;
-  findApplicationByJobId(jobs: string[]): Promise<IInterview[]> 
+  findApplicationByJobId(jobs: string[], options: PaginationOptions): Promise<{
+      applications: IInterview[];
+      total: number;
+      page: number;
+      pageSize: number;
+    }> 
+  getJobApplications(jobs: string[]): Promise<IInterview[]>  
   addInterviewRound( interviewId: string, roundData: Partial<IInterview["state"][0]>): Promise<IInterview | null> 
   submitVideoInterview( interviewId: string, candidateId: string, roundData: Partial<IInterview["state"][0]>): Promise<IInterview | null>
   updateMachineTaskStatus( candidateId: string, jobId: string, taskId: string, status: RoundStatus): Promise<any>

@@ -44,4 +44,9 @@ export interface IProfileService {
   updateMediaLinks(userId: string, data: any): Promise<any>;
 
   getAllProfiles(callback: grpc.sendUnaryData<any>): Promise<void>;
+
+  getBulkProfiles(
+    userIds: string[],
+    callback: any
+  ): Promise<any>
 }

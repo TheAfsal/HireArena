@@ -34,6 +34,7 @@ export const INTERVIEW_ROUTES = {
   START_MACHINE_TASK: `${SERVICES.INTERVIEW_SERVICE}/machine-task/start-task`,
   SUBMIT_MACHINE_TASK: `${SERVICES.INTERVIEW_SERVICE}/machine-task/submit`,
   FETCH_ALL_APPLICATIONS: `${SERVICES.INTERVIEW_SERVICE}/interviews/company-applications`,
+  FETCH_ALL_APPLICATIONS_DASHBOARD: `${SERVICES.INTERVIEW_SERVICE}/interviews/company-applications-dashboard`,
   FETCH_JOB_APPLICATIONS: `${SERVICES.INTERVIEW_SERVICE}/interviews/job-applications`,
   SCHEDULE_INTERVIEW: `${SERVICES.INTERVIEW_SERVICE}/interviews/schedule`,
   FETCH_MY_SCHEDULE: `${SERVICES.INTERVIEW_SERVICE}/interviews/schedule`,

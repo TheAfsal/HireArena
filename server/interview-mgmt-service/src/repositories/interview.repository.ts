@@ -6,6 +6,7 @@ import InterviewModel, {
   RoundStatus,
 } from "model/Interview";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
+import { PaginationOptions } from "@services/interview.service";
 class InterviewRepository
   extends BaseRepository<IInterview, string>
   implements IInterviewRepository
@@ -81,7 +82,39 @@ class InterviewRepository
       .exec();
   }
 
-  async findApplicationByJobId(jobs: string[]): Promise<IInterview[]> {
+  async findApplicationByJobId(jobs: string[], options: PaginationOptions): Promise<{
+    applications: IInterview[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }> {
+    const { page = 1, pageSize = 10, roundType } = options;
+    const skip = (page - 1) * pageSize;
+
+    const query: any = { jobId: { $in: jobs } };
+    if (roundType) {
+      query["state.roundType"] = roundType; 
+    }
+
+    const [applications, total] = await Promise.all([
+      this.model
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .exec(),
+      this.model.countDocuments(query).exec(),
+    ]);
+
+    return {
+      applications,
+      total,
+      page,
+      pageSize,
+    };
+  }
+
+  async getJobApplications(jobs: string[]): Promise<IInterview[]> {
     return this.model
       .find({ jobId: { $in: jobs } })
       .sort({ createdAt: -1 })

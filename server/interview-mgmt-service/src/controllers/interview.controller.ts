@@ -218,13 +218,50 @@ class InterviewController implements IInterviewController {
     }
   };
 
-  getAllApplications = async (req: Request, res: Response) => {
+  getAllApplications = async(req: Request, res: Response) => {
+    try {
+      
+      const { userId, companyId } = req.headers["x-user"]
+      ? JSON.parse(req.headers["x-user"] as string)
+      : { userId: null, companyId: null };
+      
+      if (!userId || !companyId) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+      }
+      const { page, pageSize, roundType } = req.query;
+
+      const result = await this.interviewService.getAllApplications(userId, companyId, {
+        page,  
+        pageSize,
+        roundType,
+      });
+
+      console.log("result", result);
+      
+
+      res.status(200).json({
+        success: true,
+        data: result.applications,
+        pagination: {
+          total: result.total,
+          page: result.page,
+          pageSize: result.pageSize,
+          totalPages: Math.ceil(result.total / result.pageSize),
+        },
+      });
+    } catch (error) {
+      console.log("@@ Error fetching job applications by Company:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+
+  getAllApplicationsDashboard = async (req: Request, res: Response) => {
     try {
       const { userId, companyId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      const applications = await this.interviewService.getAllApplications(
+      const applications = await this.interviewService.getAllApplicationsDashboard(
         userId,
         companyId
       );

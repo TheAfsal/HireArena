@@ -67,6 +67,20 @@ class ProfileService implements IProfileService {
     return userProfile;
   }
 
+  async getBulkProfiles(
+    userIds: string[],
+    callback: any
+  ): Promise<any> {
+    await this.jobSeekerRepository.getBulkProfile(userIds).then((userProfiles)=>{
+      callback(null, { jobSeekers: userProfiles });
+    }).catch((err: Error) => {
+      callback({
+        code: grpc.status.INTERNAL,
+        details: err.message,
+      });
+    });
+  }
+
   async getMinimalProfile(
     userId: string
   ): Promise<Omit<
@@ -165,7 +179,9 @@ class ProfileService implements IProfileService {
     return await this.companyRepository.findById(relationDetails.companyId);
   }
 
-  async fetchEmployeeProfile(userId: string): Promise<Partial<IEmployee> | null> {
+  async fetchEmployeeProfile(
+    userId: string
+  ): Promise<Partial<IEmployee> | null> {
     return await this.companyEmployeeRoleRepository.fetchProfile(userId);
   }
 

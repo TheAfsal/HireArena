@@ -1,6 +1,7 @@
 import {
   FindJobIdsByCompanyId,
   FindJobsByIds,
+  GetJobSeekerDetailsById,
   IsJobExist,
 } from "@config/grpcClient";
 import IEmployeeInterviewsRepository from "@core/interfaces/repository/IEmployeeInterviewsRepository";
@@ -18,6 +19,46 @@ import {
   RoundType,
 } from "model/Interview";
 import { v4 as uuidv4 } from "uuid";
+
+export interface PaginationOptions {
+  page: number;
+  pageSize: number;
+  roundType?: string;
+}
+
+interface IJob {
+  id: string;
+  jobTitle: string;
+}
+
+interface IJobSeeker {
+  id: string;
+  fullName: string;
+  email: string;
+  image: string;
+}
+interface EnrichedInterview extends IInterview {
+  jobTitle: string | null;
+  candidate: {
+    id: string;
+    fullName: string;
+    email: string;
+    image: string;
+  } | null;
+}
+
+export interface IApplicationsResponse {
+  applications: EnrichedInterview[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+export interface IApplicationOptions {
+  page: string;
+  pageSize: string;
+  roundType?: string;
+}
+
 
 export class InterviewService implements IInterviewService {
   constructor(
@@ -96,6 +137,73 @@ export class InterviewService implements IInterviewService {
 
   async getAllApplications(
     userId: string,
+    companyId: string,
+    options: IApplicationOptions
+  ): Promise<IApplicationsResponse> {
+    const jobs: string[] = await FindJobIdsByCompanyId(companyId);
+
+    if (!jobs || jobs.length === 0) {
+      return { applications: [], total: 0, page: 1, pageSize: 10 };
+    }
+
+    const page = parseInt(options.page, 10) || 1;
+    const pageSize = parseInt(options.pageSize, 10) || 10;
+    const roundType = options.roundType;
+
+    const { applications, total } =
+      await this.interviewRepo.findApplicationByJobId(jobs, {
+        page,
+        pageSize,
+        roundType,
+      });
+
+    const uniqueCandidateIds = Array.from(
+      new Set(applications.map((app) => app.candidateId))
+    );
+
+    const [jobDetails, jobSeekerDetails] = await Promise.all([
+      FindJobsByIds(jobs), 
+      GetJobSeekerDetailsById(uniqueCandidateIds), 
+    ]);
+
+    console.log("**",jobSeekerDetails);
+    
+
+    const jobMap = new Map<string, string>(
+      jobDetails.map((job) => [job.id, job.jobTitle])
+    );
+
+    const seekerMap = new Map<string, IJobSeeker>(
+      //@ts-ignore
+      jobSeekerDetails.jobSeekers.map((seeker) => [seeker.id, seeker])
+    );
+    
+    //@ts-ignore
+    const enrichedApplications: EnrichedInterview[] = applications.map(
+      (app) => ({
+        ...app.toObject(),
+        jobTitle: jobMap.get(app.jobId) || null,
+        candidate: seekerMap.has(app.candidateId)
+          ? {
+              id: seekerMap.get(app.candidateId)!.id,
+              fullName: seekerMap.get(app.candidateId)!.fullName,
+              email: seekerMap.get(app.candidateId)!.email,
+              image: seekerMap.get(app.candidateId)!.image,
+            }
+          : null,
+      })
+    );
+
+    return {
+      applications: enrichedApplications,
+      total,
+      page,
+      pageSize,
+    };
+  }
+
+  async getAllApplicationsDashboard(
+    userId: string,
     companyId: string
   ): Promise<IInterview[]> {
     const jobs = await FindJobIdsByCompanyId(companyId);
@@ -105,15 +213,11 @@ export class InterviewService implements IInterviewService {
 
     console.log("@@ job ids from job-server ", jobs);
 
-    return await this.interviewRepo.findApplicationByJobId(jobs);
+    return await this.interviewRepo.getJobApplications(jobs);
   }
 
-  async getJobApplications(
-    jobId: string
-  ): Promise<IInterview[]> {
-    console.log("@@ ",jobId);
-    
-    return await this.interviewRepo.findApplicationByJobId([jobId]);
+  async getJobApplications(jobId: string): Promise<IInterview[]> {
+    return await this.interviewRepo.getJobApplications([jobId]);
   }
 
   async getApplicationsCandidate(userId: string): Promise<IInterviewWithJob[]> {
@@ -304,10 +408,10 @@ export class InterviewService implements IInterviewService {
         let nextTest: Partial<IRoundStatus> | null = null;
         const now = new Date();
 
-        if(updatedInterview.state.length===filteredArr.length){
-          console.log("Interview Completed"); 
-          return updatedInterview
-        }else{
+        if (updatedInterview.state.length === filteredArr.length) {
+          console.log("Interview Completed");
+          return updatedInterview;
+        } else {
           nextTest = {
             roundType: RoundType[filteredArr[updatedInterview.state.length]],
             status: RoundStatus.Pending,

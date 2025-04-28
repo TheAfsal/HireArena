@@ -131,6 +131,17 @@ class JobSeekerRepository implements IJobSeekerRepository {
       data: { status: !jobSeeker.status },
     });
   }
+
+  async getBulkProfile(userIds: string[]): Promise<IJobSeeker[]> {
+    return this.prisma.jobSeeker.findMany({
+      where: {
+        id: {
+          in: userIds,
+        },
+      },
+    });
+  }
+  
 }
 
 export default JobSeekerRepository;

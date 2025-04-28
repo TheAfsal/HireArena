@@ -6,6 +6,22 @@ service UserService {
   rpc GetCompanyIdByUserId (GetCompanyIdRequest) returns (GetCompanyIdResponse);
   rpc GetAllJobSeekers (Empty) returns (JobSeekerList);
   rpc GetCompaniesDetails (CompaniesRequest) returns (CompaniesResponse);
+  rpc GetJobSeekerDetailsById (JobSeekerIdsRequest) returns (JobSeekerBasicList);
+}
+
+message JobSeekerIdsRequest {
+  repeated string ids = 1; 
+}
+
+message JobSeekerBasic {
+  string id = 1;
+  string fullName = 2;
+  string email = 3;
+  string image = 4;
+}
+
+message JobSeekerBasicList {
+  repeated JobSeekerBasic jobSeekers = 1;
 }
 
 message GetCompanyIdRequest {

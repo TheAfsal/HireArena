@@ -68,6 +68,7 @@ server.addService(userProto.UserService.service, {
   GetCompanyIdByUserId: companyController.getCompanyIdByUserId,
   GetAllJobSeekers: jobSeekerController.getAllJobSeekers,
   GetCompaniesDetails: companyController.getCompanyDetails,
+  GetJobSeekerDetailsById: jobSeekerController.getJobSeekerDetailsById
 });
 
 export default server;

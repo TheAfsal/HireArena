@@ -28,6 +28,7 @@ router.get("/schedule", interviewController.fetchScheduleInterviews);
 router.post("/schedule", interviewController.scheduleInterview);
 router.get("/status/:id", interviewController.getApplicationStatus);
 router.get("/company-applications", interviewController.getAllApplications);
+router.get("/company-applications-dashboard", interviewController.getAllApplicationsDashboard);
 router.get("/job-applications", interviewController.getJobApplications);
 router.post("/submit-video-call-interview", interviewController.submitVideoInterview);
 router.get("/:interviewId", interviewController.getInterview);

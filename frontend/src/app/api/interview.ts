@@ -1,8 +1,9 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { IInterview } from "@/Types/application.types";
-import { ScheduleForm } from "../panel/schedule/page";
 import { INTERVIEW_ROUTES as ROUTES } from "@/constants/apiRoutes";
+import { ScheduleForm } from "@/Types/interview.types";
+import { IEnrichedInterview } from "../panel/schedule/page";
 
 export async function fetchAptitudeQuestions(
   interviewId: string
@@ -142,10 +143,10 @@ export async function submitMachineTask(
   }
 }
 
-export async function fetchAllApplications(): Promise<IInterview[]> {
+export async function fetchAllApplicationsForDashboard(): Promise<IInterview[]> {
   try {
     const response = await axiosInstance.get(
-      ROUTES.FETCH_ALL_APPLICATIONS
+      ROUTES.FETCH_ALL_APPLICATIONS_DASHBOARD
     );
 
     console.log("@@ company all applications ", response.data);
@@ -158,6 +159,40 @@ export async function fetchAllApplications(): Promise<IInterview[]> {
       );
     }
 
+    throw new Error("Unknown error occurred");
+  }
+}
+
+export async function fetchAllApplications({
+  page = 1,
+  pageSize = 10,
+  roundType,
+}: {
+  page?: number;
+  pageSize?: number;
+  roundType?: string;
+}): Promise<{
+  data: IEnrichedInterview[];
+  pagination: { total: number; page: number; pageSize: number; totalPages: number };
+}> {
+  try {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString(),
+      ...(roundType && { roundType }),
+    }).toString();
+
+    const response = await axiosInstance.get(
+      `${ROUTES.FETCH_ALL_APPLICATIONS}?${queryParams}`
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
     throw new Error("Unknown error occurred");
   }
 }

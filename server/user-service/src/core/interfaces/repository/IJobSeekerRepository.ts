@@ -28,4 +28,5 @@ export interface IJobSeekerRepository {
   > | null>;
   updatePassword(id: string, hashedPassword: string): Promise<IJobSeeker>;
   updateJobSeekerStatus(id: string): Promise<IJobSeeker>;
+  getBulkProfile(userIds: string[]): Promise<IJobSeeker[]> 
 }

@@ -3,17 +3,14 @@ import * as grpc from "@grpc/grpc-js";
 import ProfileService from "@services/ProfileService";
 import { IJobSeekerController } from "@core/interfaces/controllers/IJobSeekerController";
 
-class JobSeekerController implements IJobSeekerController{
+class JobSeekerController implements IJobSeekerController {
   private profileService: any;
 
   constructor(profileService: ProfileService) {
     this.profileService = profileService;
   }
 
-  updateProfile = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
+  updateProfile = async (req: Request, res: Response): Promise<void> => {
     try {
       const { fullName, phone, email, dob, gender, image } = req.body;
       const files = req.files as Express.Multer.File[];
@@ -81,30 +78,32 @@ class JobSeekerController implements IJobSeekerController{
     }
   };
 
-  getMiniProfileByCompany = async (req: Request, res: Response): Promise<void> => {
+  getMiniProfileByCompany = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
     try {
-
-      const { id } = req.params
+      const { id } = req.params;
 
       if (!id) {
         res.status(401).json({ message: "Unauthorized" });
         return;
-      } 
+      }
 
       const profile = await this.profileService.getMinimalProfile(id);
 
       console.log(profile);
-      
+
       res.status(200).json(profile);
       return;
-    } catch (error) { 
+    } catch (error) {
       console.log(error);
-      
+
       res.status(500).json({ message: (error as Error).message });
       return;
     }
   };
-  
+
   changePassword = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req.headers["x-user"]
@@ -138,13 +137,10 @@ class JobSeekerController implements IJobSeekerController{
 
   // getAllJobSeekers = async (req: Request, res: Response) => {
   //   try {
-
   //     const usersProfile = await this.profileService.getAllProfiles();
   //     res.status(200).json(usersProfile);
-
   //   } catch (error) {
   //     console.log(error);
-
   //     res.status(400).json({ error: (error as Error).message });
   //   }
   // };
@@ -156,14 +152,22 @@ class JobSeekerController implements IJobSeekerController{
     this.profileService.getAllProfiles(callback);
   };
 
+  getJobSeekerDetailsById = (
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    const { ids } = call.request;
+    this.profileService.getBulkProfiles(ids, callback);
+  };
+
   getUserId = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
-        
+
       res.status(200).json({ userId });
-      return  
+      return;
     } catch (error) {
       console.log(error);
 

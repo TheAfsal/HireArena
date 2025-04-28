@@ -114,12 +114,29 @@ const createConversation = (participants: string[], jobId: string ,companyName: 
   });
 };
 
+const GetJobSeekerDetailsById = (ids: string[]) => {
+  return new Promise((resolve, reject) => {
+    userServiceClient.GetJobSeekerDetailsById(
+      { ids },
+      (err: any, response: any) => {
+        if (err) {
+          console.error("Error calling Chat Service:", err);
+          reject(err);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
+};
+
 export {
   IsJobExist,
   FindJobIdsByCompanyId,
   FindJobsByIds,
   GetCompaniesDetails,
-  createConversation
+  createConversation,
+  GetJobSeekerDetailsById
 };
 
 // import * as grpc from "@grpc/grpc-js";
