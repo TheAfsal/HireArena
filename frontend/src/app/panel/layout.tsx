@@ -2,7 +2,14 @@ import { cookies } from "next/headers";
 import { AppSidebar } from "./components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import Navbar from "./components/navbar";
-import { useSelector } from "react-redux";
+
+export const metadata = {
+  title: "Hire Arena",
+  description: "Your page description",
+  icons: {
+    icon: "/logo.png", 
+  },
+};
 
 export default async function Layout({
   children,

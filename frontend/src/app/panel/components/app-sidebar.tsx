@@ -47,7 +47,7 @@ import { verifyAuth } from "@/redux/slices/authSlice";
 const data = {
   teams: [
     {
-      name: "Acme Inc",
+      name: "Hire Arena",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },

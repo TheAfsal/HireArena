@@ -82,6 +82,16 @@ export const columns: ColumnDef<Job>[] = [
   {
     accessorKey: "createdAt",
     header: "Created At",
+    cell: ({ row }) => {
+      const createdAt = row.getValue("createdAt");
+      const date = new Date(createdAt as string);
+      const formattedDate = date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      return <div>{formattedDate}</div>;
+    },
   },
   {
     id: "actions",
