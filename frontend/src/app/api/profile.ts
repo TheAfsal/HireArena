@@ -1,11 +1,12 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { CompanySocialLinks } from "../panel/settings/components/social-links-sections";
+import { USER_ROUTES } from "@/constants/apiRoutes";
 
 export async function updateJobSeekerProfile(formData: FormData): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/job-seeker/profile`,
+      USER_ROUTES.JOB_SEEKER_PROFILE,
       formData,
       {
         headers: {
@@ -28,9 +29,7 @@ export async function updateJobSeekerProfile(formData: FormData): Promise<any> {
 
 export async function fetchJobSeekerProfile(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/user-service/api/job-seeker/profile`
-    );
+    const response = await axiosInstance.get(USER_ROUTES.JOB_SEEKER_PROFILE);
 
     return response.data;
   } catch (error: unknown) {
@@ -47,7 +46,7 @@ export async function fetchJobSeekerProfile(): Promise<any> {
 export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/job-seeker/profile/minimal`
+      USER_ROUTES.JOB_SEEKER_MINIMAL_PROFILE
     );
 
     return response.data;
@@ -62,10 +61,10 @@ export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   }
 }
 
-export async function fetchCandidateProfile(id:string): Promise<any> {
+export async function fetchCandidateProfile(id: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/job-seeker/profile/minimal/${id}`
+      `${USER_ROUTES.JOB_SEEKER_MINIMAL_PROFILE}/${id}`
     );
 
     return response.data;
@@ -83,7 +82,7 @@ export async function fetchCandidateProfile(id:string): Promise<any> {
 export async function updateCompanyProfile(formData: FormData): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/company/profile`,
+      USER_ROUTES.COMPANY_PROFILE,
       formData,
       {
         headers: {
@@ -106,9 +105,7 @@ export async function updateCompanyProfile(formData: FormData): Promise<any> {
 
 export async function fetchCompanyProfile(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/user-service/api/company/profile`
-    );
+    const response = await axiosInstance.get(USER_ROUTES.COMPANY_PROFILE);
 
     return response.data;
   } catch (error: unknown) {
@@ -124,9 +121,7 @@ export async function fetchCompanyProfile(): Promise<any> {
 
 export async function fetchMediaLinks(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/user-service/api/company/media-links`
-    );
+    const response = await axiosInstance.get(USER_ROUTES.COMPANY_MEDIA_LINK);
 
     return response.data;
   } catch (error: unknown) {
@@ -140,11 +135,13 @@ export async function fetchMediaLinks(): Promise<any> {
   }
 }
 
-export async function updateMediaLinks(formData: CompanySocialLinks): Promise<any> {
+export async function updateMediaLinks(
+  formData: CompanySocialLinks
+): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/company/media-links`,
-      formData,
+      USER_ROUTES.COMPANY_MEDIA_LINK,
+      formData
     );
 
     return response.data;
@@ -165,13 +162,12 @@ export async function changeJobSeekerPassword(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/job-seeker/change-password`,
+      USER_ROUTES.CHANGE_JOB_SEEKER_PASSWORD,
       { oldPassword, newPassword }
     );
 
     return response.data;
   } catch (error: unknown) {
-    console.log("1312312");
     console.log(error);
 
     if (axios.isAxiosError(error)) {
@@ -186,11 +182,10 @@ export async function changeJobSeekerPassword(
 
 export async function getUserId(): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/user-service/api/job-seeker/userId`);
+    const response = await axiosInstance.get(USER_ROUTES.FETCH_JOB_SEEKER_ID);
 
     return response.data.userId;
   } catch (error: unknown) {
-
     if (axios.isAxiosError(error)) {
       throw new Error(
         error.response ? error.response.data.message : "Something went wrong"

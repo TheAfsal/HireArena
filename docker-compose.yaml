@@ -14,7 +14,8 @@ services:
     command: npm run dev
     environment:
       - NODE_ENV=development 
-      - CLIENT_URL=https://hirearena.vercel.app
+      # - CLIENT_URL=https://hirearena.vercel.app
+      - CLIENT_URL=http://localhost:3000
       - USER_SERVER_URL=user-service
       - JOB_SERVER_URL=job-service
       - ADMIN_SERVER_URL=admin-service

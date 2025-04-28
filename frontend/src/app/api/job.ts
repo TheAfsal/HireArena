@@ -1,11 +1,12 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { JobFormData } from "../panel/post-job/components/job-posting-form";
+import { INTERVIEW_ROUTES, JOB_ROUTES } from "@/constants/apiRoutes";
 
 export async function createJob(formData: JobFormData): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/job-service/api/jobs/`,
+      JOB_ROUTES.JOB,
       formData
     );
 
@@ -27,7 +28,7 @@ export async function fetchAllJobs(
   search: string = ""
 ): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs`, {
+    const response = await axiosInstance.get(JOB_ROUTES.JOB, {
       params: {
         page,
         pageSize,
@@ -50,7 +51,7 @@ export async function fetchAllJobs(
 
 export async function fetchJobDetails(id: string): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs/${id}`);
+    const response = await axiosInstance.get(`${JOB_ROUTES.JOB}/${id}`);
 
     return response.data;
   } catch (error: unknown) {
@@ -66,7 +67,7 @@ export async function fetchJobDetails(id: string): Promise<any> {
 
 export async function fetchJobListBrief(): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs/brief`);
+    const response = await axiosInstance.get(JOB_ROUTES.JOB_LIST_BRIEF);
 
     return response.data;
   } catch (error: unknown) {
@@ -83,7 +84,7 @@ export async function fetchJobListBrief(): Promise<any> {
 export async function fetchMyApplications(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/`
+      INTERVIEW_ROUTES.FETCH_MY_APPLICATIONS
     );
 
     console.log(response.data);
@@ -103,7 +104,7 @@ export async function fetchMyApplications(): Promise<any> {
 export async function applyJob(jobId: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/interviews/apply`,
+      INTERVIEW_ROUTES.APPLY_INTERVIEW,
       {
         jobId,
       }
@@ -124,7 +125,7 @@ export async function applyJob(jobId: string): Promise<any> {
 export async function fetchAppliedJobStatus(jobId: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/status/${jobId}`
+      `${INTERVIEW_ROUTES.FETCH_APPLIED_JOBS_STATUS}/${jobId}`
     );
 
     return response.data;
@@ -141,7 +142,7 @@ export async function fetchAppliedJobStatus(jobId: string): Promise<any> {
 
 export async function fetchPostedJobs(): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs/company`);
+    const response = await axiosInstance.get(JOB_ROUTES.POSTED_JOBS);
 
     return response.data.data;
   } catch (error: unknown) {
@@ -160,7 +161,7 @@ export async function fetchPostedJobs(): Promise<any> {
 export async function fetchFilteredJobs(filters: any) {
   const queryParams = new URLSearchParams(filters).toString();
   const response = await axiosInstance.get(
-    `/job-service/api/jobs?${queryParams}`
+    `${JOB_ROUTES.JOB}?${queryParams}`
   );
 
   return response.data;
@@ -180,13 +181,13 @@ export async function fetchJobsFiltered(filters: any, page: number = 1, pageSize
     pageSize: pageSize.toString()
   }).toString();
 
-  const response = await axiosInstance.get(`/job-service/api/jobs/filter?${queryParams}`);
+  const response = await axiosInstance.get(`${JOB_ROUTES.FILTER_JOBS}?${queryParams}`);
   return response.data; 
 }
 
 export async function fetchJobById(id: string): Promise<JobFormData> {
   try {
-    const response = await axiosInstance.get(`/job-service/api/jobs/${id}`);
+    const response = await axiosInstance.get(`${JOB_ROUTES.JOB}/${id}`);
     console.log("#", response.data);
     
     return response.data;
@@ -203,7 +204,7 @@ export async function fetchJobById(id: string): Promise<JobFormData> {
 export async function updateJob(id: string, data: Partial<JobFormData>): Promise<void> {
   try {
     console.log(data);
-    await axiosInstance.patch(`/job-service/api/jobs/${id}`, data);
+    await axiosInstance.patch(`${JOB_ROUTES.FILTER_JOBS}/${id}`, data);
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       throw new Error(

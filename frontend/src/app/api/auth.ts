@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { AUTH_ROUTES as ROUTES } from "@/constants/apiRoutes";
 
 interface LoginState {
   email: string;
@@ -21,14 +22,13 @@ interface AuthResponse {
   error?: string;
 }
 
-// JobSeeker Login function
 export async function LoginJobSeeker(
   details: LoginState
 ): Promise<AuthResponse> {
   try {
     console.log(details);
     const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/login",
+      `${ROUTES.LOGIN_JOBSEEKER}`,
       details
     );
     return response.data;
@@ -50,14 +50,13 @@ export async function LoginJobSeeker(
   }
 }
 
-// JobSeeker Signup function
 export async function SignupJobSeeker(
   details: LoginState
 ): Promise<AuthResponse> {
   try {
     console.log(details);
     const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/signup",
+      `${ROUTES.SIGNUP_JOBSEEKER}`,
       details
     );
     return response.data;
@@ -72,12 +71,10 @@ export async function SignupJobSeeker(
   }
 }
 
-// Company Login function
 export async function LoginCompany(details: LoginState): Promise<AuthResponse> {
   try {
-    console.log("------details");
     const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/company-login",
+      `${ROUTES.LOGIN_COMPANY}`,
       details
     );
     return response.data;
@@ -94,10 +91,7 @@ export async function LoginCompany(details: LoginState): Promise<AuthResponse> {
 
 export async function LoginAdmin(details: LoginState): Promise<AuthResponse> {
   try {
-    const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/admin-login",
-      details
-    );
+    const response = await axiosInstance.post(`${ROUTES.LOGIN_ADMIN}`, details);
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -117,7 +111,7 @@ export async function SignupCompany(
     console.log(details);
 
     const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/company-signup",
+      `${ROUTES.SIGNUP_COMPANY}`,
       details
     );
     return response.data;
@@ -137,7 +131,7 @@ export async function VerifyUserEmail(
 ): Promise<AuthResponse & { accessToken: string; role?: string }> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/auth/api/auth/verify-email/${token}`
+      `${ROUTES.VERIFY_EMAIL}/${token}`
     );
 
     return response.data;
@@ -159,7 +153,7 @@ export async function sendInvitation(inviteDetails: {
 }): Promise<AuthResponse & { accessToken: string; role?: string }> {
   try {
     const response = await axiosInstance.post(
-      "/user-service/api/company/invite",
+      ROUTES.INVITATION_BY_COMPANY,
       inviteDetails
     );
 
@@ -178,7 +172,7 @@ export async function sendInvitation(inviteDetails: {
 export async function fetchInvitationDetails(token: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/auth/api/company/invite/${token}`
+      `${ROUTES.INVITATION_BY_COMPANY}/${token}`
     );
 
     return response.data;
@@ -196,7 +190,7 @@ export async function fetchInvitationDetails(token: string): Promise<any> {
 export async function googleToken(token: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/api/auth/refresh-token-google`,
+      ROUTES.GOOGLE_TOKEN,
       { token },
       {
         headers: {
@@ -223,10 +217,11 @@ export async function AcceptInvitation(
   password: string
 ): Promise<any> {
   try {
-    const response = await axiosInstance.post(
-      `/user-service/auth/api/company/accept-invite`,
-      { token, name, password }
-    );
+    const response = await axiosInstance.post(ROUTES.ACCEPT_INVITATION, {
+      token,
+      name,
+      password,
+    });
 
     return response.data;
   } catch (error: unknown) {
@@ -242,10 +237,9 @@ export async function AcceptInvitation(
 
 export async function ForgotPassword(email: string): Promise<void> {
   try {
-    const response = await axiosInstance.post(
-      "/user-service/auth/api/auth/forgot-password",
-      {email}
-    );
+    const response = await axiosInstance.post(ROUTES.FORGOT_PASSWORD, {
+      email,
+    });
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -258,11 +252,14 @@ export async function ForgotPassword(email: string): Promise<void> {
   }
 }
 
-export async function ConfirmToForgotPassword(token:string, newPassword: string): Promise<void> {
+export async function ConfirmToForgotPassword(
+  token: string,
+  newPassword: string
+): Promise<void> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/auth/api/auth/forgot-password-token/${token}`,
-      {newPassword}
+      `${ROUTES.CONFIRM_FORGOT_PASSWORD}/${token}`,
+      { newPassword }
     );
     return response.data;
   } catch (error: unknown) {

@@ -145,6 +145,9 @@ app.use((req, res, next) => {
       duration
     );
 
+    console.log(req.headers["x-user"]);
+    
+
     logger[logLevel]('Completed request', {
       requestId,
       method: req.method,
@@ -152,7 +155,7 @@ app.use((req, res, next) => {
       status: statusCode,
       duration,
       ip: req.ip,
-      userId: JSON.parse(req.headers["x-user"] as string).userId || 'anonymous', 
+      userId: req.headers["x-user"] ? JSON.parse(req.headers["x-user"] as string).userId : 'anonymous', 
     });
   });
 

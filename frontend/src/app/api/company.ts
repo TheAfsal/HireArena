@@ -3,24 +3,7 @@ import axiosInstance from "./axiosInstance";
 import { fetchPostedJobs } from "./job";
 import { fetchAllApplications } from "./interview";
 import { Job } from "../dashboard/components/types/job";
-
-// export async function fetchCompanies(): Promise<any> {
-//   try {
-//     const response = await axiosInstance.get(
-//       `/user-service/api/admin/companies`
-//     );
-
-//     return response.data;
-//   } catch (error: unknown) {
-//     if (axios.isAxiosError(error)) {
-//       throw new Error(
-//         error.response ? error.response.data.error : "Something went wrong"
-//       );
-//     }
-
-//     throw new Error("Unknown error occurred");
-//   }
-// }
+import { COMPANY_ROUTES } from "@/constants/apiRoutes";
 
 export async function fetchCompanies(
   page: number,
@@ -29,7 +12,9 @@ export async function fetchCompanies(
 ): Promise<{ companies: any[]; total: number }> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/admin/companies?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(
+      `${
+        COMPANY_ROUTES.FETCH_COMPANIES
+      }?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(
         searchTerm
       )}`
     );
@@ -51,10 +36,8 @@ export async function fetchCompanies(
 export async function getEmployeesInCompany(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/company/employees`
+      COMPANY_ROUTES.COMPANIES_EMPLOYEES
     );
-
-    console.log(response.data);
 
     return response.data;
   } catch (error: unknown) {
@@ -66,14 +49,6 @@ export async function getEmployeesInCompany(): Promise<any> {
     throw new Error("Unknown error occurred");
   }
 }
-
-// export async function fetchDashboardData(): Promise<any> {
-//   return new Promise((res,rej)=>{
-//     Promise.all([fetchPostedJobs(),fetchAllApplications()]).then((response)=>{
-//       res(response);
-//     })
-//   })
-// }
 
 interface Application {
   _id: string;

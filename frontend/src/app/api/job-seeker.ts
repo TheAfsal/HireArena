@@ -1,11 +1,12 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { fetchMyApplications } from "./job";
+import { ADMIN_ROUTES } from "@/constants/apiRoutes";
 
 export async function fetchCandidates(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/admin-service/api/admin/candidates`
+      ADMIN_ROUTES.FETCH_CANDIDATES_BY_ADMIN
     );
 
     return response.data;
@@ -23,7 +24,7 @@ export async function fetchCandidates(): Promise<any> {
 export async function updateJobSeekerStatus(id: string): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/admin/candidates`,
+      ADMIN_ROUTES.UPDATE_CANDIDATES_STATUS_BY_ADMIN,
       { userId: id }
     );
 
@@ -39,15 +40,6 @@ export async function updateJobSeekerStatus(id: string): Promise<any> {
   }
 }
 
-// export async function fetchDashboardDataForCandidate(): Promise<any> {
-//   try {
-//     let response =  await fetchMyApplications();
-//     console.log(response);
-    
-//   } catch (error) {
-//     throw new Error("Failed to fetch dashboard data");
-//   }
-// }
 
 export async function fetchDashboardDataForCandidate(): Promise<any[]> {
   try {

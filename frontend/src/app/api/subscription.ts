@@ -1,11 +1,12 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { SubscriptionPlan } from "../admin/subscription/components/subscription-history";
+import { SUBSCRIPTION_ROUTES } from "@/constants/apiRoutes";
 
 export async function createSubscription(plan: any): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/admin-service/api/subscriptions`,
+      SUBSCRIPTION_ROUTES.SUBSCRIPTION,
       { plan }
     );
 
@@ -24,7 +25,7 @@ export async function createSubscription(plan: any): Promise<any> {
 export async function updateSubscription(plan: any): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/admin-service/api/subscriptions/${plan.id}`,
+      `${SUBSCRIPTION_ROUTES.SUBSCRIPTION}/${plan.id}`,
       { plan }
     );
 
@@ -42,9 +43,7 @@ export async function updateSubscription(plan: any): Promise<any> {
 
 export async function fetchPlans(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/admin-service/api/subscriptions`
-    );
+    const response = await axiosInstance.get(SUBSCRIPTION_ROUTES.SUBSCRIPTION);
 
     return response.data.data;
   } catch (error: unknown) {
@@ -61,7 +60,7 @@ export async function fetchPlans(): Promise<any> {
 export async function subscribe(planId: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/api/subscription/create-checkout-session`,
+      SUBSCRIPTION_ROUTES.SUBSCRIBE_CANDIDATE,
       { planId }
     );
 
@@ -80,7 +79,7 @@ export async function subscribe(planId: string): Promise<any> {
 export async function verifySubscription(sessionId: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/user-service/api/subscription/verify?session_id=${sessionId}`
+      `${SUBSCRIPTION_ROUTES.VERIFY_SUBSCRIPTION}=${sessionId}`
     );
 
     return response.data;
@@ -97,7 +96,9 @@ export async function verifySubscription(sessionId: string): Promise<any> {
 
 export async function fetchMySubscription(): Promise<any> {
   try {
-    const response = await axiosInstance.get(`/user-service/api/subscription/`);
+    const response = await axiosInstance.get(
+      SUBSCRIPTION_ROUTES.MY_SUBSCRIPTION
+    );
     console.log(response.data);
 
     return response.data;
@@ -115,7 +116,7 @@ export async function fetchMySubscription(): Promise<any> {
 export async function fetchSubscriptionHistory(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/subscription/user`
+      SUBSCRIPTION_ROUTES.FETCH_SUBSCRIPTION_HISTORY
     );
     console.log(response.data);
 
@@ -131,14 +132,13 @@ export async function fetchSubscriptionHistory(): Promise<any> {
   }
 }
 
-
 export async function fetchSubscriptionsByAdmin(
   page: number,
   pageSize: number
 ): Promise<{ subscriptions: SubscriptionPlan[]; total: number }> {
   try {
     const response = await axiosInstance.get(
-      `/user-service/api/admin/subscriptions?page=${page}&pageSize=${pageSize}`
+      `${SUBSCRIPTION_ROUTES.FETCH_SUBSCRIPTION_BY_ADMIN}?page=${page}&pageSize=${pageSize}`
     );
     console.log(response.data);
 
@@ -155,22 +155,3 @@ export async function fetchSubscriptionsByAdmin(
     throw new Error("Unknown error occurred");
   }
 }
-
-// export async function fetchSubscriptionsByAdmin(): Promise<any> {
-//   try {
-//     const response = await axiosInstance.get(
-//       `/user-service/api/admin/subscriptions`
-//     );
-//     console.log(response.data);
-
-//     return response.data.data;
-//   } catch (error: unknown) {
-//     if (axios.isAxiosError(error)) {
-//       throw new Error(
-//         error.response ? error.response.data.error : "Something went wrong"
-//       );
-//     }
-
-//     throw new Error("Unknown error occurred");
-//   }
-// }

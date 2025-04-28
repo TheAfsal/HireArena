@@ -2,13 +2,14 @@ import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { IInterview } from "@/Types/application.types";
 import { ScheduleForm } from "../panel/schedule/page";
+import { INTERVIEW_ROUTES as ROUTES } from "@/constants/apiRoutes";
 
 export async function fetchAptitudeQuestions(
   interviewId: string
 ): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/${interviewId}`
+      `${ROUTES.FETCH_APTITUDE_QUESTION}/${interviewId}`
     );
 
     return response.data.questions;
@@ -29,7 +30,7 @@ export async function submitAptitude(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/interviews/aptitude/submit`,
+      ROUTES.SUBMIT_APTITUDE_QUESTION,
       { interviewId, data }
     );
 
@@ -48,7 +49,7 @@ export async function submitAptitude(
 export async function fetchAptitudeResult(interviewId: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/aptitude-result/${interviewId}`
+      `${ROUTES.FETCH_APTITUDE_RESULT}/${interviewId}`
     );
 
     return response.data.result;
@@ -66,7 +67,7 @@ export async function fetchAptitudeResult(interviewId: string): Promise<any> {
 export async function fetchMachineTaskByJobId(jobId: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/machine-task/job/${jobId}`
+      `${ROUTES.FETCH_MACHINE_TASK_BY_JOB}/${jobId}`
     );
 
     return response.data.task;
@@ -84,7 +85,7 @@ export async function fetchMachineTaskByJobId(jobId: string): Promise<any> {
 export async function fetchMachineTaskDetails(taskId: string): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/machine-task/${taskId}`
+      `${ROUTES.FETCH_MACHINE_TASK}/${taskId}`
     );
 
     return response.data.task;
@@ -102,7 +103,7 @@ export async function fetchMachineTaskDetails(taskId: string): Promise<any> {
 export async function startMachineTask(taskId: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/machine-task/start-task`,
+      ROUTES.START_MACHINE_TASK,
       { taskId }
     );
 
@@ -125,7 +126,7 @@ export async function submitMachineTask(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/machine-task/submit`,
+      ROUTES.SUBMIT_MACHINE_TASK,
       { taskId, repoUrl,jobId }
     );
 
@@ -144,7 +145,7 @@ export async function submitMachineTask(
 export async function fetchAllApplications(): Promise<IInterview[]> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/company-applications`
+      ROUTES.FETCH_ALL_APPLICATIONS
     );
 
     console.log("@@ company all applications ", response.data);
@@ -164,7 +165,7 @@ export async function fetchAllApplications(): Promise<IInterview[]> {
 export async function fetchJobApplications(jobId:string): Promise<IInterview[]> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/job-applications?id=${jobId}`
+      `${ROUTES.FETCH_JOB_APPLICATIONS}?id=${jobId}`
     );
 
     console.log("@@ company all applications ", response.data);
@@ -183,10 +184,9 @@ export async function fetchJobApplications(jobId:string): Promise<IInterview[]> 
 
 export async function scheduleInterview(form: ScheduleForm): Promise<any> {
   try {
-    console.log(form);
 
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/interviews/schedule`,
+      ROUTES.SCHEDULE_INTERVIEW,
       { form }
     );
 
@@ -205,7 +205,7 @@ export async function scheduleInterview(form: ScheduleForm): Promise<any> {
 export async function fetchMySchedule(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/interview-mgmt-service/api/interviews/schedule`
+      ROUTES.FETCH_MY_SCHEDULE
     );
 
     return response.data;
@@ -228,7 +228,7 @@ export async function submitVideoInterview(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/interview-mgmt-service/api/interviews/submit-video-call-interview`,
+      ROUTES.SUBMIT_VIDEO_INTERVIEW,
       { interviewId, candidateId, remarks, status }
     );
 

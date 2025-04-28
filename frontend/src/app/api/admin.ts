@@ -1,12 +1,13 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { AUTH_ROUTES as ROUTES } from "@/constants/apiRoutes";
 
 export async function approveCompanyVerification(
   companyId: string
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/admin/verify/${companyId}`,
+      `${ROUTES.VERIFY_BY_ADMIN}/${companyId}`,
       { status: "Approved" }
     );
 
@@ -28,7 +29,7 @@ export async function rejectCompanyVerification(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/user-service/api/admin/verify/${companyId}`,
+      `${ROUTES.VERIFY_BY_ADMIN}/${companyId}`,
       { status: "Rejected", rejectReason: reason }
     );
 

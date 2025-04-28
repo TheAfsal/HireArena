@@ -1,11 +1,12 @@
 "use client";
 
+import { BASE_URL, USER_ROUTES } from "@/constants/apiRoutes";
 import axios from "axios";
 
 const refreshToken = async () => {
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_GATEWAY_URL}/user-service/auth/api/auth/refresh-token`,
+      `${BASE_URL}${USER_ROUTES.REFRESH_TOKEN}`,
       {},
       { withCredentials: true }
     );
@@ -22,7 +23,7 @@ const refreshToken = async () => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_GATEWAY_URL,
+  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

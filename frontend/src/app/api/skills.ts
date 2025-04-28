@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { SKILL_ROUTES } from "@/constants/apiRoutes";
 
 // CategoryType
 export async function AddCategoryType(
@@ -7,10 +8,10 @@ export async function AddCategoryType(
   description: string
 ): Promise<any> {
   try {
-    const response = await axiosInstance.post(
-      `/job-service/api/categories/create`,
-      { name, description }
-    );
+    const response = await axiosInstance.post(SKILL_ROUTES.ADD_CATEGORY_TYPE, {
+      name,
+      description,
+    });
 
     return response.data;
   } catch (error: unknown) {
@@ -31,10 +32,12 @@ export async function EditCategoryType(
   status: boolean
 ): Promise<any> {
   try {
-    const response = await axiosInstance.put(
-      `/job-service/api/categories/update`,
-      { name, description, id, status }
-    );
+    const response = await axiosInstance.put(SKILL_ROUTES.EDIT_CATEGORY_TYPE, {
+      name,
+      description,
+      id,
+      status,
+    });
 
     return response.data;
   } catch (error: unknown) {
@@ -50,9 +53,7 @@ export async function EditCategoryType(
 
 export async function fetchCategoryType(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/job-service/api/categories/`
-    );
+    const response = await axiosInstance.get(SKILL_ROUTES.CATEGORY_TYPE);
 
     return response.data;
   } catch (error: unknown) {
@@ -74,7 +75,7 @@ export async function AddJobCategory(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/job-service/api/job-categories/create`,
+      SKILL_ROUTES.CREATE_CATEGORIES,
       { name, description, categoryTypeId: categoryType }
     );
 
@@ -99,7 +100,7 @@ export async function EditJobCategory(
 ): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/job-service/api/job-categories/update`,
+      SKILL_ROUTES.EDIT_CATEGORIES,
       { name, description, id, status, categoryTypeId: categoryType }
     );
 
@@ -118,7 +119,7 @@ export async function EditJobCategory(
 export async function fetchJobCategory(): Promise<any> {
   try {
     const response = await axiosInstance.get(
-      `/job-service/api/job-categories/`
+      SKILL_ROUTES.CATEGORIES,
     );
 
     return response.data;
@@ -137,7 +138,7 @@ export async function fetchJobCategory(): Promise<any> {
 export async function AddTechStack(name: string): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/job-service/api/tech-stacks/create`,
+      SKILL_ROUTES.ADD_TECH_STACK,
       { name }
     );
 
@@ -156,7 +157,7 @@ export async function AddTechStack(name: string): Promise<any> {
 export async function EditTechStack(id: string, name: string): Promise<any> {
   try {
     const response = await axiosInstance.put(
-      `/job-service/api/tech-stacks/update`,
+      SKILL_ROUTES.EDIT_TECH_STACK,
       { name, id }
     );
 
@@ -174,9 +175,7 @@ export async function EditTechStack(id: string, name: string): Promise<any> {
 
 export async function fetchTechStack(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/job-service/api/tech-stacks/`
-    );
+    const response = await axiosInstance.get(SKILL_ROUTES.TECH_STACK);
 
     return response.data;
   } catch (error: unknown) {
@@ -197,7 +196,7 @@ export async function AddSkills(
 ): Promise<any> {
   try {
     const response = await axiosInstance.post(
-      `/job-service/api/skills/create`,
+      SKILL_ROUTES.ADD_SKILLS,
       { name, jobCategoryId }
     );
 
@@ -215,10 +214,10 @@ export async function AddSkills(
 
 export async function EditSkills(id: string, name: string): Promise<any> {
   try {
-    const response = await axiosInstance.put(
-      `/job-service/api/skills/update`,
-      { name, id }
-    );
+    const response = await axiosInstance.put(SKILL_ROUTES.EDIT_SKILLS, {
+      name,
+      id,
+    });
 
     return response.data;
   } catch (error: unknown) {
@@ -234,9 +233,7 @@ export async function EditSkills(id: string, name: string): Promise<any> {
 
 export async function fetchSkills(): Promise<any> {
   try {
-    const response = await axiosInstance.get(
-      `/job-service/api/skills/`
-    );
+    const response = await axiosInstance.get(SKILL_ROUTES.SKILLS);
 
     return response.data;
   } catch (error: unknown) {

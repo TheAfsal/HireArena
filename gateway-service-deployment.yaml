@@ -22,7 +22,7 @@ spec:
             - name: NODE_ENV
               value: "development"
             - name: CLIENT_URL
-              value: "http://localhost:3000"
+              value: "https://hirearena.vercel.app"
             - name: USER_SERVER_URL
               value: "user-service"
             - name: JOB_SERVER_URL
