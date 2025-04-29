@@ -9,9 +9,9 @@ const page = () => {
   return (
     <div className="bg-background h-screen">
       <Hero />
-      <JobCategories />
-      <FeaturedJobs />
-      <LatestJobs />
+      {/* <JobCategories /> */}
+      {/* <FeaturedJobs /> */}
+      {/* <LatestJobs /> */}
       <Footer />
     </div>
   );

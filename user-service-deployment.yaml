@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.0
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -23,7 +23,7 @@ spec:
             - name: PORT
               value: "5000"
             - name: FRONT_END_URL
-              value: "http://localhost:3000"
+              value: "https://hirearena.vercel.app"
             # - name: DIRECT_URL
             #   value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&statement_cache_mode=describe"
             - name: DATABASE_URL

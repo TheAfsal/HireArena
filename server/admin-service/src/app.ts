@@ -122,7 +122,7 @@ app.use((req, res, next) => {
       status: statusCode,
       duration,
       ip: req.ip,
-      userId: JSON.parse(req.headers["x-user"] as string).userId || "anonymous",
+      userId: req.headers["x-user"] ? JSON.parse(req.headers["x-user"] as string).userId : "anonymous",
     });
   });
 

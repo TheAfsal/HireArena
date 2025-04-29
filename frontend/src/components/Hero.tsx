@@ -33,7 +33,7 @@ function Hero() {
               Great platform for the job seeker that searching for new career
               heights and passionate about startups.
             </p>
-            <div className="bg-white rounded-sm shadow-lg p-4 text-black">
+            {/* <div className="bg-white rounded-sm shadow-lg p-4 text-black">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative items-center">
                   <Search className="absolute left-2 top-2 h-5 w-5 text-gray-400" />
@@ -58,7 +58,7 @@ function Hero() {
                   Search my job
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             <div className="mt-4 text-sm text-text-content">
               Popular: UI Designer, UX Researcher, Android, Admin

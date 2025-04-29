@@ -285,7 +285,7 @@ app.get(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.redirect(`http://localhost:3000/google-login?token=${accessToken}`);
+    res.redirect(`https://hirearena.vercel.app/google-login?token=${accessToken}`);
   }
 );
 

@@ -21,16 +21,12 @@ app.use(
   })
 );
 
-// Setup WebSocket proxy using `http-proxy-middleware`
-// const socketIoProxy = ;
 const socketIoProxy = createProxyMiddleware({
   target: "http://chat-service:5009",
   ws: true,
   changeOrigin: true,
   on: {
-    // Custom headers if needed
     proxyReqWs: (proxyReq, req) => {
-      // You can add custom headers to the WebSocket request if needed
       //@ts-ignore
       if (req.user) {
         //@ts-ignore
@@ -40,135 +36,112 @@ const socketIoProxy = createProxyMiddleware({
   },
 });
 
-
-// app.use(helmet());
-// app.use(morgan("dev"));
+app.use(helmet());
+app.use(morgan("dev"));
 
 // performance & logging
-// const collectDefaultMetrics = client.collectDefaultMetrics;
-// collectDefaultMetrics();
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
 
-// const httpRequestCounter = new client.Counter({
-//   name: "http_requests_total",
-//   help: "Total number of HTTP requests",
-//   labelNames: ["method", "route", "status_code"],
-// });
+const httpRequestCounter = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
+});
 
-// const httpRequestDuration = new client.Histogram({
-//   name: "http_request_duration_seconds",
-//   help: "Duration of HTTP requests in seconds",
-//   labelNames: ["method", "route", "status_code"],
-//   buckets: [0.1, 0.5, 1, 2, 5],
-// });
+const httpRequestDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.1, 0.5, 1, 2, 5],
+});
 
-// app.get("/metrics", async (req, res) => {
-//   res.set("Content-Type", client.register.contentType);
-//   res.end(await client.register.metrics());
-// });
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
 
-// export const logger = winston.createLogger({
-//   format: winston.format.combine(
-//     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-//     winston.format.json() // For Loki
-//   ),
-//   transports: [
-//     new LokiTransport({
-//       host: "http://loki:3100",
-//       labels: { job: "gateway-service", environment: "development" },
-//       json: true,
-//       replaceTimestamp: true,
-//     }),
-//     new winston.transports.Console({
-//       format: winston.format.combine(
-//         winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-//         winston.format((info) => {
-//           const { level, ...metadata } = info;
-//           return { ...info, metadata };
-//         })(),
-//         winston.format.printf(({ timestamp, level, message, metadata }) => {
-//           return `[${timestamp}] ${level.toUpperCase()}: ${message} ${JSON.stringify(
-//             metadata
-//           )}`;
-//         })
-//       ),
-//     }),
-//   ],
-// });
+export const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    winston.format.json() // For Loki
+  ),
+  transports: [
+    new LokiTransport({
+      host: "http://loki:3100",
+      labels: { job: "gateway-service", environment: "development" },
+      json: true,
+      replaceTimestamp: true,
+    }),
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        winston.format((info) => {
+          const { level, ...metadata } = info;
+          return { ...info, metadata };
+        })(),
+        winston.format.printf(({ timestamp, level, message, metadata }) => {
+          return `[${timestamp}] ${level.toUpperCase()}: ${message} ${JSON.stringify(
+            metadata
+          )}`;
+        })
+      ),
+    }),
+  ],
+});
 
-// app.use((req, res, next) => {
-//   const start = Date.now();
-//   const requestId = uuidv4();
-//   req.requestId = requestId;
+app.use((req, res, next) => {
+  const start = Date.now();
+  const requestId = uuidv4();
+  req.requestId = requestId;
 
-//   logger.info("Received request", {
-//     requestId,
-//     method: req.method,
-//     path: req.path,
-//     status: null,
-//     duration: 0,
-//     ip: req.ip,
-//   });
+  logger.info("Received request", {
+    requestId,
+    method: req.method,
+    path: req.path,
+    status: null,
+    duration: 0,
+    ip: req.ip,
+  });
 
-//   res.on("finish", () => {
-//     const duration = Date.now() - start;
-//     const statusCode = res.statusCode;
-//     const logLevel =
-//       statusCode >= 500
-//         ? "error"
-//         : statusCode >= 400 || duration > 5000
-//         ? "warn"
-//         : "info";
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    const statusCode = res.statusCode;
+    const logLevel =
+      statusCode >= 500
+        ? "error"
+        : statusCode >= 400 || duration > 5000
+        ? "warn"
+        : "info";
 
-//     httpRequestCounter.inc({
-//       method: req.method,
-//       route: req.path,
-//       status_code: res.statusCode,
-//     });
-//     httpRequestDuration.observe(
-//       { method: req.method, route: req.path, status_code: res.statusCode },
-//       duration
-//     );
+    httpRequestCounter.inc({
+      method: req.method,
+      route: req.path,
+      status_code: res.statusCode,
+    });
+    httpRequestDuration.observe(
+      { method: req.method, route: req.path, status_code: res.statusCode },
+      duration
+    );
 
-//     logger[logLevel]("Completed request", {
-//       requestId,
-//       method: req.method,
-//       path: req.path,
-//       status: statusCode,
-//       duration,
-//       ip: req.ip,
-//       userId: req.user?.userId || "anonymous",
-//     });
-//   });
+    logger[logLevel]("Completed request", {
+      requestId,
+      method: req.method,
+      path: req.path,
+      status: statusCode,
+      duration,
+      ip: req.ip,
+      userId: req.user?.userId || "anonymous",
+    });
+  });
 
-//   next();
-// });
+  next();
+});
 
-// app.get("/health", (req: Request, res: Response) => {
-//   res.status(200).json({ status: "Gateway Service is up and running!" });
-// });
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({ status: "Gateway Service is up and running!" });
+});
 
-
-
-
-//
-// app.use(
-//   "/socket.io",
-//   createProxyMiddleware({
-//     target: "http://chat-service:5009",
-//     changeOrigin: true,
-//     ws: true,
-//   })
-// );
-
-// app.use(
-//   "/chat",
-//   createProxyMiddleware({
-//     target: "http://chat-service:5009",
-//     changeOrigin: true,
-//     ws: true,
-//     pathRewrite: { "^/chat": "" },
-//   })
-// );
 
 const proxyMiddleware = createProxyMiddleware<Request, Response>({
   target: `http://${process.env.USER_SERVER_URL}:5000`,
@@ -215,13 +188,6 @@ app.use(
   createProxyMiddleware({
     target: `http://${process.env.ADMIN_SERVER_URL}:5003`,
     changeOrigin: true,
-    on: {
-      // proxyReq: (proxyReq, req, res) => {
-      //   if (req.user) {
-      //     proxyReq.setHeader("x-user", JSON.stringify(req.user));
-      //   }
-      // },
-    },
   })
 );
 
@@ -257,41 +223,6 @@ app.use(
   })
 );
 
-// app.use(
-//   '/user-service',
-//   validateAccessToken,
-//   createProxyMiddleware({
-//     target: process.env.USER_SERVICE_URL || 'http://localhost:5000',
-//     changeOrigin: true,
-//     on: {
-//       // Intercept the proxy request and modify the request headers
-//       proxyReq: (proxyReq, req, res) => {
-//         console.log("!!!!!!!!");
-//         console.log(req.user);
-
-//         if (req.user) {
-//           // Pass `req.user` in the headers
-//           proxyReq.setHeader('x-user', JSON.stringify(req.user));
-//         }
-//       },
-
-//       // Intercept the proxy response
-//       proxyRes: (proxyRes, req, res) => {
-//         // You can modify the response headers if needed
-//         console.log(`Proxy Response Headers: `, proxyRes.headers);
-//         // Example: Modify response headers before passing to the client
-//         proxyRes.headers['x-modified'] = 'true';
-//       },
-
-//       // Error handling event
-//       // error: (err, req, res) => {
-//       //   console.error('Proxy Error:', err);
-//       //   res.status(500).json({ error: 'Proxy error occurred', message: err.message });
-//       // },
-//     },
-//   })
-// );
-
 app.use( socketIoProxy);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -303,3 +234,33 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 export default app;
+
+
+
+
+
+
+
+
+
+
+
+//
+// app.use(
+//   "/socket.io",
+//   createProxyMiddleware({
+//     target: "http://chat-service:5009",
+//     changeOrigin: true,
+//     ws: true,
+//   })
+// );
+
+// app.use(
+//   "/chat",
+//   createProxyMiddleware({
+//     target: "http://chat-service:5009",
+//     changeOrigin: true,
+//     ws: true,
+//     pathRewrite: { "^/chat": "" },
+//   })
+// );

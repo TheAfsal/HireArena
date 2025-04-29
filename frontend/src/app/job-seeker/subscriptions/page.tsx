@@ -4,10 +4,7 @@ import SubscriptionPlans from "./components/SubscriptionPlans";
 const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
-      
-      <main>
-        <SubscriptionPlans />
-      </main>
+      <main><SubscriptionPlans /></main>
     </div>
   );
 };

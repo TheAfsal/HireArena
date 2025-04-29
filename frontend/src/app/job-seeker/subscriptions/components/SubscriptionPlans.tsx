@@ -6,7 +6,7 @@ import {
   fetchPlans,
   subscribe,
   fetchMySubscription,
-  fetchSubscriptionHistory, // Add this function
+  fetchSubscriptionHistory, 
 } from "@/app/api/subscription";
 import { toast } from "sonner";
 import {

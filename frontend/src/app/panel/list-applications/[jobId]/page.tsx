@@ -69,7 +69,13 @@ import { cn } from "@/lib/utils";
 import { error } from "console";
 import { fetchJobDetails } from "@/app/api/job";
 import { fetchJobApplications } from "@/app/api/interview";
-import { ICandidate, IInterview, RoundType, RoundStatus, JobStatus } from "@/Types/job.types";
+import {
+  ICandidate,
+  IInterview,
+  RoundType,
+  RoundStatus,
+  JobStatus,
+} from "@/Types/job.types";
 
 const JobDashboardPage: React.FC = () => {
   const { jobId } = useParams();
@@ -392,7 +398,8 @@ const JobDashboardPage: React.FC = () => {
     { name: "GraphQL", count: 2 },
   ];
 
-  return (
+  const pages = [1, 2, 3, 4, 5];
+  const currentPage = 1;return (
     <div className="h-full w-full bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
@@ -448,20 +455,20 @@ const JobDashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="statistics" className="w-full">
+        <Tabs defaultValue="details" className="w-full">
           <TabsList className="mb-4">
-            <TabsTrigger value="statistics">Statistics</TabsTrigger>
+            {/* <TabsTrigger value="statistics">Statistics</TabsTrigger> */}
+            <TabsTrigger value="details">Job Details</TabsTrigger>
             <TabsTrigger value="applications">
               Applications ({applications?.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="details">Job Details</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="statistics">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
+          {/* <TabsContent value="statistics"> */}
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+          {/* <Card>
                 <CardHeader>
-                  <CardTitle>Application Status</CardTitle>
+                  <CardTitle>Application Status (Dummy)</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-80">
@@ -469,7 +476,20 @@ const JobDashboardPage: React.FC = () => {
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
-                            data={applicationStatusData}
+                            data={[
+                              {
+                                name: "Completed",
+                                value: 12,
+                                color: "#22c55e",
+                              },
+                              {
+                                name: "In Progress",
+                                value: 8,
+                                color: "#3b82f6",
+                              },
+                              { name: "Pending", value: 6, color: "#facc15" },
+                              { name: "Rejected", value: 4, color: "#ef4444" },
+                            ]}
                             cx="50%"
                             cy="50%"
                             innerRadius={60}
@@ -481,28 +501,25 @@ const JobDashboardPage: React.FC = () => {
                             }
                             labelLine={false}
                           >
-                            {applicationStatusData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
+                            <Cell fill="#22c55e" />
+                            <Cell fill="#3b82f6" />
+                            <Cell fill="#facc15" />
+                            <Cell fill="#ef4444" />
                           </Pie>
-                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </PieChart>
                       </ResponsiveContainer>
                       <ChartLegend className="mt-4 flex justify-center gap-4">
-                        {applicationStatusData.map((status, index) => (
-                          <ChartLegendItem
-                            key={index}
-                            name={status.name}
-                            color={status.color}
-                          />
-                        ))}
+                        <ChartLegendItem name="Completed" color="#22c55e" />
+                        <ChartLegendItem name="In Progress" color="#3b82f6" />
+                        <ChartLegendItem name="Pending" color="#facc15" />
+                        <ChartLegendItem name="Rejected" color="#ef4444" />
                       </ChartLegend>
                     </ChartContainer>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
-              <Card>
+          {/* <Card>
                 <CardHeader>
                   <CardTitle>Applications Over Time</CardTitle>
                 </CardHeader>
@@ -520,15 +537,14 @@ const JobDashboardPage: React.FC = () => {
                             fill="#8884d8"
                             fillOpacity={0.3}
                           />
-                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </AreaChart>
                       </ResponsiveContainer>
                     </ChartContainer>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
-              <Card>
+          {/* <Card>
                 <CardHeader>
                   <CardTitle>Interview Stage Completion</CardTitle>
                 </CardHeader>
@@ -542,7 +558,6 @@ const JobDashboardPage: React.FC = () => {
                           <Bar dataKey="completed" fill="#4ade80" />
                           <Bar dataKey="failed" fill="#f87171" />
                           <Bar dataKey="pending" fill="#facc15" />
-                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </BarChart>
                       </ResponsiveContainer>
                       <ChartLegend className="mt-4 flex justify-center gap-4">
@@ -553,9 +568,9 @@ const JobDashboardPage: React.FC = () => {
                     </ChartContainer>
                   </div>
                 </CardContent>
-              </Card>
+              </Card> */}
 
-              <Card>
+          {/* <Card>
                 <CardHeader>
                   <CardTitle>Candidate Skills Distribution</CardTitle>
                 </CardHeader>
@@ -563,19 +578,17 @@ const JobDashboardPage: React.FC = () => {
                   <div className="h-80">
                     <ChartContainer>
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart layout="vertical" data={candidateSkillsData}>
                           <XAxis type="number" />
                           <YAxis dataKey="name" type="category" width={100} />
                           <Bar dataKey="count" fill="#60a5fa" />
-                          {/* <ChartTooltip content={<ChartTooltipContent />} /> */}
                         </BarChart>
                       </ResponsiveContainer>
                     </ChartContainer>
                   </div>
                 </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+              </Card> */}
+          {/* </div> */}
+          {/* </TabsContent> */}
 
           <TabsContent value="applications">
             <Card>
@@ -897,7 +910,9 @@ const JobDashboardPage: React.FC = () => {
                         </div>
                         <div className="flex items-center">
                           <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
-                          <span className="text-sm">Salary: {`${job.salaryMin} - ${job.salaryMax}`}</span>
+                          <span className="text-sm">
+                            Salary: {`${job.salaryMin} - ${job.salaryMax}`}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1053,6 +1068,24 @@ const JobDashboardPage: React.FC = () => {
             )}
           </DialogContent>
         </Dialog>
+        <div className="flex items-center justify-center mt-6 space-x-2">
+          <Button variant="normal" disabled={currentPage === 1}>
+            Previous
+          </Button>
+
+          {pages.map((page) => (
+            <Button
+              key={page}
+              variant={page === currentPage ? "default" : "outline"}
+            >
+              {page}
+            </Button>
+          ))}
+
+          <Button variant="outline" disabled={currentPage === pages.length}>
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -84,7 +84,6 @@ class SubscriptionController implements ISubscriptionController {
       res.status(StatusCodes.OK).json({ data: plans });
     } catch (error) {
       console.log(error);
-
       res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: (error as Error).message });

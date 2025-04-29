@@ -53,7 +53,7 @@ services:
       - VERIFICATION_TOKEN_SECRET="d13d23qwe341r342e23eqe32"
       - ACCESS_TOKEN_SECRET=your-access-token-secret
       - REFRESH_TOKEN_SECRET=your-refresh-token-secret
-      - GOOGLE_CLIENT_ID=892370541918-tpo69pcvf47h0k3r5i2tm6mbj31t3vup.apps.googleusercontent.com
+      - GOOGLE_CLIENT_ID=258204932509-q1but04jdr9fi3l7jgacr19rvm1k1fq8.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
       - GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
       - SESSION_SECRET=your_secret_key

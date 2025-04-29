@@ -33,7 +33,7 @@ services:
 
   # User service
   user-service:
-    image: user-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.0
     build:
       context: ./server/user-service
     container_name: user-service
@@ -168,7 +168,7 @@ services:
     build:
       context: ./server/admin-service
     container_name: admin-service
-    image: admin-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/admin-service:v1.0.0
     ports:
       - "5003:5003"
     volumes:

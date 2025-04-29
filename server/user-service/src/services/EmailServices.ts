@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { IEmailService } from "../core/interfaces/services/IEmailService";
 import "colors";
+import { logger } from "app";
 class EmailService implements IEmailService {
   private transporter;
 
@@ -17,7 +18,7 @@ class EmailService implements IEmailService {
   async sendVerificationEmail(email: string, token: string): Promise<void> {
     try {
       const verificationUrl = `${process.env.FRONT_END_URL}/auth/verify-email/${token}`;
-      const message = `<p>Dear [User's Name],</p>
+      const message = `<p>Dear User,</p>
 
         <p>Thank you for joining <strong>HireArena</strong>! We're excited to have you on board as you take the next steps toward landing your dream job.</p>
 
@@ -35,10 +36,9 @@ class EmailService implements IEmailService {
         <p>The HireArena Team</p>
 
         <p style="font-size: 12px; color: #888;">If you're having trouble clicking the button, use this link: <a href="${verificationUrl}">${verificationUrl}</a></p>
-
       `;
 
-      console.log(verificationUrl);
+      logger.info(verificationUrl);
 
       // await this.transporter.sendMail({
       //   to: email,
@@ -79,7 +79,7 @@ class EmailService implements IEmailService {
         <p style="font-size: 12px; color: #888;">If you're having trouble clicking the button, use this link: <a href="${invitationUrl}">${invitationUrl}</a></p>
       `;
 
-      console.log(message.bgCyan);
+      logger.info(message.bgCyan);
 
       // await this.transporter.sendMail({
       //   to: email,
@@ -115,7 +115,7 @@ class EmailService implements IEmailService {
         <p style="font-size: 12px; color: #888;">If you're having trouble clicking the button, use this link: <a href="${passwordChangeUrl}">${passwordChangeUrl}</a></p>
       `;
   
-      console.log(passwordChangeUrl);
+      logger.info(passwordChangeUrl);
   
       // await this.transporter.sendMail({
       //   to: email,
