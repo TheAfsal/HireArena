@@ -62,8 +62,8 @@ export function ChatInterface({
     }
   };
 
-  console.log("user : ->" , user);
-  console.log("user : ->" , userId);
+  // console.log("user : ->" , user);
+  // console.log("user : ->" , userId);
     
 
   return (

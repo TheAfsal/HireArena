@@ -2,6 +2,7 @@
 import { ISkillController } from "@core/interfaces/controllers/ISkillController";
 import { ISkillService } from "@core/interfaces/services/ISkillService";
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
 export class SkillController implements ISkillController {
   private skillService: ISkillService;
@@ -19,11 +20,11 @@ export class SkillController implements ISkillController {
         status: true,
       });
       
-      res.status(201).json(skill);
+      res.status(StatusCodes.CREATED).json(skill);
     } catch (error) {
       console.log(error);
       
-      res.status(500).json({ error: "Failed to create skill" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create skill" });
     }
   };
 
@@ -37,9 +38,9 @@ export class SkillController implements ISkillController {
         experienceLevel,
         status,
       });
-      res.status(200).json(updatedSkill);
+      res.status(StatusCodes.OK).json(updatedSkill);
     } catch (error) {
-      res.status(500).json({ error: "Failed to update skill" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update skill" });
     }
   };
 
@@ -49,21 +50,21 @@ export class SkillController implements ISkillController {
       //@ts-ignore
       const skill = await this.skillService.getSkill(Number(id));
       if (skill) {
-        res.status(200).json(skill);
+        res.status(StatusCodes.OK).json(skill);
       } else {
         res.status(404).json({ error: "Skill not found" });
       }
     } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve skill" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve skill" });
     }
   };
 
   getAll = async (req: Request, res: Response) => {
     try {
       const skills = await this.skillService.getSkills();
-      res.status(200).json(skills);
+      res.status(StatusCodes.OK).json(skills);
     } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve skills" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve skills" });
     }
   };
 
@@ -72,9 +73,9 @@ export class SkillController implements ISkillController {
       const { id } = req.params;
       //@ts-ignore
       await this.skillService.deleteSkill(Number(id));
-      res.status(204).send();
+      res.status(StatusCodes.NO_CONTENT).send();
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete skill" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to delete skill" });
     }
   };
 }

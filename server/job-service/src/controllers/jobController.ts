@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
 import { IUser } from "../core/types/IUser";
 import {
-  createConversation,
-  getCompaniesDetails,
   getCompanyIdByUserId,
 } from "@config/grpcClient";
 import { IJobController } from "@core/interfaces/controllers/IJobController";
 import { IJobService } from "@core/interfaces/services/IJobService";
 import * as grpc from "@grpc/grpc-js";
 import { IJob } from "@shared/types/job.types";
+import { StatusCodes } from "http-status-codes";
+
 
 declare global {
   namespace Express {
@@ -34,10 +34,10 @@ class JobController implements IJobController {
 
       const job = await this.jobService.createJob(req.body, userId);
 
-      res.status(201).json({ message: "Job created successfully", job });
+      res.status(StatusCodes.CREATED).json({ message: "Job created successfully", job });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
     }
   };
 
@@ -46,7 +46,7 @@ class JobController implements IJobController {
       const updatedJob = await this.jobService.updateJob(req.params.id, req.body);
       res.json(updatedJob);
     } catch (error) {
-      res.status(400).json({ error: (error as Error).message });
+      res.status(StatusCodes.BAD_REQUEST).json({ error: (error as Error).message });
     }
   }
 
@@ -87,7 +87,7 @@ class JobController implements IJobController {
       const { jobs, total } = await this.jobService.getAllJobsForAdmin(page, pageSize, search);
       res.json({ jobs, total });
     } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
     }
   };
 
@@ -103,7 +103,7 @@ class JobController implements IJobController {
 
       res.json(jobDetails);
     } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
     }
   };
 
@@ -115,7 +115,7 @@ class JobController implements IJobController {
       const jobs = await this.jobService.getAllJobsBrief(userId);
       res.json(jobs);
     } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
     }
   };
 
@@ -252,7 +252,7 @@ class JobController implements IJobController {
       });
     } catch (error) {
       console.error("Error fetching jobs:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal Server Error" });
     }
     // try {
     //   const filters = req.query;
@@ -273,7 +273,7 @@ class JobController implements IJobController {
       const companyId = await getCompanyIdByUserId(userId);
 
       if (!companyId) {
-        res.status(400).json({ error: "Company ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ error: "Company ID is required" });
         return;
       }
 
@@ -281,7 +281,7 @@ class JobController implements IJobController {
       res.json({ success: true, data: jobs });
     } catch (error) {
       console.error("Error fetching company jobs:", error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
   };
 

@@ -4,68 +4,13 @@ import { createConversation, GetCompaniesDetails, IsJobExist } from "@config/grp
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
 import { IInterviewController } from "@core/interfaces/controllers/IInterviewController";
 import { RoundStatus, RoundType } from "model/Interview";
+import { StatusCodes } from "http-status-codes";
 
 class InterviewController implements IInterviewController {
   constructor(
     private interviewService: IInterviewService,
     private aptitudeService: IAptitudeService
   ) {}
-
-  // getAptitudeQuestions = async (req: Request, res: Response) => {
-  //   try {
-  //     const { interviewId } = req.params;
-
-  //     if (!interviewId) {
-  //       res
-  //         .status(400)
-  //         .json({ success: false, message: "Interview ID is required" });
-  //       return;
-  //     }
-
-  //     const questions = await this.interviewService.fetchAptitudeQuestions(
-  //       interviewId
-  //     );
-
-  //     if (typeof questions === "string") {
-  //       res.status(403).json({ success: false, message: questions });
-  //       return;
-  //     }
-
-  //     res.json({ success: true, questions });
-  //   } catch (error) {
-  //     console.log(error);
-  //     res
-  //       .status(500)
-  //       .json({ success: false, message: (error as Error).message });
-  //   }
-  // };
-
-  // fetchAppliedJobStatus = async (req: Request, res: Response) => {
-  //   try {
-  //     const { jobId } = req.params;
-
-  //     const { userId } = req.headers["x-user"]
-  //       ? JSON.parse(req.headers["x-user"] as string)
-  //       : null;
-
-  //     if (!jobId) {
-  //       res.status(400).json({ error: "Application is missing" });
-  //       return;
-  //     }
-
-  //     const status = await this.interviewService.fetchAppliedJobStatus(
-  //       jobId,
-  //       userId
-  //     );
-  //     res.json({ status });
-  //     return;
-  //   } catch (error: any) {
-  //     res.status(500).json({ error: error.message });
-  //     return;
-  //   }
-  // };
-
-  // Adding changes
 
   applyJob = async (req: Request, res: Response) => {
     try {
@@ -75,19 +20,13 @@ class InterviewController implements IInterviewController {
         : null;
 
       if (!jobId) {
-        res.status(400).json({ message: "job is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "job is required" });
         return;
       }
 
-      console.log(1);
-      
-      
       const jobDetails = await IsJobExist(jobId);
-      console.log(2);
       
       if (!jobDetails) throw new Error("Job not found");
-      console.log(jobDetails);
-      console.log(3);
       
       const application = await this.interviewService.applyForJob(
         jobId,
@@ -97,15 +36,9 @@ class InterviewController implements IInterviewController {
           testOptions: JSON.parse(jobDetails.job.testOptions),
         }
       );
-      console.log(4);
-      
       const companyId = jobDetails.job.companyId;
       
       const companyDetails = await GetCompaniesDetails([companyId]);
-      
-      console.log(5);
-      console.log(companyDetails);
-      console.log(6);
       
       await createConversation(
         [userId, companyId],
@@ -113,25 +46,23 @@ class InterviewController implements IInterviewController {
         companyDetails[0].companyName,
         companyDetails[0].logo
       );
-
-      console.log(6);
       
       if (!application.state) {
         throw new Error("Job application failed");
       }
 
       if (application.state[0].roundType === "Aptitude Test") {
-        res.status(201).json({
+        res.status(StatusCodes.CREATED).json({
           message: "Job application submitted, aptitude test scheduled",
           interviewId: application._id,
         });
         return;
       }
 
-      res.status(201).json(application);
+      res.status(StatusCodes.CREATED).json(application);
     } catch (error) {
       console.log(error);
-      res.status(400).json({ message: (error as Error).message });
+      res.status(StatusCodes.BAD_REQUEST).json({ message: (error as Error).message });
     }
   };
 
@@ -141,7 +72,7 @@ class InterviewController implements IInterviewController {
 
       if (!interviewId) {
         res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "Interview ID is required" });
         return;
       }
@@ -151,7 +82,7 @@ class InterviewController implements IInterviewController {
       );
 
       if (!application || !application.jobId) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
           message: "The requested application is not valid",
         });
@@ -162,7 +93,7 @@ class InterviewController implements IInterviewController {
       );
 
       if (!questions) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
           message: "Questions generation failed",
         });
@@ -178,7 +109,7 @@ class InterviewController implements IInterviewController {
     } catch (error) {
       console.log(error);
       res
-        .status(500)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: (error as Error).message });
     }
   };
@@ -191,7 +122,7 @@ class InterviewController implements IInterviewController {
 
       if(companyId){
         return res
-          .status(200)
+          .status(StatusCodes.OK)
           .json({ status: false, message: "not a job-seeker" });
       }  
 
@@ -204,16 +135,16 @@ class InterviewController implements IInterviewController {
 
       if (!applications)
         return res
-          .status(200)
+          .status(StatusCodes.OK)
           .json({ status: false, message: "user not applied for thie job" });
 
       console.log("@@ fetching candidate application status: ", applications);
 
-      res.status(200).json({ state: applications.state });
+      res.status(StatusCodes.OK).json({ state: applications.state });
       return;
     } catch (error) {
       console.log("Error fetching job applications:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
       return;
     }
   };
@@ -239,7 +170,7 @@ class InterviewController implements IInterviewController {
       console.log("result", result);
       
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         success: true,
         data: result.applications,
         pagination: {
@@ -251,7 +182,7 @@ class InterviewController implements IInterviewController {
       });
     } catch (error) {
       console.log("@@ Error fetching job applications by Company:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
   }
 
@@ -268,11 +199,11 @@ class InterviewController implements IInterviewController {
 
       console.log("@@ companies all application", applications);
 
-      res.status(200).json(applications);
+      res.status(StatusCodes.OK).json(applications);
       return;
     } catch (error) {
       console.log("@@ Error fetching job applications by Company:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
       return;
     }
   };
@@ -286,11 +217,11 @@ class InterviewController implements IInterviewController {
 
       console.log("@@ companies all application", applications);
 
-      res.status(200).json(applications);
+      res.status(StatusCodes.OK).json(applications);
       return;
     } catch (error) {
       console.log("@@ Error fetching job applications by Company:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
       return;
     }
   };
@@ -307,11 +238,11 @@ class InterviewController implements IInterviewController {
 
       console.log("@@ companies all application of candidate", applications);
 
-      res.status(200).json(applications);
+      res.status(StatusCodes.OK).json(applications);
       return;
     } catch (error) {
       console.log("@@ Error fetching applications for candidate :", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
       return;
     }
   };
@@ -328,11 +259,11 @@ class InterviewController implements IInterviewController {
 
       console.log("@@ schduled applications of ", applications);
 
-      res.status(200).json(applications);
+      res.status(StatusCodes.OK).json(applications);
       return;
     } catch (error) {
       console.log("@@ Error fetching applications for candidate :", error);
-      res.status(500).json({ success: false, message: "Server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
       return;
     }
   };
@@ -348,12 +279,12 @@ class InterviewController implements IInterviewController {
       console.log(interviewId, role, scheduledAt);
 
       if (!interviewId || !role || !scheduledAt) {
-        return res.status(400).json({ message: "Missing required fields" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Missing required fields" });
       }
 
       const scheduledDate = new Date(scheduledAt);
       if (isNaN(scheduledDate.getTime())) {
-        return res.status(400).json({ message: "Invalid date format" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid date format" });
       }
 
       const updatedInterview = await this.interviewService.scheduleInterview(
@@ -363,7 +294,7 @@ class InterviewController implements IInterviewController {
         scheduledDate
       );
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         success: true,
         data: updatedInterview,
         message: "Interview scheduled successfully",
@@ -371,7 +302,7 @@ class InterviewController implements IInterviewController {
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: `Error scheduling interview: ${(error as Error).message}`,
       });
@@ -386,11 +317,11 @@ class InterviewController implements IInterviewController {
         : null; 
       
       if (!interviewId || !candidateId || !status || !remarks) {
-        return res.status(400).json({ message: "Missing required fields" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Missing required fields" });
       }
 
       if (!Object.values(RoundStatus).includes(status)) {
-        return res.status(400).json({ message: "Invalid status" });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid status" });
       }
       
       const updatedInterview = await this.interviewService.submitVideoInterview(
@@ -402,7 +333,7 @@ class InterviewController implements IInterviewController {
       );
       console.log(3);
       
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         success: true,
         data: updatedInterview,
         message: "Video interview submitted successfully"
@@ -411,7 +342,7 @@ class InterviewController implements IInterviewController {
       console.log(4);
       console.log(error);
       
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: `Error submitting video interview: ${(error as Error).message}`
       });

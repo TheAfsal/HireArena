@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { IJobCategoryController } from "@core/interfaces/controllers/IJobCategoryController";
 import { IJobCategoryService } from "@core/interfaces/services/IJobCategoryService";
+import { StatusCodes } from "http-status-codes";
 
 export class JobCategoryController implements IJobCategoryController{
   private jobCategoryService: IJobCategoryService;
@@ -17,9 +18,9 @@ export class JobCategoryController implements IJobCategoryController{
         description,
         categoryTypeId
       );
-      res.status(201).json(jobCategory);
+      res.status(StatusCodes.CREATED).json(jobCategory);
     } catch (error) {
-      res.status(500).json({ error: "Failed to create job category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create job category" });
     }
   };
 
@@ -34,11 +35,11 @@ export class JobCategoryController implements IJobCategoryController{
           status,
           categoryTypeId
         );
-      res.status(200).json(updatedJobCategory);
+      res.status(StatusCodes.OK).json(updatedJobCategory);
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ error: "Failed to update job category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update job category" });
     }
   };
 
@@ -48,21 +49,21 @@ export class JobCategoryController implements IJobCategoryController{
       //@ts-ignore
       const jobCategory = await this.jobCategoryService.getJobCategory(Number(id));
       if (jobCategory) {
-        res.status(200).json(jobCategory);
+        res.status(StatusCodes.OK).json(jobCategory);
       } else {
-        res.status(404).json({ error: "Job category not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ error: "Job category not found" });
       }
     } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve job category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve job category" });
     }
   };
 
   getAll = async (req: Request, res: Response) => {
     try {
       const jobCategories = await this.jobCategoryService.getJobCategories();
-      res.status(200).json(jobCategories);
+      res.status(StatusCodes.OK).json(jobCategories);
     } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve job categories" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve job categories" });
     }
   };
 
@@ -71,9 +72,9 @@ export class JobCategoryController implements IJobCategoryController{
       const { id } = req.params;
       //@ts-ignore
       await this.jobCategoryService.deleteJobCategory(Number(id));
-      res.status(204).send();
+      res.status(StatusCodes.NO_CONTENT).send();
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete job category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to delete job category" });
     }
   };
 }

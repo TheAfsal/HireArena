@@ -7,7 +7,7 @@ import { TYPES } from "@di/types";
 import { inject, injectable } from "inversify";
 import { Server, Socket } from "socket.io";
 import { getCompanyIdByUserId } from "@config/grpc.client";
-
+import { StatusCodes } from "http-status-codes";
 declare global {
   namespace Express {
     interface Request {
@@ -19,7 +19,6 @@ declare global {
 @injectable()
 export class ChatController implements IChatController {
   constructor(
-    // @inject(TYPES.SocketIOServer) private io: Server,
     @inject(TYPES.ChatService) private chatService: IChatService
   ) {}
 
@@ -55,7 +54,7 @@ export class ChatController implements IChatController {
   //     console.log(this.io);
   //     this.io.to(roomId).emit("newMessage", savedMessage, (response) => {
   //       console.log(response);
-        
+
   //       if (response === "success") {
   //         console.log("Message was successfully sent to the room");
   //       } else {
@@ -107,15 +106,15 @@ export class ChatController implements IChatController {
         : null;
 
       if (!userId) {
-        res.status(400).json({ message: "userId is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "userId is required" });
         return;
       }
 
       const conversations = await this.chatService.getUserConversations(userId);
-      res.status(200).json({ conversations, userId });
+      res.status(StatusCodes.OK).json({ conversations, userId });
       return;
     } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -127,22 +126,24 @@ export class ChatController implements IChatController {
         : null;
 
       if (!userId) {
-        res.status(400).json({ message: "userId is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "userId is required" });
         return;
       }
 
-      const companyId = await getCompanyIdByUserId(userId)
+      const companyId = await getCompanyIdByUserId(userId);
 
       if (!companyId) {
-        res.status(400).json({ error: "Company ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ error: "Company ID is required" });
         return;
       }
 
-      const conversations = await this.chatService.getUserConversations(companyId);
-      res.status(200).json({ conversations, companyId });
+      const conversations = await this.chatService.getUserConversations(
+        companyId
+      );
+      res.status(StatusCodes.OK).json({ conversations, companyId });
       return;
     } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };

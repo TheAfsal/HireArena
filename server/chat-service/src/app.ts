@@ -14,6 +14,13 @@ import { v4 as uuidv4 } from 'uuid';
 const app: Application = express();
 const server = http.createServer(app);
 dotenv.config();
+
+app.use((req,res,next)=>{
+  console.log("@@ \n\n\n\n    ",req.url,"\n\n\n");
+  next()
+})
+
+
 const socketManager = container.get<SocketManager>(TYPES.SocketManager);
 socketManager.setupSocket(server);
 
@@ -67,94 +74,54 @@ export const logger = winston.createLogger({
   ],
 });
 
-app.use((req:any, res, next) => {
-  const start = Date.now();
-  const requestId = uuidv4();
-  req.requestId = requestId;
+// app.use((req:any, res, next) => {
+//   const start = Date.now();
+//   const requestId = uuidv4();
+//   req.requestId = requestId;
 
-  logger.info("Received request", {
-    requestId,
-    method: req.method,
-    path: req.path,
-    status: null,
-    duration: 0,
-    ip: req.ip,
-  });
+//   logger.info("Received request", {
+//     requestId,
+//     method: req.method,
+//     path: req.path,
+//     status: null,
+//     duration: 0,
+//     ip: req.ip,
+//   });
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    const statusCode = res.statusCode;
-    const logLevel =
-      statusCode >= 500
-        ? "error"
-        : statusCode >= 400 || duration > 5000
-        ? "warn"
-        : "info";
+//   res.on("finish", () => {
+//     const duration = Date.now() - start;
+//     const statusCode = res.statusCode;
+//     const logLevel =
+//       statusCode >= 500
+//         ? "error"
+//         : statusCode >= 400 || duration > 5000
+//         ? "warn"
+//         : "info";
 
-    httpRequestCounter.inc({
-      method: req.method,
-      route: req.path,
-      status_code: res.statusCode,
-    });
-    httpRequestDuration.observe(
-      { method: req.method, route: req.path, status_code: res.statusCode },
-      duration
-    );
+//     httpRequestCounter.inc({
+//       method: req.method,
+//       route: req.path,
+//       status_code: res.statusCode,
+//     });
+//     httpRequestDuration.observe(
+//       { method: req.method, route: req.path, status_code: res.statusCode },
+//       duration
+//     );
 
-    logger[logLevel]("Completed request", {
-      requestId,
-      method: req.method,
-      path: req.path,
-      status: statusCode,
-      duration,
-      ip: req.ip,
-      userId: JSON.parse(req.headers["x-user"] as string).userId || "anonymous",
-    });
-  });
+//     logger[logLevel]("Completed request", {
+//       requestId,
+//       method: req.method,
+//       path: req.path,
+//       status: statusCode,
+//       duration,
+//       ip: req.ip,
+//       userId: JSON.parse(req.headers["x-user"] as string).userId || "anonymous",
+//     });
+//   });
 
-  next();
-});
+//   next();
+// });
 
 app.use("/api/chats", chatRoutes);
 
 export default server;
-
-// const io = new Server(server, {
-//   cors: {
-//     origin: "*",
-//     methods: ["GET", "POST"],
-//   },
-// });
-
-// const chatController = container.get<IChatController>(TYPES.ChatController);
-
-// io.use((socket, next) => {
-//   const token = socket.handshake.auth.token;
-//   if (!token) return next(new Error("Authentication error"));
-
-//   try {
-//     jwt.verify(
-//       token,
-//       process.env.ACCESS_TOKEN_SECRET as string,
-//       (err, decoded) => {
-//         if (err) {
-//           return next(new Error("Invalid or expired token"));
-//         }
-
-//         if (decoded && typeof decoded === "object") {
-//           socket.userId = decoded.userId;
-//         } else {
-//           return next(new Error("Invalid token structure"));
-//         }
-
-//         next();
-//       }
-//     );
-//   } catch (err) {
-//     next(new Error("Invalid token"));
-//   }
-// });
-// io.on("connection", (socket) => {
-//   console.log("New user connected: ----------------------------------------------", socket.id);
-//   chatController.registerEvents(socket);
-// });

@@ -33,9 +33,13 @@ export default function ChatApp() {
   const [users, setUsers] = useState<User[]>([]);
   const [myId, setMyId] = useState<string>("");
   const [messages, setMessages] = useState<{ [key: string]: Message[] }>({});
-  const [notifications, setNotifications] = useState<{ [key: string]: number }>({});
+  const [notifications, setNotifications] = useState<{ [key: string]: number }>(
+    {}
+  );
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<
+    string | null
+  >(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -44,16 +48,28 @@ export default function ChatApp() {
   };
 
   useEffect(() => {
-    console.log("@@ chat");
-
-    const newSocket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`, {
+    // const newSocket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`, {
+    const newSocket = io(`http://localhost:4000`, {
+      transports: ["websocket"],
       auth: { token: getAuthToken() },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
       console.log("Connected to chat server");
+      socket;
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.log("Connection error:", error.message);
+    });
+
+    newSocket.on("reconnect_attempt", (attempt) => {
+      console.log(`Reconnection attempt ${attempt}`);
     });
 
     const fetchUsers = async () => {
@@ -103,12 +119,14 @@ export default function ChatApp() {
       // Increment notification count
       setNotifications((prev) => ({
         ...prev,
-        [notification.conversationId]: (prev[notification.conversationId] || 0) + 1,
+        [notification.conversationId]:
+          (prev[notification.conversationId] || 0) + 1,
       }));
     });
 
     newSocket.on("chatHistory", (history: Message[]) => {
-      const conversationId = history.length > 0 ? history[0].conversationId : selectedConversationId;
+      const conversationId =
+        history.length > 0 ? history[0].conversationId : selectedConversationId;
       if (conversationId) {
         setMessages((prev) => ({
           ...prev,
@@ -134,10 +152,9 @@ export default function ChatApp() {
 
   useEffect(() => {
     if (selectedUser && socket) {
-      console.log(selectedUser);
+      // console.log(selectedUser);
       const conversationId = selectedUser._id;
       setSelectedConversationId(conversationId);
-      // Clear notifications when opening a conversation
       setNotifications((prev) => {
         const updated = { ...prev };
         delete updated[conversationId];
@@ -160,6 +177,8 @@ export default function ChatApp() {
       roomId: selectedConversationId,
       content,
     };
+
+    console.log("****", newMessage);
 
     socket.emit("message", newMessage);
   };
@@ -208,5 +227,3 @@ export interface UserListProps {
   messages: { [key: string]: Message[] };
   notifications: { [key: string]: number };
 }
-
-

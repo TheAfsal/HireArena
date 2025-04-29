@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { CategoryService } from "@services/CategoryService";
 import { ICategoryController } from "@core/interfaces/controllers/ICategoryController";
 import { ICategoryService } from "@core/interfaces/services/ICategoryService";
-
-export class CategoryController implements ICategoryController{
+import { StatusCodes } from "http-status-codes";
+export class CategoryController implements ICategoryController {
   private categoryService: ICategoryService;
 
   constructor(categoryService: ICategoryService) {
@@ -17,18 +17,18 @@ export class CategoryController implements ICategoryController{
         name,
         description
       );
-      res.status(201).json(category);
+      res.status(StatusCodes.CREATED).json(category);
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ error: "Failed to create category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create category" });
     }
   };
 
   update = async (req: Request, res: Response) => {
     try {
       console.log("reaching update");
-      
+
       const { id, name, description, status } = req.body;
       console.log(id, name, description, status);
 
@@ -38,9 +38,9 @@ export class CategoryController implements ICategoryController{
         description,
         status
       );
-      res.status(200).json(updatedCategory);
+      res.status(StatusCodes.OK).json(updatedCategory);
     } catch (error) {
-      res.status(500).json({ error: "Failed to update category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update category" });
     }
   };
 
@@ -49,23 +49,23 @@ export class CategoryController implements ICategoryController{
       const { id } = req.params;
       const category = await this.categoryService.getCategory(id);
       if (category) {
-        res.status(200).json(category);
+        res.status(StatusCodes.OK).json(category);
       } else {
-        res.status(404).json({ error: "Category not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ error: "Category not found" });
       }
     } catch (error) {
-      res.status(500).json({ error: "Failed to retrieve category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve category" });
     }
   };
 
   getAll = async (req: Request, res: Response) => {
     try {
       const categories = await this.categoryService.getCategories();
-      res.status(200).json(categories);
+      res.status(StatusCodes.OK).json(categories);
     } catch (error) {
       console.log(error);
-      
-      res.status(500).json({ error: "Failed to retrieve categories" });
+
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to retrieve categories" });
     }
   };
 
@@ -75,7 +75,7 @@ export class CategoryController implements ICategoryController{
       await this.categoryService.deleteCategory(id);
       res.status(204).send();
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete category" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to delete category" });
     }
   };
 }

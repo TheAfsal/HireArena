@@ -277,3 +277,7 @@ afzi@afzi-Victus-by-HP-Gaming-Laptop-15-fa0xxx:~/web_dev/brototype/hire_arena$ a
         "tags": {}
     }
 }
+
+
+
+eksctl create cluster --name hirearena-cluster --version 1.32 --region us-east-1 --nodegroup-name demo-workers --node-type t3.small --nodes 3 --nodes-min 1 --nodes-max 4 --managed

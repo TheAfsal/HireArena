@@ -24,9 +24,9 @@ spec:
               value: "5000"
             - name: FRONT_END_URL
               value: "http://localhost:3000"
+            # - name: DIRECT_URL
+            #   value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&statement_cache_mode=describe"
             - name: DATABASE_URL
-              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-            - name: DIRECT_URL
               value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
             - name: VERIFICATION_TOKEN_SECRET
               value: "d13d23qwe341r342e23eqe32"

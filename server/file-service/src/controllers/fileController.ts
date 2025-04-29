@@ -2,6 +2,7 @@ import { ServerUnaryCall, sendUnaryData } from "@grpc/grpc-js";
 import { IFileController } from "core/interfaces/controllers/IFileController";
 import { IFileService } from "core/interfaces/services/IFileService";
 import { randomBytes } from "crypto";
+import { StatusCodes } from "http-status-codes";
 
 class FileController implements IFileController {
   private fileService: IFileService;
@@ -33,9 +34,8 @@ class FileController implements IFileController {
       callback(null, { fileUrl });
     } catch (error: any) {
       console.log(error);
-
       //@ts-ignore
-      callback({ code: 500, message: error.message });
+      callback({ code: StatusCodes.INTERNAL_SERVER_ERROR, message: error.message });
     }
   }
 }

@@ -4,9 +4,10 @@ import stripeLib from "stripe";
 import { fetchSubscriptionPlan } from "@config/grpcClient";
 import { UserSubscription } from "@prisma/client";
 import { ISubscriptionController } from "@core/interfaces/controllers/ISubscriptionController";
+import { StatusCodes } from "http-status-codes";
 const stripe = new stripeLib(process.env.STRIPE_SECRET_KEY || "");
 
-class SubscriptionController implements ISubscriptionController{
+class SubscriptionController implements ISubscriptionController {
   private subscriptionService: any;
   private transactionService: any;
 
@@ -29,7 +30,7 @@ class SubscriptionController implements ISubscriptionController{
       const plan = await fetchSubscriptionPlan(planId);
 
       if (!plan) {
-        res.status(404).json({ message: "Plan not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: "Plan not found" });
         return;
       }
 
@@ -68,7 +69,7 @@ class SubscriptionController implements ISubscriptionController{
       res.json({ sessionUrl: session.url });
     } catch (error: any) {
       console.log(error);
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Failed to create checkout session",
         error: error.message,
       });
@@ -79,7 +80,7 @@ class SubscriptionController implements ISubscriptionController{
     try {
       const { session_id } = req.query;
       if (!session_id) {
-        res.status(400).json({ message: "Session ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Session ID is required" });
         return;
       }
 
@@ -87,7 +88,7 @@ class SubscriptionController implements ISubscriptionController{
         session_id as string
       );
       if (!session || session.payment_status !== "paid") {
-        res.status(400).json({ message: "Payment verification failed" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Payment verification failed" });
         return;
       }
 
@@ -96,7 +97,7 @@ class SubscriptionController implements ISubscriptionController{
       const transactionId = session.metadata?.transactionId;
 
       if (!userId || !planId) {
-        res.status(400).json({ message: "Invalid session metadata" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Invalid session metadata" });
         return;
       }
 
@@ -112,11 +113,11 @@ class SubscriptionController implements ISubscriptionController{
         transaction.id
       );
 
-      res.status(200).json({ message: "Subscription activated", subscription });
+      res.status(StatusCodes.OK).json({ message: "Subscription activated", subscription });
       return;
     } catch (error) {
       console.log("Subscription Verification Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
       return;
     }
   };
@@ -133,12 +134,12 @@ class SubscriptionController implements ISubscriptionController{
       console.log(subscription);
 
       res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({ message: "Subscription fetching successful", ...subscription });
       return;
     } catch (error) {
       console.log("Fetching Subscription Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
       return;
     }
   };
@@ -154,13 +155,13 @@ class SubscriptionController implements ISubscriptionController{
 
       const subscriptions: UserSubscription[] =
         await this.subscriptionService.getSubscriptionHistory(userId);
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         message: "Subscription history fetched successfully",
         subscriptions,
       });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
       return;
     }
   };
@@ -181,7 +182,7 @@ class SubscriptionController implements ISubscriptionController{
   //   } catch (error) {
   //       console.log(error);
 
-  //     res.status(400).json({ error: (error as Error).message });
+  //     res.status(StatusCodes.BAD_REQUEST).json({ error: (error as Error).message });
   //   }
   // };
 
@@ -193,7 +194,7 @@ class SubscriptionController implements ISubscriptionController{
   //     const plan = await subscriptionService.fetchPlan(planId);
   //     if (!plan)
   //       return res
-  //         .status(404)
+  //         .status(StatusCodes.NOT_FOUND)
   //         .json({ message: "Subscription plan not found." });
 
   //     const paymentIntent = await stripe.paymentIntents.create({
@@ -218,7 +219,7 @@ class SubscriptionController implements ISubscriptionController{
   //         transaction.transactionId,
   //         "failed"
   //       );
-  //       return res.status(400).json({ message: "Payment failed." });
+  //       return res.status(StatusCodes.BAD_REQUEST).json({ message: "Payment failed." });
   //     }
 
   //     const subscription = await subscriptionService.subscribeUser(
@@ -233,12 +234,12 @@ class SubscriptionController implements ISubscriptionController{
   //     );
 
   //     return res
-  //       .status(200)
+  //       .status(StatusCodes.OK)
   //       .json({ message: "Subscription successful", subscription });
   //   } catch (error) {
   //     console.error(error);
   //     res
-  //       .status(500)
+  //       .status(StatusCodes.INTERNAL_SERVER_ERROR)
   //       .json({ message: "Subscription failed", error: (error as Error).message });
   //   }
   // };

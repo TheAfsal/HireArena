@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
-import CompanyService from "@services/CompanyServices";
-import JobSeekerService from "@services/JobSeekerService";
-import SubscriptionService from "@services/SubscriptionService";
 import { IAdminController } from "@core/interfaces/controllers/IAdminController";
 import { ICompanyService } from "@core/interfaces/services/ICompanyService";
 import { IJobSeekerService } from "@core/interfaces/services/IJobSeekerService";
 import { ISubscriptionService } from "@core/interfaces/services/ISubscriptionService";
-
+import { StatusCodes } from "http-status-codes";
 class AdminController implements IAdminController {
   private companyService: ICompanyService;
   private jobSeekerService: IJobSeekerService;
@@ -22,26 +19,6 @@ class AdminController implements IAdminController {
     this.subscriptionService = subscriptionService;
   }
 
-  // getAllCandidateProfile = async (req: Request, res: Response): Promise<void> => {
-  //   try {
-  //   //   const { userId } = req.headers["x-user"]
-  //   //     ? JSON.parse(req.headers["x-user"] as string)
-  //   //     : null;
-
-  //   //   const updatedMediaLinks = await this.profileService.updateMediaLinks(
-  //   //     userId,
-  //   //     req.body
-  //   //   );
-
-  //   //   res.status(200).json(updatedMediaLinks);
-  //     return;
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(500).json({ message: (error as Error).message });
-  //     return;
-  //   }
-  // };
-
   toggleCandidateStatus = async (
     req: Request,
     res: Response
@@ -50,11 +27,11 @@ class AdminController implements IAdminController {
       const { userId } = req.body;
       const updatedCandidate = await this.jobSeekerService.toggleStatus(userId);
 
-      res.status(200).json(updatedCandidate);
+      res.status(StatusCodes.OK).json(updatedCandidate);
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -74,7 +51,7 @@ class AdminController implements IAdminController {
       );
       const total = await this.companyService.getCompaniesCount(search);
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         companies,
         total,
         page,
@@ -83,7 +60,7 @@ class AdminController implements IAdminController {
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -92,11 +69,11 @@ class AdminController implements IAdminController {
   //   try {
   //     const companies = await this.companyService.getAllCompanies();
 
-  //     res.status(200).json(companies);
+  //     res.status(StatusCodes.OK).json(companies);
   //     return;
   //   } catch (error) {
   //     console.log(error);
-  //     res.status(500).json({ message: (error as Error).message });
+  //     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
   //     return;
   //   }
   // };
@@ -107,7 +84,7 @@ class AdminController implements IAdminController {
       const { status, rejectReason } = req.body;
 
       if (status !== "Approved" && status !== "Rejected") {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           message: "Invalid status. Must be 'Approved' or 'Rejected'.",
         });
         return;
@@ -126,7 +103,7 @@ class AdminController implements IAdminController {
         data: verifiedCompany,
       });
     } catch (error) {
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         message: "Error verifying profile",
         error: (error as Error).message,
       });
@@ -142,12 +119,12 @@ class AdminController implements IAdminController {
       const { subscriptions, total } =
         await this.subscriptionService.getAllSubscriptions(skip, pageSize);
 
-      res.status(200).json({ success: true, data: { subscriptions, total } });
+      res.status(StatusCodes.OK).json({ success: true, data: { subscriptions, total } });
       return;
     } catch (error) {
       console.error("Error fetching subscriptions:", error);
       res
-        .status(500)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: "Internal Server Error" });
       return;
     }
@@ -157,12 +134,12 @@ class AdminController implements IAdminController {
   //   try {
   //     const subscriptions =
   //       await this.subscriptionService.getAllSubscriptions();
-  //     res.status(200).json({ success: true, data: subscriptions });
+  //     res.status(StatusCodes.OK).json({ success: true, data: subscriptions });
   //     return;
   //   } catch (error) {
   //     console.error("Error fetching subscriptions:", error);
   //     res
-  //       .status(500)
+  //       .status(StatusCodes.INTERNAL_SERVER_ERROR)
   //       .json({ success: false, message: "Internal Server Error" });
   //     return;
   //   }

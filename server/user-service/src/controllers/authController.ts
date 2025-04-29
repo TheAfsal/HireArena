@@ -6,14 +6,14 @@ import { IAuthResponse } from "../core/types/IAuthResponse";
 import { IUserCreateRequest } from "@core/types/IUserCreateRequest";
 import { IUser } from "@core/types/IUser";
 import { IAuthController } from "@core/interfaces/controllers/IAuthController";
-import { IJobSeeker } from "@shared/types/user.types";
 import { IProfileService } from "@core/interfaces/services/IProfileService";
+import { StatusCodes } from "http-status-codes";
 
 declare global {
   namespace Express {
     interface Request {
       user?: IUser;
-      requestId?:string
+      requestId?: string;
     }
   }
 }
@@ -32,7 +32,7 @@ class AuthController implements IAuthController {
       const userData: IUserCreateRequest = req.body;
 
       if (!userData.name || userData.name.trim().length < 3) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Name must be at least 3 characters long",
@@ -40,7 +40,7 @@ class AuthController implements IAuthController {
         return;
       }
       if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Invalid email address",
@@ -50,7 +50,7 @@ class AuthController implements IAuthController {
 
       // Validate password (e.g., minimum length 6 characters)
       if (!userData.password || userData.password.length < 6) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Password must be at least 6 characters",
@@ -60,12 +60,12 @@ class AuthController implements IAuthController {
 
       await this.authService.signup(userData);
 
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         status: "success",
         message: "Verification email sent. Please check your inbox.",
       });
     } catch (error) {
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during registration",
         error: (error as Error).message,
@@ -86,7 +86,7 @@ class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "User verified successfully",
         data: details?.user,
@@ -97,7 +97,7 @@ class AuthController implements IAuthController {
       return;
     } catch (error: any) {
       console.log(error);
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during registration",
         error: (error as Error).message,
@@ -114,7 +114,7 @@ class AuthController implements IAuthController {
       const userData: IUserCreateRequest = req.body;
 
       if (!userData.name || userData.name.trim().length < 3) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Name must be at least 3 characters long",
@@ -122,7 +122,7 @@ class AuthController implements IAuthController {
         return;
       }
       if (!userData.email || !/\S+@\S+\.\S+/.test(userData.email)) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Invalid email address",
@@ -131,7 +131,7 @@ class AuthController implements IAuthController {
       }
 
       if (!userData.password || userData.password.length < 6) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Password must be at least 6 characters",
@@ -141,12 +141,12 @@ class AuthController implements IAuthController {
 
       await this.authService.signupCompany(userData);
 
-      res.status(201).json({
+      res.status(StatusCodes.CREATED).json({
         status: "success",
         message: "Verification email sent. Please check your inbox.",
       });
     } catch (error) {
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during registration",
         error: (error as Error).message,
@@ -164,7 +164,7 @@ class AuthController implements IAuthController {
 
       // Validate email
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Invalid email address",
@@ -174,7 +174,7 @@ class AuthController implements IAuthController {
 
       // Validate password (e.g., minimum length 6 characters)
       if (!password || password.length < 6) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Password must be at least 6 characters",
@@ -191,7 +191,7 @@ class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "User logged in successfully",
         data: {
@@ -202,7 +202,7 @@ class AuthController implements IAuthController {
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during login",
         error: (error as Error).message,
@@ -219,7 +219,7 @@ class AuthController implements IAuthController {
       console.log(email, password);
 
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Invalid email address",
@@ -228,7 +228,7 @@ class AuthController implements IAuthController {
       }
 
       if (!password || password.length < 6) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Password must be at least 6 characters",
@@ -245,7 +245,7 @@ class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "User logged in successfully",
         data: {
@@ -255,7 +255,7 @@ class AuthController implements IAuthController {
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during login",
         error: (error as Error).message,
@@ -269,7 +269,7 @@ class AuthController implements IAuthController {
       console.log(email, password);
 
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Invalid email address",
@@ -278,7 +278,7 @@ class AuthController implements IAuthController {
       }
 
       if (!password || password.length < 6) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "An error occurred during login",
           error: "Password must be at least 6 characters",
@@ -295,7 +295,7 @@ class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "User logged in successfully",
         data: {
@@ -306,7 +306,7 @@ class AuthController implements IAuthController {
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred during login",
         error: (error as Error).message,
@@ -348,7 +348,7 @@ class AuthController implements IAuthController {
 
       const authResponse = await this.authService.refresh(refreshToken);
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Tokens refreshed successfully",
         data: { tokens: authResponse.tokens },
@@ -384,7 +384,7 @@ class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Tokens refreshed successfully",
         data: { tokens: token },
@@ -412,7 +412,7 @@ class AuthController implements IAuthController {
       if (!role) {
         details = await this.profileService.getProfile(userId);
         console.log("@@ who am i: ", details);
-        res.status(200).json({
+        res.status(StatusCodes.OK).json({
           status: "success",
           message: "user verified successfully",
           role: "job-seeker",
@@ -425,7 +425,7 @@ class AuthController implements IAuthController {
       } else {
         details = await this.profileService.fetchEmployeeProfile(userId);
         console.log("@@ who am i - : ", details);
-        res.status(200).json({
+        res.status(StatusCodes.OK).json({
           status: "success",
           message: "user verified successfully",
           role: details.role,
@@ -470,7 +470,7 @@ class AuthController implements IAuthController {
       }
 
       await this.authService.forgotPassword(email);
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Email sent successfully",
       });
@@ -491,7 +491,7 @@ class AuthController implements IAuthController {
       const { newPassword } = req.body;
 
       await this.authService.forgotPasswordUsingToken(token, newPassword);
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Password updated successfully",
       });

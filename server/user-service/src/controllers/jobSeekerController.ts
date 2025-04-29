@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as grpc from "@grpc/grpc-js";
 import ProfileService from "@services/ProfileService";
 import { IJobSeekerController } from "@core/interfaces/controllers/IJobSeekerController";
-
+import { StatusCodes } from "http-status-codes";
 class JobSeekerController implements IJobSeekerController {
   private profileService: any;
 
@@ -33,12 +33,12 @@ class JobSeekerController implements IJobSeekerController {
         gender,
         profileImage,
       });
-      res.status(200).json(updatedUser);
+      res.status(StatusCodes.OK).json(updatedUser);
       return;
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -50,11 +50,11 @@ class JobSeekerController implements IJobSeekerController {
         : null;
       const userProfile = await this.profileService.getProfile(userId);
 
-      res.status(200).json(userProfile);
+      res.status(StatusCodes.OK).json(userProfile);
     } catch (error) {
       console.log(error);
 
-      res.status(400).json({ error: (error as Error).message });
+      res.status(StatusCodes.BAD_REQUEST).json({ error: (error as Error).message });
     }
   };
 
@@ -65,15 +65,15 @@ class JobSeekerController implements IJobSeekerController {
         : null;
 
       if (!userId) {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
         return;
       }
 
       const profile = await this.profileService.getMinimalProfile(userId);
-      res.status(200).json(profile);
+      res.status(StatusCodes.OK).json(profile);
       return;
     } catch (error) {
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -86,7 +86,7 @@ class JobSeekerController implements IJobSeekerController {
       const { id } = req.params;
 
       if (!id) {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(StatusCodes.UNAUTHORIZED).json({ message: "Unauthorized" });
         return;
       }
 
@@ -94,12 +94,12 @@ class JobSeekerController implements IJobSeekerController {
 
       console.log(profile);
 
-      res.status(200).json(profile);
+      res.status(StatusCodes.OK).json(profile);
       return;
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -115,7 +115,7 @@ class JobSeekerController implements IJobSeekerController {
 
       if (!oldPassword || !newPassword) {
         res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Both old and new passwords are required." });
         return;
       }
@@ -125,12 +125,12 @@ class JobSeekerController implements IJobSeekerController {
         oldPassword,
         newPassword
       );
-      res.status(200).json({ message: "Password updated successfully." });
+      res.status(StatusCodes.OK).json({ message: "Password updated successfully." });
       return;
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -138,10 +138,10 @@ class JobSeekerController implements IJobSeekerController {
   // getAllJobSeekers = async (req: Request, res: Response) => {
   //   try {
   //     const usersProfile = await this.profileService.getAllProfiles();
-  //     res.status(200).json(usersProfile);
+  //     res.status(StatusCodes.OK).json(usersProfile);
   //   } catch (error) {
   //     console.log(error);
-  //     res.status(400).json({ error: (error as Error).message });
+  //     res.status(StatusCodes.BAD_REQUEST).json({ error: (error as Error).message });
   //   }
   // };
 
@@ -166,12 +166,12 @@ class JobSeekerController implements IJobSeekerController {
         ? JSON.parse(req.headers["x-user"] as string)
         : null;
 
-      res.status(200).json({ userId });
+      res.status(StatusCodes.OK).json({ userId });
       return;
     } catch (error) {
       console.log(error);
 
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };

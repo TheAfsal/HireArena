@@ -4,7 +4,7 @@ import InvitationService from "@services/InvitationService";
 import ProfileService from "@services/ProfileService";
 import CompanyService from "@services/CompanyServices";
 import { ICompanyController } from "@core/interfaces/controllers/ICompanyController";
-
+import { StatusCodes } from "http-status-codes";
 class CompanyController implements ICompanyController {
   private invitationService: any;
   private profileService: any;
@@ -36,7 +36,7 @@ class CompanyController implements ICompanyController {
       console.log(userId);
 
       if (!email || !userId || !role) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "Invalid input",
           error: "Email, companyId, and role are required.",
@@ -46,7 +46,7 @@ class CompanyController implements ICompanyController {
 
       await this.invitationService.sendInvitation(email, userId, role, message);
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Invitation sent successfully",
       });
@@ -55,7 +55,7 @@ class CompanyController implements ICompanyController {
       //@ts-ignore
       console.log(error);
 
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred while sending the invitation",
         error: (error as Error).message,
@@ -73,7 +73,7 @@ class CompanyController implements ICompanyController {
       const { token } = req.params;
 
       if (!token) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "Invalid input",
           error: "Authorization token is missing or malformed",
@@ -87,7 +87,7 @@ class CompanyController implements ICompanyController {
 
       console.log(invitationDetails);
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Invitation fetched successfully",
         data: invitationDetails,
@@ -97,7 +97,7 @@ class CompanyController implements ICompanyController {
       //@ts-ignore
       console.log(error);
 
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred while sending the invitation",
         error: (error as Error).message,
@@ -117,7 +117,7 @@ class CompanyController implements ICompanyController {
       console.log(token, name, password);
 
       if (!token || !name || !password) {
-        res.status(400).json({
+        res.status(StatusCodes.BAD_REQUEST).json({
           status: "error",
           message: "Invalid input",
           error: "Token, name and password are required.",
@@ -138,14 +138,14 @@ class CompanyController implements ICompanyController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(StatusCodes.OK).json({
         status: "success",
         message: "Invitation accepted successfully",
         data: user,
       });
       return;
     } catch (error) {
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         status: "error",
         message: "An error occurred while accepting the invitation",
         error: (error as Error).message,
@@ -165,15 +165,15 @@ class CompanyController implements ICompanyController {
       );
 
       if (!companyProfile) {
-        res.status(404).json({ message: "Company not found" });
+        res.status(StatusCodes.NOT_FOUND).json({ message: "Company not found" });
         return;
       }
 
-      res.status(200).json(companyProfile);
+      res.status(StatusCodes.OK).json(companyProfile);
       return;
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
       return;
     }
   };
@@ -221,11 +221,11 @@ class CompanyController implements ICompanyController {
         logo,
       });
 
-      res.status(200).json(updatedCompany);
+      res.status(StatusCodes.OK).json(updatedCompany);
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -238,11 +238,11 @@ class CompanyController implements ICompanyController {
 
       const CompanyDetails = await this.profileService.medialLinks(userId);
 
-      res.status(200).json(CompanyDetails);
+      res.status(StatusCodes.OK).json(CompanyDetails);
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -258,11 +258,11 @@ class CompanyController implements ICompanyController {
         req.body
       );
 
-      res.status(200).json(updatedMediaLinks);
+      res.status(StatusCodes.OK).json(updatedMediaLinks);
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };
@@ -282,9 +282,9 @@ class CompanyController implements ICompanyController {
 
       console.log("@@employees: ", employees);
 
-      res.status(200).json(employees);
+      res.status(StatusCodes.OK).json(employees);
     } catch (error) {
-      res.status(500).json({
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message:
           error instanceof Error ? error.message : "Internal server error",
@@ -305,11 +305,11 @@ class CompanyController implements ICompanyController {
     try {
       const CompaniesDetails = await this.companyService.getAllCompanies();
 
-      res.status(200).json(CompaniesDetails);
+      res.status(StatusCodes.OK).json(CompaniesDetails);
       return;
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: (error as Error).message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
       return;
     }
   };

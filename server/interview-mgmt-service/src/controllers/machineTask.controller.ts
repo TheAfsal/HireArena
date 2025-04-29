@@ -2,40 +2,43 @@ import { Request, Response } from "express";
 import * as grpc from "@grpc/grpc-js";
 import { IMachineTaskController } from "@core/interfaces/controllers/IMachineTaskController";
 import { IMachineTaskService } from "@core/interfaces/services/IMachineTaskService";
-
-class MachineTaskController implements IMachineTaskController{
+import { StatusCodes } from "http-status-codes";
+class MachineTaskController implements IMachineTaskController {
   constructor(private machineTaskService: IMachineTaskService) {}
 
   CreateMachineTask = async (
-      call: grpc.ServerUnaryCall<any, any>,
-      callback: grpc.sendUnaryData<any>
-    ) => {
-      try {
-        const { jobId, companyId } = call.request;
-  
-        if (!jobId || !companyId) throw new Error("Missing job id");
-  
-        console.log(`Generating machine test for job ${jobId}...`);
-  
-        let machineTest = await this.machineTaskService.createMachineTest(jobId, companyId);
-  
-        console.log("@@ machineTest : ", machineTest);
-  
-          return callback(null, { success: true });
-      } catch (error) {
-        console.log("Error creating aptitude test:", error);
-        callback({
-          code: grpc.status.INTERNAL,
-        });
-      }
-    };
+    call: grpc.ServerUnaryCall<any, any>,
+    callback: grpc.sendUnaryData<any>
+  ) => {
+    try {
+      const { jobId, companyId } = call.request;
+
+      if (!jobId || !companyId) throw new Error("Missing job id");
+
+      console.log(`Generating machine test for job ${jobId}...`);
+
+      let machineTest = await this.machineTaskService.createMachineTest(
+        jobId,
+        companyId
+      );
+
+      console.log("@@ machineTest : ", machineTest);
+
+      return callback(null, { success: true });
+    } catch (error) {
+      console.log("Error creating aptitude test:", error);
+      callback({
+        code: grpc.status.INTERNAL,
+      });
+    }
+  };
 
   getMachineTaskByJobId = async (req: Request, res: Response) => {
     try {
       const { jobId } = req.params;
 
       if (!jobId) {
-        res.status(400).json({ success: false, message: "Job ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Job ID is required" });
         return;
       }
 
@@ -45,7 +48,7 @@ class MachineTaskController implements IMachineTaskController{
       console.log(error);
 
       res
-        .status(500)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: (error as Error).message });
     }
   };
@@ -55,9 +58,7 @@ class MachineTaskController implements IMachineTaskController{
       const { taskId } = req.params;
 
       if (!taskId) {
-        res
-          .status(400)
-          .json({ success: false, message: "Task ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Task ID is required" });
         return;
       }
 
@@ -66,14 +67,14 @@ class MachineTaskController implements IMachineTaskController{
       );
 
       console.log("@@ taskDetails : ", taskDetails);
-      
+
       //@ts-ignore
       await this.machineTaskService.startMachineTask(taskDetails?._id);
-      
+
       res.json({ success: true, task: taskDetails });
     } catch (error) {
       res
-        .status(500)
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ success: false, message: (error as Error).message });
     }
   };
@@ -82,17 +83,17 @@ class MachineTaskController implements IMachineTaskController{
     try {
       const { taskId } = req.body;
       if (!taskId) {
-        res.status(400).json({ message: "Task ID is required" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Task ID is required" });
         return;
       }
 
       const result = await this.machineTaskService.startMachineTask(taskId);
-      res.status(200).json(result);
+      res.status(StatusCodes.OK).json(result);
       return;
     } catch (error: any) {
       console.log(error);
 
-      res.status(500).json({ message: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
       return;
     }
   };
@@ -103,10 +104,10 @@ class MachineTaskController implements IMachineTaskController{
       const isAllowed = await this.machineTaskService.isSubmissionAllowed(
         taskId
       );
-      res.status(200).json({ isAllowed });
+      res.status(StatusCodes.OK).json({ isAllowed });
       return;
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
       return;
     }
   };
@@ -120,7 +121,7 @@ class MachineTaskController implements IMachineTaskController{
         : null;
 
       if (!userId || !taskId || !repoUrl) {
-        res.status(400).json({ message: "Missing required fields" });
+        res.status(StatusCodes.BAD_REQUEST).json({ message: "Missing required fields" });
         return;
       }
 
@@ -134,7 +135,7 @@ class MachineTaskController implements IMachineTaskController{
       res.json(result);
     } catch (error) {
       console.error("Error submitting machine task:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Internal server error" });
     }
   };
 }

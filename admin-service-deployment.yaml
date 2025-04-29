@@ -35,10 +35,10 @@ spec:
               value: "your-access-token-secret"
             - name: REFRESH_TOKEN_SECRET
               value: "your-refresh-token-secret"
+            # - name: DIRECT_URL
+            #   value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&statement_cache_mode=describe"
             - name: DATABASE_URL
-              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-            - name: DIRECT_URL
-              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgresa"
+              value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
 ---
 apiVersion: v1
 kind: Service

@@ -2,7 +2,7 @@ import * as grpc from "@grpc/grpc-js";
 import { Request, Response } from "express";
 import IAptitudeController from "@core/interfaces/controllers/IAptitudeController";
 import IAptitudeService from "@core/interfaces/services/IAptitudeService";
-
+import { StatusCodes } from "http-status-codes";
 export default class AptitudeController implements IAptitudeController {
   constructor(private aptitudeService: IAptitudeService) {}
 
@@ -34,17 +34,17 @@ export default class AptitudeController implements IAptitudeController {
 
       if (!interviewId || !Array.isArray(data)) {
         res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ message: "Missing or invalid interviewId or data." });
         return;
       }
 
       const result = await this.aptitudeService.submitTest(interviewId, data);
-      res.status(200).json(result);
+      res.status(StatusCodes.OK).json(result);
       return;
     } catch (error: any) {
       console.error("Error submitting aptitude test:", error);
-      res.status(500).json({ message: error.message });
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
       return;
     }
   };

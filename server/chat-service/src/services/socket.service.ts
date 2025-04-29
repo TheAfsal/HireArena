@@ -15,7 +15,7 @@ export class SocketManager {
     this.chatService = chatService;
     this.io = new Server({
       cors: {
-        origin: "*",
+        origin: ["http://localhost:3000","http://localhost"],
         methods: ["GET", "POST"],
       },
     });
@@ -51,7 +51,9 @@ export class SocketManager {
       this.io.on("connection", (socket: Socket) => {
         console.log(`User ${socket.userId} connected`);
   
-        // Join a personal room for the user to receive notifications
+        console.log("@@@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n");
+        
+        
         socket.join(`user:${socket.userId}`);
   
         socket.on("joinRoom", (roomId: string) => {
