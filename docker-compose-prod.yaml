@@ -4,7 +4,7 @@ services:
     build:
       context: ./server/gateway-service
     container_name: gateway-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/gateway-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/gateway-service:v1.0.0
     ports:
       - "4000:4000"
     volumes:

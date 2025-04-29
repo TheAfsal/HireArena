@@ -48,8 +48,7 @@ export default function ChatApp() {
   };
 
   useEffect(() => {
-    // const newSocket = io(`${process.env.NEXT_PUBLIC_CHAT_SERVER_URL}`, {
-    const newSocket = io(`http://localhost:4000`, {
+    const newSocket = io(`${process.env.NEXT_PUBLIC_GATEWAY_URL}`, {
       transports: ["websocket"],
       auth: { token: getAuthToken() },
       reconnection: true,
