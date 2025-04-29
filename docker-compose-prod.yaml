@@ -198,7 +198,7 @@ services:
     build:
       context: ./server/chat-service
     container_name: chat-service
-    image: chat-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/chat-service:v1.0.0
     ports:
       - "5009:5009"
       - "5010:5010"

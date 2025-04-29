@@ -140,9 +140,14 @@ export default function VideoCall() {
 
   useEffect(() => {
     const peer = new Peer();
-    const socket = io(`${process.env.NEXT_PUBLIC_VIDEO_SERVER_URL}`, {
+    const socket = io(`${process.env.NEXT_PUBLIC_GATEWAY_URL}`, {
+      transports: ["websocket"],
       auth: { token: getAuthToken() },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
+
 
     peerInstance.current = peer;
     socketInstance.current = socket;
