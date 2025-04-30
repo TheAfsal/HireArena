@@ -1,10 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
+
+import { useEffect } from "react";
 import AuthForm from "./components/AuthForm";
 import HeaderCard from "./components/HeaderCard";
 import Navbar from "./components/Navbar";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import BackgroundPaths from "./components/BackgroundPaths";
 
 export default function Page() {
   const auth = useSelector((state: any) => state.auth);
@@ -17,12 +19,15 @@ export default function Page() {
   }, [auth]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="h-screen relative overflow-hidden bg-white dark:bg-neutral-950">
       <Navbar />
-      <main className="grid lg:grid-cols-2 gap-12 px-4 max-w-7xl mx-auto">
-        <HeaderCard />
-        <AuthForm />
-      </main>
+      <BackgroundPaths title="HireArena" />
+      <div className="relative z-10 pt-16 pb-24">
+        <main className="grid lg:grid-cols-2 mt-10 px-4 max-w-7xl mx-auto">
+          <div /> {/* Empty left column */}
+          <AuthForm /> {/* Right column */}
+        </main>
+      </div>
     </div>
   );
 }
