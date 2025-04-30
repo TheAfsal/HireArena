@@ -14,6 +14,15 @@ export class JobCategoryService implements IJobCategoryService {
     description: string,
     categoryTypeId: string
   ): Promise<IJobCategory> {
+    const isExisting = await this.jobCategoryRepository.findOne(
+      "name",
+      name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Job Category already exist");
+    }
+
     return await this.jobCategoryRepository.create({
       name,
       description,
@@ -29,6 +38,16 @@ export class JobCategoryService implements IJobCategoryService {
     status: boolean,
     categoryTypeId: string
   ): Promise<IJobCategory> {
+
+    const isExisting = await this.jobCategoryRepository.findOne(
+      "name",
+      name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Job Category already exist");
+    }
+
     return await this.jobCategoryRepository.update(id, {
       name,
       description,

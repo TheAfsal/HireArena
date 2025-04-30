@@ -1,13 +1,24 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
 import { fetchCandidates, updateJobSeekerStatus } from "@/app/api/job-seeker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface User {
   id: string;
@@ -20,6 +31,7 @@ interface User {
 
 export default function UsersPage() {
   const [candidates, setCandidates] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     const getCandidates = async () => {
@@ -34,19 +46,21 @@ export default function UsersPage() {
     getCandidates();
   }, []);
 
-  const toggleStatus = async (user: User) => {
-    try {
-      let response = await updateJobSeekerStatus(user.id);
-      console.log(response);
+  const confirmToggleStatus = async () => {
+    if (!selectedUser) return;
 
+    try {
+      const response = await updateJobSeekerStatus(selectedUser.id);
       setCandidates((prevCandidates) =>
         prevCandidates.map((candidate) =>
           candidate.email === response.email ? response : candidate
         )
       );
-      toast.success(`Candidate ${response.status?"unblocked":"blocked"} successfully`)
+      toast.success(`Candidate ${response.status ? "unblocked" : "blocked"} successfully`);
     } catch (err) {
-      toast.error("Error toggling user status")
+      toast.error("Error toggling user status");
+    } finally {
+      setSelectedUser(null);
     }
   };
 
@@ -108,22 +122,48 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                     {new Date(user.createdAt).toLocaleString("en-US", {
-                      weekday: "short", // 'Thu'
-                      year: "numeric", // '2025'
-                      month: "short", // 'Feb'
-                      hour: "2-digit", // '03'
-                      minute: "2-digit", // '39'
-                      hour12: true, // 'AM/PM'
+                      weekday: "short",
+                      year: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
                     })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <Button
-                      variant="ghost"
-                      className="text-gray-500 hover:text-gray-700"
-                      onClick={() => toggleStatus(user)}
-                    >
-                      {user.status ? "Block" : "Unblock"}
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="text-gray-500 hover:text-gray-700"
+                          onClick={() => setSelectedUser(user)}
+                        >
+                          {user.status ? "Block" : "Unblock"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {user.status
+                              ? `Block ${user.fullName}?`
+                              : `Unblock ${user.fullName}?`}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action can be reversed later.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel
+                            onClick={() => setSelectedUser(null)}
+                          >
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction onClick={confirmToggleStatus}>
+                            Confirm
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </td>
                 </tr>
               ))}

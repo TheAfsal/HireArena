@@ -21,4 +21,5 @@ export interface IJobCategoryRepository {
   ): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null>;
   findAll(): Promise<any>;
   delete(id: string): Promise<void>;
+  findOne(key: string, value: string): Promise<Omit<IJobCategory, "categoryType" | "jobs" | "skills"> | null>;
 }

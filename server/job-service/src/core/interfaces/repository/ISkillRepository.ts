@@ -22,4 +22,5 @@ export interface ISkillRepository {
     }[]
   >;
   delete(id: string): Promise<void>;
+  findOne(key: string, value: string): Promise<Partial<ISkill> | null> ;
 }

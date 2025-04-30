@@ -39,6 +39,18 @@ class CategoryRepository implements ICategoryRepository {
       where: { id },
     });
   }
+
+  async findOne(key: keyof ICategoryType, value: string): Promise<ICategoryType | null> {
+    return await this.prisma.categoryType.findFirst({
+      where: {
+        [key]: {
+          equals: value,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
+  
 }
 
 export default CategoryRepository;

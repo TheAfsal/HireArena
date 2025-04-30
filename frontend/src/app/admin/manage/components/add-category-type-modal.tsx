@@ -14,11 +14,11 @@ import { PlusCircle } from "lucide-react";
 
 interface AddCategoryModalProps {
   //   isOpen: boolean;
-  //   onClose: () => void;
+    onClose: () => void;
   onAddCategory: (categoryName: string, description: string) => void;
 }
 
-export const AddCategoryModal = ({ onAddCategory }: AddCategoryModalProps) => {
+export const AddCategoryModal = ({ onAddCategory,onClose }: AddCategoryModalProps) => {
   const [categoryName, setCategoryName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -57,7 +57,7 @@ export const AddCategoryModal = ({ onAddCategory }: AddCategoryModalProps) => {
           />
         </div>
         <DialogFooter>
-          <Button variant="link">Cancel</Button>
+          <Button variant="link" onClick={onClose}>Cancel</Button>
           <Button onClick={handleAddCategory}>Add Category</Button>
         </DialogFooter>
       </DialogContent>

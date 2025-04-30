@@ -26,9 +26,8 @@ export default function JobsPage() {
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch jobs with pagination and search
   useEffect(() => {
     const getJobs = async () => {
       setIsLoading(true);

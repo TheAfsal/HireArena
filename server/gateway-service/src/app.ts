@@ -40,26 +40,26 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 // performance & logging
-const collectDefaultMetrics = client.collectDefaultMetrics;
-collectDefaultMetrics();
+// const collectDefaultMetrics = client.collectDefaultMetrics;
+// collectDefaultMetrics();
 
-const httpRequestCounter = new client.Counter({
-  name: "http_requests_total",
-  help: "Total number of HTTP requests",
-  labelNames: ["method", "route", "status_code"],
-});
+// const httpRequestCounter = new client.Counter({
+//   name: "http_requests_total",
+//   help: "Total number of HTTP requests",
+//   labelNames: ["method", "route", "status_code"],
+// });
 
-const httpRequestDuration = new client.Histogram({
-  name: "http_request_duration_seconds",
-  help: "Duration of HTTP requests in seconds",
-  labelNames: ["method", "route", "status_code"],
-  buckets: [0.1, 0.5, 1, 2, 5],
-});
+// const httpRequestDuration = new client.Histogram({
+//   name: "http_request_duration_seconds",
+//   help: "Duration of HTTP requests in seconds",
+//   labelNames: ["method", "route", "status_code"],
+//   buckets: [0.1, 0.5, 1, 2, 5],
+// });
 
-app.get("/metrics", async (req, res) => {
-  res.set("Content-Type", client.register.contentType);
-  res.end(await client.register.metrics());
-});
+// app.get("/metrics", async (req, res) => {
+//   res.set("Content-Type", client.register.contentType);
+//   res.end(await client.register.metrics());
+// });
 
 export const logger = winston.createLogger({
   format: winston.format.combine(
@@ -90,57 +90,57 @@ export const logger = winston.createLogger({
   ],
 });
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const requestId = uuidv4();
-  req.requestId = requestId;
+// app.use((req, res, next) => {
+//   const start = Date.now();
+//   const requestId = uuidv4();
+//   req.requestId = requestId;
 
-  logger.info("Received request", {
-    requestId,
-    method: req.method,
-    path: req.path,
-    status: null,
-    duration: 0,
-    ip: req.ip,
-  });
+//   logger.info("Received request", {
+//     requestId,
+//     method: req.method,
+//     path: req.path,
+//     status: null,
+//     duration: 0,
+//     ip: req.ip,
+//   });
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    const statusCode = res.statusCode;
-    const logLevel =
-      statusCode >= 500
-        ? "error"
-        : statusCode >= 400 || duration > 5000
-        ? "warn"
-        : "info";
+//   res.on("finish", () => {
+//     const duration = Date.now() - start;
+//     const statusCode = res.statusCode;
+//     const logLevel =
+//       statusCode >= 500
+//         ? "error"
+//         : statusCode >= 400 || duration > 5000
+//         ? "warn"
+//         : "info";
 
-    httpRequestCounter.inc({
-      method: req.method,
-      route: req.path,
-      status_code: res.statusCode,
-    });
-    httpRequestDuration.observe(
-      { method: req.method, route: req.path, status_code: res.statusCode },
-      duration
-    );
+//     httpRequestCounter.inc({
+//       method: req.method,
+//       route: req.path,
+//       status_code: res.statusCode,
+//     });
+//     httpRequestDuration.observe(
+//       { method: req.method, route: req.path, status_code: res.statusCode },
+//       duration
+//     );
 
-    logger[logLevel]("Completed request", {
-      requestId,
-      method: req.method,
-      path: req.path,
-      status: statusCode,
-      duration,
-      ip: req.ip,
-      userId: req.user?.userId || "anonymous",
-    });
-  });
+//     logger[logLevel]("Completed request", {
+//       requestId,
+//       method: req.method,
+//       path: req.path,
+//       status: statusCode,
+//       duration,
+//       ip: req.ip,
+//       userId: req.user?.userId || "anonymous",
+//     });
+//   });
 
-  next();
-});
+//   next();
+// });
 
-app.get("/health", (req: Request, res: Response) => {
-  res.status(200).json({ status: "Gateway Service is up and running!" });
-});
+// app.get("/health", (req: Request, res: Response) => {
+//   res.status(200).json({ status: "Gateway Service is up and running!" });
+// });
 
 
 const proxyMiddleware = createProxyMiddleware<Request, Response>({

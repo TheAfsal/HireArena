@@ -12,7 +12,6 @@ export function AddSkillDialog({ children }: { children: React.ReactNode }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
     setOpen(false)
   }
 

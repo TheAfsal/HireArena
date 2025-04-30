@@ -14,6 +14,15 @@ export class SkillService implements ISkillService {
     jobCategoryId: string;
     status: boolean;
   }): Promise<ISkill> {
+    const isExisting = await this.skillRepository.findOne(
+      "name",
+      data.name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Skill already exist");
+    }
+
     return await this.skillRepository.create(data);
   }
 
@@ -26,6 +35,15 @@ export class SkillService implements ISkillService {
       status: boolean;
     }
   ): Promise<ISkill> {
+    
+    const isExisting = await this.skillRepository.findOne(
+      "name",
+      data.name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Skill already exist");
+    }
     return await this.skillRepository.update(id, data);
   }
 

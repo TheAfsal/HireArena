@@ -22,9 +22,15 @@ export class SkillController implements ISkillController {
       
       res.status(StatusCodes.CREATED).json(skill);
     } catch (error) {
-      console.log(error);
       
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create skill" });
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create skill";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 
@@ -40,7 +46,15 @@ export class SkillController implements ISkillController {
       });
       res.status(StatusCodes.OK).json(updatedSkill);
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update skill" });
+      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update skill";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 

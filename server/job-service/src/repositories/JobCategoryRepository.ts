@@ -131,6 +131,17 @@ class JobCategoryRepository implements IJobCategoryRepository {
       where: { id },
     });
   }
+
+  async findOne(key: string, value: string) {
+    return await this.prisma.jobCategory.findFirst({
+      where: {
+        [key]: {
+          equals: value,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
 }
 
 export default JobCategoryRepository;

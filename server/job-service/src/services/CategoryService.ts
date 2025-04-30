@@ -9,10 +9,16 @@ export class CategoryService implements ICategoryService {
     this.categoryRepository = categoryRepository;
   }
 
-  async createCategory(
-    name: string,
-    description: string
-  ): Promise<ICategoryType> {
+  async createCategory(name: string, description: string): Promise<any> {
+    const isExisting = await this.categoryRepository.findOne(
+      "name",
+      name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Category already exist");
+    }
+
     return await this.categoryRepository.create({
       name,
       description,
@@ -26,6 +32,16 @@ export class CategoryService implements ICategoryService {
     description: string,
     status: boolean
   ): Promise<ICategoryType> {
+
+    const isExisting = await this.categoryRepository.findOne(
+      "name",
+      name.trim()
+    );
+
+    if (isExisting) {
+      throw new Error("Category already exist");
+    }
+
     return await this.categoryRepository.update(id, {
       name,
       description,

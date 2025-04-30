@@ -118,16 +118,7 @@ export default function CompaniesPage() {
       setIsLoading(false);
     }
   };
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="w-full h-screen flex justify-center items-center">
-  //       <div className="w-12 h-12 border-4 border-t-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-  //     </div>
-  //   );
-  // }
   
-
   return (
     <DataTable
       title="Companies"

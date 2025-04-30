@@ -25,14 +25,16 @@ export default function SkillsTable() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleAddSkill = async (name: string, jobCategory: string) => {
-    console.log(name, jobCategory);
-
-    const response = await AddSkills(name, jobCategory);
-    setSkills([
-      ...skills,
-      {...response, jobCategory:response.jobCategory.name},
-    ]);
-    toast.success("Skill created successfully");
+    try {
+      const response = await AddSkills(name, jobCategory);
+      setSkills([
+        ...skills,
+        {...response, jobCategory:response.jobCategory.name},
+      ]);
+      toast.success("Skill created successfully");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   const handleEditSkill = (
@@ -41,11 +43,7 @@ export default function SkillsTable() {
     techStack: string,
     jobCategory: string
   ) => {
-    // setSkills(
-    //   skills.map((skill) =>
-    //     skill.id === id ? { ...skill, name, techStack, jobCategory } : skill
-    //   )
-    // );
+    
   };
 
   useEffect(() => {
@@ -272,7 +270,7 @@ export const EditSkillDialog = ({
   const handleEditSkill = () => {
     if (skillName && techStack && jobCategory) {
       onEditSkill(skill.id, skillName, techStack, jobCategory);
-      onClose(); // Close modal after editing
+      onClose(); 
     }
   };
 
@@ -329,120 +327,3 @@ export const EditSkillDialog = ({
     </Dialog>
   );
 };
-
-// "use client";
-
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { Button } from "@/components/ui/button";
-// import { EditSkillDialog } from "./edit-skill-dialog";
-// import { Skill } from "../page";
-// import { AddSkillDialog } from "./add-skill-dialog";
-// import { PlusCircle } from "lucide-react";
-
-// export default function SkillsTable() {
-//   const skills = [
-//     {
-//       skill: "Python",
-//       techStack: "Backend",
-//       jobCategory: "Software Engineer",
-//       jobLevel: "Mid",
-//       created: "02/01/2022",
-//       modified: "02/01/2022",
-//     },
-//     {
-//       skill: "React",
-//       techStack: "Frontend",
-//       jobCategory: "Software Engineer",
-//       jobLevel: "Mid",
-//       created: "02/01/2022",
-//       modified: "02/01/2022",
-//     },
-//     {
-//       skill: "SQL",
-//       techStack: "Database",
-//       jobCategory: "Software Engineer",
-//       jobLevel: "Mid",
-//       created: "02/01/2022",
-//       modified: "02/01/2022",
-//     },
-//     {
-//       skill: "AWS",
-//       techStack: "DevOps",
-//       jobCategory: "Software Engineer",
-//       jobLevel: "Mid",
-//       created: "02/01/2022",
-//       modified: "02/01/2022",
-//     },
-//     {
-//       skill: "REST",
-//       techStack: "API",
-//       jobCategory: "Software Engineer",
-//       jobLevel: "Mid",
-//       created: "02/01/2022",
-//       modified: "02/01/2022",
-//     },
-//   ]
-
-//   return (
-//     <div className="border rounded-2xl p-2">
-//         <div className="flex items-center justify-between mb-4 border p-3 rounded-2xl">
-//          <div>
-//            <h1 className="text-2xl font-semibold mb-1">Job categories</h1>
-//            <p className="text-muted-foreground text-sm">
-//              Job categories help you organize your jobs and better match
-//              candidates.
-//            </p>
-//          </div>
-//          <AddSkillDialog>
-//            <Button className="rounded-xl">
-//              <PlusCircle className="mr-2 h-4 w-4" />
-//              Add new category
-//            </Button>
-//          </AddSkillDialog>
-//        </div>
-//       <Table >
-//         <TableHeader>
-//           <TableRow>
-//             <TableHead>Skill</TableHead>
-//             <TableHead>Tech Stack</TableHead>
-//             <TableHead>Job Category</TableHead>
-//             <TableHead>Created</TableHead>
-//             <TableHead>Modified</TableHead>
-//             <TableHead>Actions</TableHead>
-//           </TableRow>
-//         </TableHeader>
-//         <TableBody>
-//           {skills.map((skill) => (
-//             <TableRow key={skill.skill}>
-//               <TableCell>{skill.skill}</TableCell>
-//               <TableCell>
-//                 <span className="text-blue-600 hover:underline cursor-pointer">
-//                   {skill.techStack}
-//                 </span>
-//               </TableCell>
-//               <TableCell>
-//                 <span className="text-blue-600 hover:underline cursor-pointer">
-//                   {skill.jobCategory}
-//                 </span>
-//               </TableCell>
-//               <TableCell>{skill.created}</TableCell>
-//               <TableCell>{skill.modified}</TableCell>
-//               <TableCell>
-//                 <Button variant="link" className="text-blue-600 p-0">
-//                   Edit
-//                 </Button>
-//               </TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//     </div>
-//   );
-// }

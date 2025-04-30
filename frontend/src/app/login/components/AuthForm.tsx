@@ -73,20 +73,23 @@ function AuthForm() {
     // Basic validation before submitting the form
     const errors: string[] = [];
 
-    // Validate the fields (email, password, etc.)
+    console.log(formValues);
+    
     if (
       !formValues.email ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)
     ) {
+      setLoading(false)
       errors.push("Please enter a valid email address.");
     }
-
+    
     if (!formValues.password || formValues.password.length < 6) {
+      setLoading(false)
       errors.push("Password must be at least 6 characters long.");
     }
-
-    // For signup, additional validation like name is required
+    
     if (formState === "signup" && !formValues.name?.trim()) {
+      setLoading(false)
       errors.push("Name is required.");
     }
 
@@ -154,6 +157,8 @@ function AuthForm() {
       }
     } else if (formState === "signup") {
       let response;
+      console.log("@@ formValues", formValues);
+      
       if (formType === "job-seeker") {
         response = await SignupJobSeeker(formValues);
         setLoading(false);

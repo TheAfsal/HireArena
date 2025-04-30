@@ -20,7 +20,15 @@ export class JobCategoryController implements IJobCategoryController{
       );
       res.status(StatusCodes.CREATED).json(jobCategory);
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create job category" });
+      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create job category";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 
@@ -37,9 +45,15 @@ export class JobCategoryController implements IJobCategoryController{
         );
       res.status(StatusCodes.OK).json(updatedJobCategory);
     } catch (error) {
-      console.log(error);
-
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update job category" });
+      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update job category";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 

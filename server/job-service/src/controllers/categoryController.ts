@@ -19,15 +19,20 @@ export class CategoryController implements ICategoryController {
       );
       res.status(StatusCodes.CREATED).json(category);
     } catch (error) {
-      console.log(error);
-
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to create category" });
+      
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to create category";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 
   update = async (req: Request, res: Response) => {
     try {
-      console.log("reaching update");
 
       const { id, name, description, status } = req.body;
       console.log(id, name, description, status);
@@ -39,8 +44,15 @@ export class CategoryController implements ICategoryController {
         status
       );
       res.status(StatusCodes.OK).json(updatedCategory);
-    } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to update category" });
+    } catch (error) {   
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update category";
+    
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: errorMessage });
     }
   };
 

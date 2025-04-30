@@ -7,11 +7,10 @@ import SearchBar from "./components/SearchBar";
 import Filters from "./components/Filters";
 
 const Page = () => {
-  const [filters, setFilters] = useState({}); // Base filters from Filters component
+  const [filters, setFilters] = useState({}); 
   const [searchQuery, setSearchQuery] = useState("");
-  const [combinedFilters, setCombinedFilters] = useState({}); // Filters + searchQuery
+  const [combinedFilters, setCombinedFilters] = useState({}); 
 
-  // Update combinedFilters whenever filters or searchQuery changes
   useEffect(() => {
     setCombinedFilters({ ...filters, searchQuery });
   }, [filters, searchQuery]);

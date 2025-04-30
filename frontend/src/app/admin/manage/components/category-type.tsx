@@ -48,8 +48,7 @@ export default function CategoryTypesTable() {
       );
       toast.success("Category Type updated successfully");
     } catch (error) {
-      toast.error("Failed to update category type");
-      console.log(error);
+      toast.error((error as Error).message);
     }
   };
 
@@ -60,8 +59,7 @@ export default function CategoryTypesTable() {
       setCategories([...categories, response]);
       toast.success("Category Type created successfully");
     } catch (error) {
-      toast.error("Failed to create category type");
-      console.log(error);
+      toast.error((error as Error).message);
     }
   };
 
@@ -89,7 +87,10 @@ export default function CategoryTypesTable() {
             candidates.
           </p>
         </div>
-        <AddCategoryModal onAddCategory={handleAddCategory} />
+        <AddCategoryModal
+          onAddCategory={handleAddCategory}
+          onClose={() => setIsEditModalOpen(false)}
+        />
       </div>
 
       <Table>

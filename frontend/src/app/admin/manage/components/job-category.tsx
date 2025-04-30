@@ -267,15 +267,19 @@ export default function JobCategoryTable() {
     description: string,
     categoryType: string
   ) => {
-    let response = await AddJobCategory(name, description, categoryType);
-    console.log(response);
-    console.log(response.categoryType.name);
-
-    setJobCategories([
-      ...jobCategories,
-      { ...response, categoryType: response.categoryType.name },
-    ]);
-    toast.success("Category created successfully");
+    try {
+      let response = await AddJobCategory(name, description, categoryType);
+      console.log(response);
+      console.log(response.categoryType.name);
+  
+      setJobCategories([
+        ...jobCategories,
+        { ...response, categoryType: response.categoryType.name },
+      ]);
+      toast.success("Category created successfully");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   const handleEditJobCategory = async (
@@ -285,21 +289,24 @@ export default function JobCategoryTable() {
     status: boolean,
     categoryType: string
   ) => {
-    let response = await EditJobCategory(
-      id,
-      name,
-      description,
-      status,
-      categoryType
-    );
-    console.log(response);
-
-    setJobCategories(
-      jobCategories.map((category) =>
-        category.id === response.id ? response : category
-      )
-    );
-    toast.success("Category edited successfully");
+    try {
+      let response = await EditJobCategory(
+        id,
+        name,
+        description,
+        status,
+        categoryType
+      );
+  
+      setJobCategories(
+        jobCategories.map((category) =>
+          category.id === response.id ? response : category
+        )
+      );
+      toast.success("Category edited successfully");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
 
   return (
