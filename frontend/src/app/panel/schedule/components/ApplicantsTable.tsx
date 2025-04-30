@@ -13,7 +13,7 @@ interface PaginationProps {
 const ApplicantsTable: React.FC<{
   interviews: IEnrichedInterview[];
   onViewDetails: (interviewId: string) => void;
-  onSchedule: (interviewId: string, roundType: RoundType) => void;
+  onSchedule: (interviewId: string, candidateName: string, roundType: RoundType) => void;
   userRole: string | null;
   pagination: PaginationProps;
 }> = ({ interviews, onViewDetails, onSchedule, userRole, pagination }) => {
@@ -126,7 +126,7 @@ const ApplicantsTable: React.FC<{
                       ) && (
                         <button
                           onClick={() =>
-                            onSchedule(interview._id, latestRound?.roundType)
+                            onSchedule(interview._id, interview?.candidate?.fullName || "", latestRound?.roundType)
                           }
                           className="text-blue-600 hover:text-blue-900 transition-colors"
                         >

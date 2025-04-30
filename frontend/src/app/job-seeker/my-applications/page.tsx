@@ -48,38 +48,6 @@ interface IApplication {
   jobDetails: IJobDetails;
 }
 
-// const fetchCandidateApplications = async (): Promise<IApplication[]> => {
-//   return [
-//     {
-//       _id: "67fdeb564a2de82587e8b43e",
-//       jobId: "eabd9da8-0841-4cd5-a69f-6440145eaff4",
-//       candidateId: "d536c55f-0426-4281-bc3c-45c35e8b72da",
-//       state: [
-//         {
-//           roundType: RoundType.TechnicalInterview,
-//           status: RoundStatus.Scheduled,
-//           videoCallLink: "https://zoom.us/j/scheduledInterviewId",
-//           scheduledInterviewId: "67fe0bdb5ce93cd11a411a65",
-//           scheduledAt: "2025-04-18T07:30:00.000Z",
-//           createdAt: "2025-04-15T07:33:47.261Z",
-//           updatedAt: "2025-04-15T07:33:47.261Z",
-//         },
-//       ],
-//       scheduledAt: "2025-04-15T05:15:02.100Z",
-//       createdAt: "2025-04-15T05:15:02.100Z",
-//       updatedAt: "2025-04-15T07:33:47.261Z",
-//       __v: 0,
-//       jobDetails: {
-//         jobId: "eabd9da8-0841-4cd5-a69f-6440145eaff4",
-//         title: "Jr. Designer",
-//         testOptions:
-//           '{"Machine Task":false,"Aptitude Test":false,"Coding Challenge":false,"Technical Interview":true,"Behavioral Interview":false}',
-//         description: "fasdfasd fasdfasd",
-//       },
-//     },
-//   ];
-// };
-
 const ApplicationList: React.FC<{
   applications: IApplication[];
   onViewDetails: (application: IApplication) => void;
@@ -384,23 +352,3 @@ const CandidateApplicationsPage: React.FC = () => {
 
 export default CandidateApplicationsPage;
 
-// original
-// import React from "react";
-// import { Separator } from "@/components/ui/separator";
-// import JobList from "./components/JobList";
-
-// const page = () => {
-//   return (
-//     <div className="p-10">
-//       <div>
-//         <h2 className="text-3xl font-bold">Find Jobs</h2>
-//       </div>
-//       <Separator className="my-5" />
-//       <div className="py-8 flex gap-8">
-//         <JobList />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default page;

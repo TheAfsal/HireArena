@@ -1,5 +1,6 @@
 export interface ScheduleForm {
   interviewId: string;
+  candidateName?: string;
   scheduledAt: Date | null;
 }
 

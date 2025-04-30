@@ -34,6 +34,8 @@ spec:
               value: "user-service:5051"
             - name: CHAT_SERVER_URL
               value: "chat-service:5010"
+            - name: FRONTEND_URL
+              value: "https://hirearena.vercel.app"
 ---
 apiVersion: v1
 kind: Service

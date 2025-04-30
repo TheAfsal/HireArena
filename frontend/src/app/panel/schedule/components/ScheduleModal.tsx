@@ -7,7 +7,8 @@ const ScheduleModal: React.FC<{
     onClose: () => void;
     onSubmit: (form: ScheduleForm) => void;
     interviewId: string;
-  }> = ({ isOpen, onClose, onSubmit, interviewId }) => {
+    candidateName: string;
+  }> = ({ isOpen, onClose, onSubmit, interviewId, candidateName }) => {
     const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
   
     const handleSubmit = () => {
@@ -29,7 +30,7 @@ const ScheduleModal: React.FC<{
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            Schedule Interview #{interviewId}
+            Schedule Interview for {candidateName}
           </h3>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">

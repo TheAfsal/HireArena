@@ -29,26 +29,8 @@ import {
   X,
 } from "lucide-react";
 import { type IJob } from "../page";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendItem,
-} from "@/components/ui/chart";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -158,13 +140,11 @@ const JobDashboardPage: React.FC = () => {
   };
 
   const filteredApplications = applications?.filter((application) => {
-    // Status filter
     if (statusFilter !== "all") {
       const latestStatus = getLatestRoundStatus(application.state);
       if (latestStatus !== statusFilter) return false;
     }
 
-    // Round type filter
     if (roundTypeFilter !== "all") {
       const hasRoundType = application.state.some(
         (state) => state.roundType === roundTypeFilter
@@ -172,7 +152,6 @@ const JobDashboardPage: React.FC = () => {
       if (!hasRoundType) return false;
     }
 
-    // Date range filter
     if (dateFrom) {
       const applicationDate = new Date(application.createdAt);
       if (applicationDate < dateFrom) return false;
@@ -185,7 +164,6 @@ const JobDashboardPage: React.FC = () => {
       if (applicationDate > nextDay) return false;
     }
 
-    // Search query filter (by candidate ID)
     if (searchQuery) {
       return application.candidateId
         .toLowerCase()
@@ -399,8 +377,9 @@ const JobDashboardPage: React.FC = () => {
   ];
 
   const pages = [1, 2, 3, 4, 5];
-  const currentPage = 1;return (
-    <div className="h-full w-full bg-gray-50 p-6">
+  const currentPage = 1;
+  return (
+    <div className="h-screen w-full bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <Button
@@ -785,7 +764,25 @@ const JobDashboardPage: React.FC = () => {
                       {filteredApplications?.map((application) => (
                         <tr key={application._id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {application.candidateId}
+                            <div className="flex justify-left items-center gap-3">
+                              <Avatar>
+                                <AvatarImage
+                                  //@ts-ignore
+                                  src={application?.candidate?.image}
+                                  alt="@shadcn"
+                                />
+                                <AvatarFallback>
+                                  {
+                                    //@ts-ignore
+                                    application?.candidate?.fullName[0]
+                                  }
+                                </AvatarFallback>
+                              </Avatar>
+                              {
+                                //@ts-ignore
+                                application?.candidate?.fullName
+                              }
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span
@@ -863,6 +860,27 @@ const JobDashboardPage: React.FC = () => {
                     )}
                   </div>
                 )}
+                <div className="flex items-center justify-center mt-6 space-x-2">
+                  <Button variant="normal" disabled={currentPage === 1}>
+                    Previous
+                  </Button>
+
+                  {pages.map((page) => (
+                    <Button
+                      key={page}
+                      variant={page === currentPage ? "default" : "outline"}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+
+                  <Button
+                    variant="outline"
+                    disabled={currentPage === pages.length}
+                  >
+                    Next
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -949,7 +967,6 @@ const JobDashboardPage: React.FC = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Application Details Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
@@ -1068,24 +1085,6 @@ const JobDashboardPage: React.FC = () => {
             )}
           </DialogContent>
         </Dialog>
-        <div className="flex items-center justify-center mt-6 space-x-2">
-          <Button variant="normal" disabled={currentPage === 1}>
-            Previous
-          </Button>
-
-          {pages.map((page) => (
-            <Button
-              key={page}
-              variant={page === currentPage ? "default" : "outline"}
-            >
-              {page}
-            </Button>
-          ))}
-
-          <Button variant="outline" disabled={currentPage === pages.length}>
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   );

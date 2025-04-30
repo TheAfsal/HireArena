@@ -107,9 +107,8 @@ class InterviewService {
     }
     async scheduleInterview(interviewId, employeeId, roundType, scheduledAt) {
         try {
-            // const scheduledInterviewId = Math.random().toString(36).substring(2, 10);
             const scheduledInterviewId = (0, uuid_1.v4)();
-            const videoCallLink = `http://localhost:3000/job-seeker/video-call/meeting/${scheduledInterviewId}`;
+            const videoCallLink = `/job-seeker/video-call/meeting/${scheduledInterviewId}`;
             const scheduledInterview = {
                 scheduledInterviewId: interviewId,
                 candidateId: "",

@@ -59,7 +59,6 @@ export interface IApplicationOptions {
   roundType?: string;
 }
 
-
 export class InterviewService implements IInterviewService {
   constructor(
     private interviewRepo: IInterviewRepository,
@@ -162,12 +161,9 @@ export class InterviewService implements IInterviewService {
     );
 
     const [jobDetails, jobSeekerDetails] = await Promise.all([
-      FindJobsByIds(jobs), 
-      GetJobSeekerDetailsById(uniqueCandidateIds), 
+      FindJobsByIds(jobs),
+      GetJobSeekerDetailsById(uniqueCandidateIds),
     ]);
-
-    console.log("**",jobSeekerDetails);
-    
 
     const jobMap = new Map<string, string>(
       jobDetails.map((job) => [job.id, job.jobTitle])
@@ -177,7 +173,7 @@ export class InterviewService implements IInterviewService {
       //@ts-ignore
       jobSeekerDetails.jobSeekers.map((seeker) => [seeker.id, seeker])
     );
-    
+
     //@ts-ignore
     const enrichedApplications: EnrichedInterview[] = applications.map(
       (app) => ({
@@ -205,20 +201,124 @@ export class InterviewService implements IInterviewService {
   async getAllApplicationsDashboard(
     userId: string,
     companyId: string
-  ): Promise<IInterview[]> {
+  ): Promise<any[]> {
     const jobs = await FindJobIdsByCompanyId(companyId);
-    if (!jobs?.length) {
+  
+    if (!jobs || jobs.length === 0) {
       return [];
     }
-
-    console.log("@@ job ids from job-server ", jobs);
-
-    return await this.interviewRepo.getJobApplications(jobs);
+  
+    const interviews = await this.interviewRepo.getJobApplications(jobs);
+    const uniqueCandidateIds = Array.from(
+      new Set(interviews.map((app: any) => app.candidateId))
+    );
+  
+    try {
+      const [userDetailsResult, jobDetails] = await Promise.all([
+        GetJobSeekerDetailsById(uniqueCandidateIds),
+        FindJobsByIds(jobs),
+      ]);
+  
+      const jobSeekers = (
+        userDetailsResult as {
+          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+        }
+      ).jobSeekers;
+  
+      const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
+      const jobMap = new Map(jobDetails.map((job: any) => [job.id, job.jobTitle]));
+  
+      return interviews.map((interview: any) => {
+        const {
+          _id,
+          jobId,
+          candidateId,
+          state,
+          scheduledAt,
+          createdAt,
+          updatedAt,
+        } = interview._doc;
+  
+        return {
+          id: _id.toString(),
+          jobId,
+          jobTitle: jobMap.get(jobId) || null,
+          candidateId,
+          state,
+          scheduledAt,
+          createdAt,
+          updatedAt,
+          candidate: candidateMap.has(candidateId)
+            ? {
+                id: candidateMap.get(candidateId)!.id,
+                fullName: candidateMap.get(candidateId)!.fullName,
+                email: candidateMap.get(candidateId)!.email,
+                image: candidateMap.get(candidateId)!.image || null,
+              }
+            : null,
+        };
+      });
+    } catch (error) {
+      throw new Error("Failed to fetch candidate or job details");
+    }
   }
+  
 
-  async getJobApplications(jobId: string): Promise<IInterview[]> {
-    return await this.interviewRepo.getJobApplications([jobId]);
+  async getJobApplications(jobId: string): Promise<any[]> {
+    const applications = await this.interviewRepo.getJobApplications([jobId]);
+  
+    if (!applications || applications.length === 0) {
+      return [];
+    }
+  
+    const uniqueCandidateIds = Array.from(
+      new Set(applications.map((app: any) => app.candidateId))
+    );
+  
+    try {
+      const userDetailsResult = await GetJobSeekerDetailsById(uniqueCandidateIds);
+      const jobSeekers = (
+        userDetailsResult as {
+          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+        }
+      ).jobSeekers;
+  
+      const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
+  
+      return applications.map((app: any) => {
+        const {
+          _id,
+          jobId,
+          candidateId,
+          state,
+          scheduledAt,
+          createdAt,
+          updatedAt,
+        } = app;
+  
+        return {
+          id: _id.toString(),
+          jobId,
+          candidateId,
+          state,
+          scheduledAt,
+          createdAt,
+          updatedAt,
+          candidate: candidateMap.has(candidateId)
+            ? {
+                id: candidateMap.get(candidateId)!.id,
+                fullName: candidateMap.get(candidateId)!.fullName,
+                email: candidateMap.get(candidateId)!.email,
+                image: candidateMap.get(candidateId)!.image || null,
+              }
+            : null,
+        };
+      });
+    } catch (error) {
+      throw new Error("Failed to fetch candidate details");
+    }
   }
+  
 
   async getApplicationsCandidate(userId: string): Promise<IInterviewWithJob[]> {
     const interviews = await this.interviewRepo.findApplicationByCandidateId(
@@ -250,9 +350,51 @@ export class InterviewService implements IInterviewService {
     return interviewsWithJobs;
   }
 
-  async getScheduleInterviews(userId: string): Promise<IScheduledInterview[]> {
-    return await this.employeeInterviewsRepo.findMySchedule(userId);
+  async getScheduleInterviews(userId: string): Promise<any[]> {
+    const interviews = await this.employeeInterviewsRepo.findMySchedule(userId);
+  
+    if (!interviews || interviews.length === 0) {
+      return [];
+    }
+  
+    const uniqueCandidateIds = Array.from(
+      new Set(interviews.map((i: any) => i.candidateId))
+    );
+  
+    try {
+      const userDetailsResult = await GetJobSeekerDetailsById(uniqueCandidateIds);
+      const jobSeekers = (
+        userDetailsResult as {
+          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+        }
+      ).jobSeekers;
+  
+      const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
+  
+      return interviews.map((interview: any) => {
+        const { _id, scheduledInterviewId, candidateId, time, link } = interview;
+  
+        return {
+          _id,
+          scheduledInterviewId,
+          candidateId,
+          time,
+          link,
+          candidate: candidateMap.has(candidateId)
+            ? {
+                id: candidateMap.get(candidateId)!.id,
+                fullName: candidateMap.get(candidateId)!.fullName,
+                email: candidateMap.get(candidateId)!.email,
+                image: candidateMap.get(candidateId)!.image || null,
+              }
+            : null,
+        };
+      });
+    } catch (error) {
+      throw new Error("Failed to fetch candidate details");
+    }
   }
+  
 
   async scheduleInterview(
     interviewId: string,
@@ -261,9 +403,8 @@ export class InterviewService implements IInterviewService {
     scheduledAt: Date
   ): Promise<IInterview> {
     try {
-      // const scheduledInterviewId = Math.random().toString(36).substring(2, 10);
       const scheduledInterviewId = uuidv4();
-      const videoCallLink = `http://localhost:3000/job-seeker/video-call/meeting/${scheduledInterviewId}`;
+      const videoCallLink = `/job-seeker/video-call/meeting/${scheduledInterviewId}`;
 
       const scheduledInterview: IScheduledInterview = {
         scheduledInterviewId: interviewId,

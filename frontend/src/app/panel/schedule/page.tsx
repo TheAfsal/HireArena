@@ -65,8 +65,8 @@ const Page: React.FC = () => {
     console.log("View details for interview:", interviewId);
   };
 
-  const handleSchedule = (interviewId: string, roundType: RoundType) => {
-    setSelectedInterview({ interviewId, scheduledAt: null });
+  const handleSchedule = (interviewId: string,candidateName: string, roundType: RoundType) => {
+    setSelectedInterview({ interviewId,candidateName, scheduledAt: null });
     setIsModalOpen(true);
   };
 
@@ -152,6 +152,7 @@ const Page: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleScheduleSubmit}
           interviewId={selectedInterview?.interviewId || ""}
+          candidateName = {selectedInterview?.candidateName || ""}
         />
       </div>
     </div>

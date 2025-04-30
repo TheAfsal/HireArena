@@ -136,6 +136,7 @@ services:
       - JOB_SERVER_URL=job-service:5015
       - USER_SERVER_URL=user-service:5051
       - CHAT_SERVER_URL=chat-service:5010
+      - FRONTEND_URL=http://localhost:3000
       # - NODE_ENV=development
       # - MONGO_DB=db-mongo
     networks:

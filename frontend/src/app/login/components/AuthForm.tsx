@@ -31,30 +31,36 @@ interface FormValues {
 function AuthForm() {
   const [loading, setLoading] = useState<boolean>(false);
   const [formType, setFormType] = useState<FormType>("job-seeker");
-  const [formState, setFormState] = useState<FormState>("signup");
+  const [formState, setFormState] = useState<FormState>("login");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [popupForgotPassword, setPopupForgotPassword] =
     useState<boolean>(false);
   const [formValues, setFormValues] = useState<FormValues>({
-    email: "afsal@gmail.com",
-    password: "123123",
+    email: "",
+    password: "",
     name: "",
   });
 
   useEffect(() => {
-    if (formType !== "job-seeker")
-      setFormValues({
-        email: "alexander@gmail.com",
-        password: "123123",
-        name: "",
-      });
-    else
+    if (formType === "job-seeker" && formState === "login")
       setFormValues({
         email: "afsal@gmail.com",
         password: "123123",
         name: "",
       });
-  }, [formType]);
+    else if (formType === "company" && formState === "login")
+      setFormValues({
+        email: "alexander@gmail.com",
+        password: "123123",
+        name: "",
+      });
+      else  
+      setFormValues({
+        email: "",
+        password: "",
+        name: "",
+      });
+  }, [formType, formState]);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -74,22 +80,22 @@ function AuthForm() {
     const errors: string[] = [];
 
     console.log(formValues);
-    
+
     if (
       !formValues.email ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)
     ) {
-      setLoading(false)
+      setLoading(false);
       errors.push("Please enter a valid email address.");
     }
-    
+
     if (!formValues.password || formValues.password.length < 6) {
-      setLoading(false)
+      setLoading(false);
       errors.push("Password must be at least 6 characters long.");
     }
-    
+
     if (formState === "signup" && !formValues.name?.trim()) {
-      setLoading(false)
+      setLoading(false);
       errors.push("Name is required.");
     }
 
@@ -158,7 +164,7 @@ function AuthForm() {
     } else if (formState === "signup") {
       let response;
       console.log("@@ formValues", formValues);
-      
+
       if (formType === "job-seeker") {
         response = await SignupJobSeeker(formValues);
         setLoading(false);

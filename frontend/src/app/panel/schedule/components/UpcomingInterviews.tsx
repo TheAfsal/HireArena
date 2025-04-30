@@ -2,6 +2,8 @@ import { ResultForm, UpcomingInterview } from "@/Types/interview.types";
 import ResultModal from "./ResultModal";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 const submitInterviewResult = async (form: ResultForm): Promise<void> => {
   console.log("Submitting interview result:", form);
@@ -79,13 +81,32 @@ const UpcomingInterviews: React.FC<{
                 key={interview._id}
                 className="flex justify-between items-center"
               >
-                <div>
-                  <p className="text-gray-700">
-                    <span className="font-medium">Candidate ID:</span>{" "}
-                    {interview.candidateId}
-                  </p>
+                <div className="flex justify-start items-center gap-5">
+                  <div className="flex justify-left items-center gap-3">
+                    <Avatar>
+                      <AvatarImage
+                        //@ts-ignore
+                        src={interview?.candidate?.image}
+                        alt="@shadcn"
+                      />
+                      <AvatarFallback>
+                        {
+                          //@ts-ignore
+                           interview?.candidate?.fullName[0]
+                        }
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="text-gray-700">
+                      <span className="font-medium">Candidate:</span>{" "}
+                      {
+                        //@ts-ignore
+                        interview.candidate.fullName
+                      }
+                    </p>
+                  </div>
+                  |
                   <p className="text-gray-600">
-                    <span className="font-medium">Time:</span>{" "}
+                    <span className="font-medium">Time to join:</span>{" "}
                     {isValidDate
                       ? new Date(timeString).toLocaleString()
                       : "Invalid Date"}
