@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import AuthForm from "./components/AuthForm";
-import HeaderCard from "./components/HeaderCard";
 import Navbar from "./components/Navbar";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -24,8 +23,8 @@ export default function Page() {
       <BackgroundPaths title="HireArena" />
       <div className="relative z-10 pt-16 pb-24">
         <main className="grid lg:grid-cols-2 mt-10 px-4 max-w-7xl mx-auto">
-          <div /> {/* Empty left column */}
-          <AuthForm /> {/* Right column */}
+          <div /> 
+          <AuthForm /> 
         </main>
       </div>
     </div>

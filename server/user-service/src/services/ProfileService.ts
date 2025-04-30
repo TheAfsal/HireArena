@@ -28,14 +28,18 @@ class ProfileService implements IProfileService {
   }
 
   async updateProfile(data: IJobSeekerUpdateInput): Promise<IJobSeeker> {
-    let fileUrl = "";
-    if (data.profileImage?.mimetype) {
-      fileUrl = await new Promise<string>((resolve, reject) => {
+    let profileImageUrl = data.profileImage;
+    if (data.profileImage && typeof data.profileImage !== 'string') {
+      //@ts-ignore
+      profileImageUrl = await new Promise<string>((resolve, reject) => {
         grpcClient.fileServiceClient.uploadFile(
           {
-            fileName: data?.profileImage?.originalname,
-            fileData: data?.profileImage?.buffer,
-            mimeType: data?.profileImage?.mimetype,
+            //@ts-ignore
+            fileName: data.profileImage.originalname,
+            //@ts-ignore
+            fileData: data.profileImage.buffer,
+            //@ts-ignore
+            mimeType: data.profileImage.mimetype,
           },
           (err, response) => {
             if (err) reject(err);
@@ -45,10 +49,42 @@ class ProfileService implements IProfileService {
       });
     }
 
+    // Handle resume upload
+    let resumeUrl = null;
+    //@ts-ignore
+    if (data.resume) {
+      console.log("--------------------------");
+      console.log(data.resume);
+      console.log("****---------------------****");
+      
+      //@ts-ignore
+      resumeUrl = await new Promise<string>((resolve, reject) => {
+        grpcClient.fileServiceClient.uploadFile(
+          {
+            //@ts-ignore
+            fileName: data.resume.originalname,
+            //@ts-ignore
+            fileData: data.resume.buffer,
+            //@ts-ignore
+            mimeType: data.resume.mimetype,
+          },
+          (err, response) => {
+            if (err) reject(err);
+            else resolve(response.fileUrl);
+          }
+        );
+      });
+    }
+
+    console.log("@@ resumeUrl", resumeUrl);
+    
+    
     return await this.jobSeekerRepository.updateProfile({
       ...data,
       //@ts-ignore
-      profileImage: fileUrl || data.profileImage,
+      profileImage: profileImageUrl,
+      //@ts-ignore
+      resume: resumeUrl,
     });
   }
 

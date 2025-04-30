@@ -12,34 +12,109 @@ class JobSeekerController implements IJobSeekerController {
 
   updateProfile = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { fullName, phone, email, dob, gender, image } = req.body;
-      const files = req.files as Express.Multer.File[];
-      var profileImage;
-      if (files[0]) {
-        profileImage = files[0];
-      } else {
-        profileImage = image;
-      }
+      // Extract userId from headers
       const { userId } = req.headers["x-user"]
         ? JSON.parse(req.headers["x-user"] as string)
-        : null;
+        : {};
 
-      const updatedUser = await this.profileService.updateProfile({
-        userId,
+      if (!userId) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "User ID is required" });
+        return;
+      }
+
+      // Extract form data fields
+      const {
         fullName,
         phone,
         email,
         dob,
         gender,
-        profileImage,
-      });
-      res.status(StatusCodes.OK).json(updatedUser);
-      return;
-    } catch (error) {
-      console.log(error);
+        headline,
+        location,
+        summary,
+        yearsOfExperience,
+        currentJobTitle,
+        currentCompany,
+        highestEducation,
+        university,
+        skills,
+        languages,
+        portfolioUrl,
+        linkedinUrl,
+        githubUrl,
+        jobPreferences,
+      } = req.body;
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
-      return;
+      // Parse JSON strings for arrays and objects
+      const parsedSkills = skills ? JSON.parse(skills) : [];
+      const parsedLanguages = languages ? JSON.parse(languages) : [];
+      const parsedJobPreferences = jobPreferences
+        ? JSON.parse(jobPreferences)
+        : {};
+
+      // Handle file uploads
+      const files = req.files as Express.Multer.File[] | undefined;
+      const profileImageFile =
+        files?.find((file) => file.fieldname === "profileImage") || null;
+      const resumeFile =
+        files?.find((file) => file.fieldname === "resume") || null;
+      const existingImage = req.body.image; // Existing image URL from form
+
+      // Validate file types
+      if (profileImageFile && !profileImageFile.mimetype.startsWith("image/")) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Profile image must be an image file" });
+        return;
+      }
+      if (
+        resumeFile &&
+        ![
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ].includes(resumeFile.mimetype)
+      ) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: "Resume must be a PDF or Word document" });
+        return;
+      }
+
+      const updateData = {
+        userId,
+        fullName,
+        phone,
+        email,
+        dob: dob ? new Date(dob) : undefined,
+        gender,
+        profileImage: profileImageFile || existingImage,
+        headline,
+        location,
+        summary,
+        yearsOfExperience,
+        currentJobTitle,
+        currentCompany,
+        highestEducation,
+        university,
+        skills: parsedSkills,
+        languages: parsedLanguages,
+        portfolioUrl,
+        linkedinUrl,
+        githubUrl,
+        resume: resumeFile,
+        jobPreferences: parsedJobPreferences,
+      };
+
+      const updatedUser = await this.profileService.updateProfile(updateData);
+      res.status(StatusCodes.OK).json(updatedUser);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: (error as Error).message });
     }
   };
 
@@ -54,7 +129,9 @@ class JobSeekerController implements IJobSeekerController {
     } catch (error) {
       console.log(error);
 
-      res.status(StatusCodes.BAD_REQUEST).json({ error: (error as Error).message });
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: (error as Error).message });
     }
   };
 
@@ -73,7 +150,9 @@ class JobSeekerController implements IJobSeekerController {
       res.status(StatusCodes.OK).json(profile);
       return;
     } catch (error) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: (error as Error).message });
       return;
     }
   };
@@ -99,7 +178,9 @@ class JobSeekerController implements IJobSeekerController {
     } catch (error) {
       console.log(error);
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: (error as Error).message });
       return;
     }
   };
@@ -125,12 +206,16 @@ class JobSeekerController implements IJobSeekerController {
         oldPassword,
         newPassword
       );
-      res.status(StatusCodes.OK).json({ message: "Password updated successfully." });
+      res
+        .status(StatusCodes.OK)
+        .json({ message: "Password updated successfully." });
       return;
     } catch (error) {
       console.log(error);
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: (error as Error).message });
       return;
     }
   };
@@ -171,7 +256,9 @@ class JobSeekerController implements IJobSeekerController {
     } catch (error) {
       console.log(error);
 
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: (error as Error).message });
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: (error as Error).message });
       return;
     }
   };
