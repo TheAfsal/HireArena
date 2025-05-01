@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.0
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -35,9 +35,9 @@ spec:
             - name: REFRESH_TOKEN_SECRET
               value: "your-refresh-token-secret"
             - name: GOOGLE_CLIENT_ID
-              value: "892370541918-tpo69pcvf47h0k3r5i2tm6mbj31t3vup.apps.googleusercontent.com"
+              value: "892370541918-8pmgndg7tc2p60ommhj7inirmis69hki.apps.googleusercontent.com"  
             - name: GOOGLE_CLIENT_SECRET
-              value: "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"
+              value: "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"
             - name: GOOGLE_CALLBACK_URL
               value: "https://hirearena.vercel.app/user-service/auth/api/auth/google/callback"
             - name: SESSION_SECRET
