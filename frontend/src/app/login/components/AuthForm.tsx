@@ -190,7 +190,8 @@ function AuthForm() {
   }
 
   const googleLogin = () => {
-    window.open("http://localhost:5000/auth/google", "_self")
+    window.open("http://localhost:4000/user-service/auth/api/auth/google", "_self")
+    // window.open("http://localhost:5000/auth/google", "_self")
   }
 
   if (loading) {

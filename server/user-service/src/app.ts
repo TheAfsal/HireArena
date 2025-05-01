@@ -201,14 +201,6 @@ app.use((req, res, next) => {
 //   }
 // });
 
-app.get(
-  "/auth/google",
-  ((req,res,next)=>{
-    console.log("@@@@ ************************************");
-    next()
-  }),
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
 
 interface GoogleUser {
   displayName: string;
@@ -216,82 +208,87 @@ interface GoogleUser {
   photos: { value: string }[];
 }
 
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "http://localhost:3000/login",
-  }),
+// app.get(
+//   "/auth/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
-  async (req, res) => {
-    if (!req.user) {
-      return res.redirect("http://localhost:3000/login");
-    }
+// app.get(
+//   "/auth/google/callback",
+//   passport.authenticate("google", {
+//     failureRedirect:  `${process.env.FRONT_END_URL}/login`,
+//   }),
 
-    //@ts-ignore
-    const userProfile = req.user as GoogleUser | null;
+//   async (req, res) => {
+//     if (!req.user) {
+//       return res.redirect(`${process.env.FRONT_END_URL}/login`);
+//     }
 
-    if (!userProfile) {
-      return res.redirect("http://localhost:3000/login");
-    }
+//     //@ts-ignore
+//     const userProfile = req.user as GoogleUser | null;
 
-    const email = userProfile.emails[0].value;
-    const name = userProfile.displayName;
+//     if (!userProfile) {
+//       return res.redirect(`${process.env.FRONT_END_URL}/login`);
+//     }
 
-    const jobSeekerRepository = new JobSeekerRepository(prisma);
-    const adminRepository = new AdminRepository(prisma);
-    const companyRepository = new CompanyRepository(prisma);
-    const employeeRepository = new EmployeeRepository(prisma);
-    const redisService = new RedisService();
-    const passwordService = new PasswordService();
-    const tokenService = new TokenService();
-    const emailService = new EmailService();
+//     const email = userProfile.emails[0].value;
+//     const name = userProfile.displayName;
 
-    const authService = new AuthService(
-      jobSeekerRepository,
-      adminRepository,
-      companyRepository,
-      employeeRepository,
-      redisService,
-      emailService,
-      passwordService,
-      tokenService
-    );
+//     const jobSeekerRepository = new JobSeekerRepository(prisma);
+//     const adminRepository = new AdminRepository(prisma);
+//     const companyRepository = new CompanyRepository(prisma);
+//     const employeeRepository = new EmployeeRepository(prisma);
+//     const redisService = new RedisService();
+//     const passwordService = new PasswordService();
+//     const tokenService = new TokenService();
+//     const emailService = new EmailService();
 
-    const user = await authService.googleLogin({
-      email,
-      name,
-      password: "123123",
-    });
+//     const authService = new AuthService(
+//       jobSeekerRepository,
+//       adminRepository,
+//       companyRepository,
+//       employeeRepository,
+//       redisService,
+//       emailService,
+//       passwordService,
+//       tokenService
+//     );
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+//     const user = await authService.googleLogin({
+//       email,
+//       name,
+//       password: "123123",
+//     });
 
-    const accessToken = jwt.sign(
-      { userId: user.id },
-      process.env.ACCESS_TOKEN_SECRET || "",
-      {
-        expiresIn: "100m",
-      }
-    );
-    const refreshToken = jwt.sign(
-      { userId: user.id, role: "HR" },
-      process.env.REFRESH_TOKEN_SECRET || "",
-      {
-        expiresIn: "7d",
-      }
-    );
+//     if (!user) {
+//       throw new Error("User not found");
+//     }
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+//     const accessToken = jwt.sign(
+//       { userId: user.id },
+//       process.env.ACCESS_TOKEN_SECRET || "",
+//       {
+//         expiresIn: "100m",
+//       }
+//     );
+//     const refreshToken = jwt.sign(
+//       { userId: user.id, role: "HR" },
+//       process.env.REFRESH_TOKEN_SECRET || "",
+//       {
+//         expiresIn: "7d",
+//       }
+//     );
 
-    res.redirect(`https://hirearena.vercel.app/google-login?token=${accessToken}`);
-  }
-);
+//     res.cookie("refreshToken", refreshToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       sameSite: "strict",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     res.redirect(`${process.env.FRONT_END_URL}/google-login?token=${accessToken}`);
+//   }
+// );
 
 app.get("/auth/logout", (req, res) => {
   req.logout(() => {

@@ -19,6 +19,13 @@ import AdminRepository from "@repositories/AdminRepository";
 import ProfileService from "@services/ProfileService";
 import CompanyService from "@services/CompanyServices";
 import passport from "passport";
+import jwt from "jsonwebtoken";
+
+interface GoogleUser {
+  displayName: string;
+  emails: { value: string }[];
+  photos: { value: string }[];
+}
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const adminRepository = new AdminRepository(prisma);
@@ -28,7 +35,10 @@ const employeeRepository = new EmployeeRepository(prisma);
 const redisService = new RedisService();
 const passwordService = new PasswordService();
 const tokenService = new TokenService();
-const companyService = new CompanyService(companyEmployeeRoleRepository,companyRepository);
+const companyService = new CompanyService(
+  companyEmployeeRoleRepository,
+  companyRepository
+);
 const emailService = new EmailService();
 const invitationRepository = new InvitationRepository(prisma);
 
@@ -71,10 +81,6 @@ const authController = new AuthController(authService, profileService);
 
 const router = Router();
 
-
-router.use(passport.initialize());
-router.use(passport.session());
-
 router.post("/login", authController.login);
 router.post("/company-login", authController.loginCompany);
 router.post("/admin-login", authController.loginAdmin);
@@ -96,15 +102,73 @@ router.get("/who-am-i", authController.whoAmI);
 
 router.post("/forgot-password", authController.forgotPassword);
 
-router.post("/forgot-password-token/:token", authController.forgotPasswordUsingToken);
+router.post(
+  "/forgot-password-token/:token",
+  authController.forgotPasswordUsingToken
+);
 
-// router.get(
-//   "/google",
-//   ((req,res,next)=>{
-//     console.log("@@@@ ************************************");
-//     next()
-//   }),
-//   passport.authenticate("google", { scope: ["profile", "email"] })
-// );
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${process.env.FRONT_END_URL}/login`,
+  }),
+
+  async (req, res) => {
+    if (!req.user) {
+      return res.redirect(`${process.env.FRONT_END_URL}/login`);
+    }
+
+    //@ts-ignore
+    const userProfile = req.user as GoogleUser | null;
+
+    if (!userProfile) {
+      return res.redirect(`${process.env.FRONT_END_URL}/login`);
+    }
+
+    const email = userProfile.emails[0].value;
+    const name = userProfile.displayName;
+
+    const user = await authService.googleLogin({
+      email,
+      name,
+      password: "123123",
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const accessToken = jwt.sign(
+      { userId: user.id },
+      process.env.ACCESS_TOKEN_SECRET || "",
+      {
+        expiresIn: "100m",
+      }
+    );
+    const refreshToken = jwt.sign(
+      { userId: user.id, role: "HR" },
+      process.env.REFRESH_TOKEN_SECRET || "",
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.redirect(
+      `${process.env.FRONT_END_URL}/google-login?token=${accessToken}`
+    );
+  }
+);
 
 export default router;

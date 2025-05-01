@@ -39,7 +39,7 @@ spec:
             - name: GOOGLE_CLIENT_SECRET
               value: "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"
             - name: GOOGLE_CALLBACK_URL
-              value: "http://localhost:5000/auth/google/callback"
+              value: "https://hirearena.vercel.app/user-service/auth/api/auth/google/callback"
             - name: SESSION_SECRET
               value: "your_secret_key"
             - name: CLIENT_URL
