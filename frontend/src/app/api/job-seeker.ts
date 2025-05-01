@@ -2,6 +2,7 @@ import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { fetchMyApplications } from "./job";
 import { ADMIN_ROUTES } from "@/constants/apiRoutes";
+import { fetchCandidateNotifications } from "./notification";
 
 export async function fetchCandidates(): Promise<any> {
   try {
@@ -40,20 +41,17 @@ export async function updateJobSeekerStatus(id: string): Promise<any> {
   }
 }
 
-
 export async function fetchDashboardDataForCandidate(): Promise<any[]> {
   try {
-    const response = await fetchMyApplications();
-    console.log(response);
-    
-    const data = response;
-    if (!Array.isArray(data)) {
-      console.warn("API response is not an array:", data);
-      return [];
-    }
-    return data;
-  } catch (error: unknown) {
-    console.error("Error fetching candidate applications:", error);
+    const details = await Promise.all([
+      fetchMyApplications(),
+      fetchCandidateNotifications(1,10),
+    ]);
+
+    return details;
+  } catch (err) {
+    console.error("Error fetching candidate dashboard data:", err);
     throw new Error("Failed to fetch candidate dashboard data");
   }
 }
+

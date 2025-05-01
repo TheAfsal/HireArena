@@ -10,7 +10,8 @@ import { connectDB } from "@config/db";
 import client from "prom-client";
 import winston from "winston";
 import LokiTransport from "winston-loki";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+
 dotenv.config();
 
 const app: Application = express();
@@ -61,7 +62,10 @@ export const logger = winston.createLogger({
   transports: [
     new LokiTransport({
       host: "http://loki:3100",
-      labels: { job: "interview-management-service", environment: "development" },
+      labels: {
+        job: "interview-management-service",
+        environment: "development",
+      },
       json: true,
       replaceTimestamp: true,
     }),

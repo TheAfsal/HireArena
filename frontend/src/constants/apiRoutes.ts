@@ -8,6 +8,7 @@ export const SERVICES = {
   INTERVIEW_SERVICE: "/interview-mgmt-service/api",
   ADMIN_SERVICE: "/admin-service/api",
   CHAT_SERVICE: "/chat-service/api",
+  NOTIFICATION_SERVICE: "/notification-service/api",
 };
 
 export const AUTH_ROUTES = {
@@ -98,4 +99,9 @@ export const SUBSCRIPTION_ROUTES = {
   MY_SUBSCRIPTION: `${SERVICES.USER_SERVICE}/subscription`,
   FETCH_SUBSCRIPTION_HISTORY: `${SERVICES.USER_SERVICE}/subscription/user`,
   FETCH_SUBSCRIPTION_BY_ADMIN: `${SERVICES.USER_SERVICE}/admin/subscriptions`,
+};
+
+export const NOTIFICATION_ROUTES = {
+  NOTIFICATION: `${SERVICES.NOTIFICATION_SERVICE}/notification`,
+  MARK_AS_DONE: `${SERVICES.NOTIFICATION_SERVICE}/notification/read`,
 };

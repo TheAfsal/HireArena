@@ -7,15 +7,26 @@ dotenv.config();
 const PROTO_PATH = path.join(__dirname, "../proto/interview.proto");
 const USER_PROTO_PATH = path.join(__dirname, "../proto/user.proto");
 const CHAT_SERVER_PROTO_PATH = path.resolve(__dirname, "../proto/chat.proto");
+const NOTIFICATION_SERVER_PROTO_PATH = path.resolve(
+  __dirname,
+  "../proto/notification.proto"
+);
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const userPackageDefinition = protoLoader.loadSync(USER_PROTO_PATH);
 const chatServerPackageDefinition = protoLoader.loadSync(
   CHAT_SERVER_PROTO_PATH
 );
+const notificationServerPackageDefinition = protoLoader.loadSync(
+  NOTIFICATION_SERVER_PROTO_PATH
+);
+
 const interviewProto = grpc.loadPackageDefinition(packageDefinition).interview;
 const userProto = grpc.loadPackageDefinition(userPackageDefinition).user;
 const chatProto = grpc.loadPackageDefinition(chatServerPackageDefinition).chat;
+const notificationProto = grpc.loadPackageDefinition(
+  notificationServerPackageDefinition
+).notification;
 
 //@ts-ignore
 const interviewServiceClient = new interviewProto.InterviewService(
@@ -30,6 +41,16 @@ const userServiceClient = new userProto.UserService(
 //@ts-ignore
 const chatServiceClient = new chatProto.ChatService(
   process.env.CHAT_SERVER_URL,
+  grpc.credentials.createInsecure()
+);
+//@ts-ignore
+console.log("====================================");
+console.log(process.env.CHAT_SERVER_URL);
+console.log(process.env.NOTIFICATION_SERVER_URL);
+console.log("====================================");
+//@ts-ignore
+const notificationServiceClient = new notificationProto.NotificationService(
+  process.env.NOTIFICATION_SERVER_URL,
   grpc.credentials.createInsecure()
 );
 
@@ -90,7 +111,7 @@ const GetCompaniesDetails = (companyIds: string[]) => {
           reject(error);
         } else {
           console.log(response);
-          
+
           resolve(response.companies);
         }
       }
@@ -98,10 +119,15 @@ const GetCompaniesDetails = (companyIds: string[]) => {
   });
 };
 
-const createConversation = (participants: string[], jobId: string ,companyName: string, logo:string) => {
+const createConversation = (
+  participants: string[],
+  jobId: string,
+  companyName: string,
+  logo: string
+) => {
   return new Promise((resolve, reject) => {
     chatServiceClient.CreateConversation(
-      { participants, jobId , companyName, logo },
+      { participants, jobId, companyName, logo },
       (err: any, response: any) => {
         if (err) {
           console.error("Error calling Chat Service:", err);
@@ -129,14 +155,37 @@ const GetJobSeekerDetailsById = (ids: string[]) => {
     );
   });
 };
+ 
+const CreateNotification = (data: {
+  userId: string;
+  message: string;
+  type: string;
+  relatedId: string;
+}) => {
+  return new Promise((resolve, reject) => {
 
+    notificationServiceClient.CreateNotification(
+      data,
+      (err: any, response: any) => {
+        if (err) {
+          console.error("Error calling Notification Service:", err);
+          reject(err);
+        } else {
+          resolve(response);
+        }
+      }
+    );
+  });
+}; 
+ 
 export {
   IsJobExist,
   FindJobIdsByCompanyId,
   FindJobsByIds,
   GetCompaniesDetails,
   createConversation,
-  GetJobSeekerDetailsById
+  GetJobSeekerDetailsById,
+  CreateNotification,
 };
 
 // import * as grpc from "@grpc/grpc-js";

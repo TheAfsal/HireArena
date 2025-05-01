@@ -1,4 +1,5 @@
 import {
+  CreateNotification,
   FindJobIdsByCompanyId,
   FindJobsByIds,
   GetJobSeekerDetailsById,
@@ -75,6 +76,10 @@ export class InterviewService implements IInterviewService {
       jobSeekerId
     );
 
+    const existingJob = await FindJobsByIds([jobId])
+
+    console.log("@@ existingJob - ", existingJob);
+
     if (existingApplication)
       throw new Error("You have already applied for this job");
 
@@ -120,8 +125,17 @@ export class InterviewService implements IInterviewService {
       }
     }
 
-    return await this.interviewRepo.createApplication(applicationData);
-  }
+    const createdApplication =  await this.interviewRepo.createApplication(applicationData);
+
+    await CreateNotification({
+      userId: jobSeekerId,
+      message: `You applied for job ${existingJob[0].jobTitle}`,
+      type: "INTERVIEW_COMPLETED",
+      relatedId: jobId,
+    });
+    
+    return createdApplication;
+  } 
 
   async getApplicationsStatus(
     jobSeekerId: string,

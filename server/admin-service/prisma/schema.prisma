@@ -80,18 +80,34 @@ model Invitation {
 }
 
 model JobSeeker {
-  id               String             @id
-  fullName         String
-  email            String             @unique
-  password         String
-  phone            String?
-  dob              DateTime?
-  gender           String?
-  image            String?
-  status           Boolean
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime
-  UserSubscription UserSubscription[]
+  id                String            @id @default(uuid())
+  fullName          String
+  email             String            @unique
+  password          String
+  phone             String?
+  dob               DateTime?
+  gender            String?
+  image             String?           
+  status            Boolean
+  headline          String?           
+  location          String?           
+  summary           String?           
+  yearsOfExperience String?           
+  currentJobTitle   String?           
+  currentCompany    String?           
+  highestEducation  String?           
+  university        String?           
+  skills            String[]        
+  languages         String[]  
+  portfolioUrl      String?           
+  linkedinUrl       String?           
+  githubUrl         String?           
+  resume            String?           
+  jobPreferences    Json?             
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  userSubscriptions UserSubscription[] 
 }
 
 model Transaction {

@@ -18,5 +18,14 @@
 /interview-mgmt-service/node_modules
 /interview-mgmt-service/.env
 
+/chat-service/node_modules
+/chat-service/.env
+
+/video-service/node_modules
+/video-service/.env
+
+/notification-service/node_modules
+/notification-service/.env
+
 /a.rest
 

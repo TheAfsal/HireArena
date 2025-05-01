@@ -18,6 +18,7 @@ import InvitationRepository from "@repositories/InvitationRepository";
 import AdminRepository from "@repositories/AdminRepository";
 import ProfileService from "@services/ProfileService";
 import CompanyService from "@services/CompanyServices";
+import passport from "passport";
 
 const jobSeekerRepository = new JobSeekerRepository(prisma);
 const adminRepository = new AdminRepository(prisma);
@@ -70,6 +71,10 @@ const authController = new AuthController(authService, profileService);
 
 const router = Router();
 
+
+router.use(passport.initialize());
+router.use(passport.session());
+
 router.post("/login", authController.login);
 router.post("/company-login", authController.loginCompany);
 router.post("/admin-login", authController.loginAdmin);
@@ -92,5 +97,14 @@ router.get("/who-am-i", authController.whoAmI);
 router.post("/forgot-password", authController.forgotPassword);
 
 router.post("/forgot-password-token/:token", authController.forgotPasswordUsingToken);
+
+// router.get(
+//   "/google",
+//   ((req,res,next)=>{
+//     console.log("@@@@ ************************************");
+//     next()
+//   }),
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
 export default router;

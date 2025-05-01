@@ -223,6 +223,22 @@ app.use(
   })
 );
 
+app.use(
+  "/notification-service/",
+  validateAccessToken,
+  createProxyMiddleware({
+    target: `http://${process.env.NOTIFICATION_SERVER_URL}:5020`,
+    changeOrigin: true,
+    on: {
+      proxyReq: (proxyReq, req: Request, res: Response) => {
+        if (req.user) {
+          proxyReq.setHeader("x-user", JSON.stringify(req.user));
+        }
+      },
+    },
+  })
+);
+
 app.use( socketIoProxy);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

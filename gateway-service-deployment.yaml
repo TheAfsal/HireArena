@@ -33,6 +33,8 @@ spec:
               value: "interview-management-service"
             - name: CHAT_SERVER_URL
               value: "chat-service"
+            - name: NOTIFICATION_SERVER_URL
+              value: "notification-service"
             - name: ACCESS_TOKEN_SECRET
               value: "your-access-token-secret"
             - name: REFRESH_TOKEN_SECRET
