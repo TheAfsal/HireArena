@@ -146,7 +146,7 @@ const CompanyDashboard: React.FC = () => {
                     Applied On
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Status
                   </th>
                 </tr>
               </thead>
@@ -166,12 +166,7 @@ const CompanyDashboard: React.FC = () => {
                         ).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <Link
-                          href={`/panel/applications/${app._id}`}
-                          className="text-indigo-600 hover:text-indigo-800"
-                        >
-                          View Details
-                        </Link>
+                        {app.state[app.state.length - 1].status}
                       </td>
                     </tr>
                   ))

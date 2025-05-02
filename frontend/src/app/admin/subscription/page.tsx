@@ -10,12 +10,10 @@ export type SubscriptionPlan = {
   price: string;
   duration: string;
   features: Record<string, boolean>;
-  status: string;
+  status: "active" | "inactive";
 };
 
 export type CreateSubscriptionData = Omit<SubscriptionPlan, "id">;
-
-
 
 export default function AdminSubscriptions() {
   return (
@@ -29,7 +27,7 @@ export default function AdminSubscriptions() {
           Existing Plans
         </h2>
         <SubscriptionList />
-        <div className=" border rounded-xl p-5 mt-10">
+        <div className="border rounded-xl p-5 mt-10">
           <SubscriptionHistory />
         </div>
       </div>

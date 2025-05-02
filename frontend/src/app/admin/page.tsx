@@ -8,7 +8,7 @@ export default function DashboardPage() {
       <main className="p-10">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold tracking-tight">
-            Welcome back, Acme Inc.!
+            Welcome back, HireArena.!
           </h2>
         </div>
 

@@ -99,7 +99,10 @@ const JobDashboardPage: React.FC = () => {
   const handleViewApplicationDetails = async (application: IInterview) => {
     setSelectedApplication(application);
 
-    const candidate = await fetchJobSeekerProfileByAdmin(application.candidateId);
+    const candidate = await fetchJobSeekerProfileByAdmin(
+      application.candidateId
+    );
+    console.log(candidate);
     setSelectedCandidate(candidate);
 
     setIsDialogOpen(true);
@@ -442,132 +445,6 @@ const JobDashboardPage: React.FC = () => {
               Applications ({applications?.length || 0})
             </TabsTrigger>
           </TabsList>
-
-          {/* <TabsContent value="statistics"> */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
-          {/* <Card>
-                <CardHeader>
-                  <CardTitle>Application Status (Dummy)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ChartContainer>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={[
-                              {
-                                name: "Completed",
-                                value: 12,
-                                color: "#22c55e",
-                              },
-                              {
-                                name: "In Progress",
-                                value: 8,
-                                color: "#3b82f6",
-                              },
-                              { name: "Pending", value: 6, color: "#facc15" },
-                              { name: "Rejected", value: 4, color: "#ef4444" },
-                            ]}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={2}
-                            dataKey="value"
-                            label={({ name, percent }) =>
-                              `${name}: ${(percent * 100).toFixed(0)}%`
-                            }
-                            labelLine={false}
-                          >
-                            <Cell fill="#22c55e" />
-                            <Cell fill="#3b82f6" />
-                            <Cell fill="#facc15" />
-                            <Cell fill="#ef4444" />
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <ChartLegend className="mt-4 flex justify-center gap-4">
-                        <ChartLegendItem name="Completed" color="#22c55e" />
-                        <ChartLegendItem name="In Progress" color="#3b82f6" />
-                        <ChartLegendItem name="Pending" color="#facc15" />
-                        <ChartLegendItem name="Rejected" color="#ef4444" />
-                      </ChartLegend>
-                    </ChartContainer>
-                  </div>
-                </CardContent>
-              </Card> */}
-
-          {/* <Card>
-                <CardHeader>
-                  <CardTitle>Applications Over Time</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ChartContainer>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={applicationsOverTimeData}>
-                          <XAxis dataKey="date" />
-                          <YAxis />
-                          <Area
-                            type="monotone"
-                            dataKey="applications"
-                            stroke="#8884d8"
-                            fill="#8884d8"
-                            fillOpacity={0.3}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </ChartContainer>
-                  </div>
-                </CardContent>
-              </Card> */}
-
-          {/* <Card>
-                <CardHeader>
-                  <CardTitle>Interview Stage Completion</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ChartContainer>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={interviewStageData}>
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Bar dataKey="completed" fill="#4ade80" />
-                          <Bar dataKey="failed" fill="#f87171" />
-                          <Bar dataKey="pending" fill="#facc15" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                      <ChartLegend className="mt-4 flex justify-center gap-4">
-                        <ChartLegendItem name="Completed" color="#4ade80" />
-                        <ChartLegendItem name="Failed" color="#f87171" />
-                        <ChartLegendItem name="Pending" color="#facc15" />
-                      </ChartLegend>
-                    </ChartContainer>
-                  </div>
-                </CardContent>
-              </Card> */}
-
-          {/* <Card>
-                <CardHeader>
-                  <CardTitle>Candidate Skills Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-80">
-                    <ChartContainer>
-                      <ResponsiveContainer width="100%" height="100%">
-                          <XAxis type="number" />
-                          <YAxis dataKey="name" type="category" width={100} />
-                          <Bar dataKey="count" fill="#60a5fa" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </ChartContainer>
-                  </div>
-                </CardContent>
-              </Card> */}
-          {/* </div> */}
-          {/* </TabsContent> */}
 
           <TabsContent value="applications">
             <Card>
@@ -983,7 +860,9 @@ const JobDashboardPage: React.FC = () => {
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm text-gray-500">Name</p>
-                        <p className="font-medium">{selectedCandidate.name}</p>
+                        <p className="font-medium">
+                          {selectedCandidate.fullName}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Email</p>
@@ -994,9 +873,11 @@ const JobDashboardPage: React.FC = () => {
                         <p className="font-medium">{selectedCandidate.phone}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">Experience</p>
+                        <p className="text-sm text-gray-500">
+                          Years of Experience
+                        </p>
                         <p className="font-medium">
-                          {selectedCandidate.experience}
+                          {selectedCandidate.yearsOfExperience}
                         </p>
                       </div>
                       <div>
@@ -1013,10 +894,42 @@ const JobDashboardPage: React.FC = () => {
                           ))}
                         </div>
                       </div>
+                      <div>
+                        <p className="text-sm text-gray-500">
+                          Current Job Title
+                        </p>
+                        <p className="font-medium">
+                          {selectedCandidate.currentJobTitle}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Location</p>
+                        <p className="font-medium">
+                          {selectedCandidate.location}
+                        </p>
+                      </div>
                       <div className="pt-2">
-                        <Button variant="outline" size="sm" className="w-full">
-                          View Resume
-                        </Button>
+                        {selectedCandidate.resume ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() =>
+                              window.open(selectedCandidate.resume, "_blank")
+                            }
+                          >
+                            View Resume
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            disabled={true}
+                          >
+                            Resume not available
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1058,7 +971,7 @@ const JobDashboardPage: React.FC = () => {
                         )}
 
                         <div className="mt-3 flex justify-end gap-2">
-                          {round.status === RoundStatus.Pending && (
+                          {/* {round.status === RoundStatus.Pending && (
                             <Button size="sm" variant="outline">
                               Schedule
                             </Button>
@@ -1070,15 +983,15 @@ const JobDashboardPage: React.FC = () => {
                           )}
                           <Button size="sm" variant="outline">
                             View Details
-                          </Button>
+                          </Button> */}
                         </div>
                       </div>
                     ))}
 
-                    <div className="flex justify-end gap-2 pt-2">
+                    {/* <div className="flex justify-end gap-2 pt-2">
                       <Button variant="outline">Add Interview Round</Button>
                       <Button>Update Status</Button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

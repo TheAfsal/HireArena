@@ -31,6 +31,6 @@ router.put("/change-password", JobSeekerController.changePassword);
 router.get("/userId", JobSeekerController.getUserId);
 router.get("/profile/minimal/:id", JobSeekerController.getMiniProfileByCompany);
 router.get("/profile/minimal", JobSeekerController.getMinimalProfile);
+router.get("/profile/admin/:userId", JobSeekerController.getProfileForAdmin);
 
 export default router;
-

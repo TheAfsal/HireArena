@@ -6,6 +6,7 @@ export interface IJobSeekerController {
   getProfile(req: Request, res: Response): Promise<void>;
   getUserId(req: Request, res: Response): Promise<void>;
   getMinimalProfile(req: Request, res: Response): Promise<void>;
+  getProfileForAdmin (req: Request, res: Response): Promise<void>;
   getMiniProfileByCompany(req: Request, res: Response): Promise<void>;
   changePassword(req: Request, res: Response): Promise<void>;
   getAllJobSeekers(

@@ -135,6 +135,21 @@ class JobSeekerController implements IJobSeekerController {
     }
   };
 
+  getProfileForAdmin = async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.params
+      const userProfile = await this.profileService.getProfile(userId);
+
+      res.status(StatusCodes.OK).json(userProfile);
+    } catch (error) {
+      console.log(error);
+
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: (error as Error).message });
+    }
+  };
+
   getMinimalProfile = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req.headers["x-user"]
