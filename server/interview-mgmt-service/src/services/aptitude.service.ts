@@ -11,7 +11,11 @@ import { IAptitudeQuestion, IQuestions } from "model/Question";
 import SubmitTest from "../usecase/submitAptitudeTest";
 import GeminiHelper from "utils/gemini.helper";
 import IAptitudeTestResultRepository from "@core/interfaces/repository/IAptitudeTestResultRepository";
-import { IsJobExist } from "@config/grpcClient";
+import {
+  CreateNotification,
+  FindJobsByIds,
+  IsJobExist,
+} from "@config/grpcClient";
 
 class AptitudeService implements IAptitudeService {
   constructor(
@@ -71,8 +75,7 @@ class AptitudeService implements IAptitudeService {
 
     const lastState = application.state[application.state.length - 1];
 
-    console.log("@@lastState",lastState);
-    
+    console.log("@@lastState", lastState);
 
     const isAptitudeRound =
       lastState?.roundType === "Aptitude Test" &&
@@ -84,8 +87,7 @@ class AptitudeService implements IAptitudeService {
 
     const isWithinTimeLimit = diffInMinutes <= 31;
 
-    console.log(isAptitudeRound ,isWithinTimeLimit);
-    
+    console.log(isAptitudeRound, isWithinTimeLimit);
 
     if (isAptitudeRound && isWithinTimeLimit) {
       const submit = new SubmitTest(this.questionsRepo, this.interviewRepo);
@@ -96,9 +98,9 @@ class AptitudeService implements IAptitudeService {
       );
 
       console.log("@@ test result", result);
-      
+
       const storedResult = await this.aptitudeResultRepo.saveResults(result);
-      
+
       console.log("@@ storedResult", storedResult);
 
       if (storedResult.status === RoundStatus.Completed)
@@ -144,13 +146,38 @@ class AptitudeService implements IAptitudeService {
           }
         }
 
+        const existingJob = await FindJobsByIds([application.jobId]);
+
         if (!nextTest) {
+          await CreateNotification({
+            userId: application.candidateId,
+            message: `${existingJob[0].jobTitle}'s Interview completed successfully`,
+            type: "INTERVIEW_COMPLETED",
+            relatedId: application.jobId,
+          });
           throw new Error("No pending test found to schedule next.");
         }
 
         await this.interviewRepo.addNextTest(interviewId, nextTest);
+
+        await CreateNotification({
+          userId: application.candidateId,
+          message: `${existingJob[0].jobTitle}'s Aptitude round completed successfully`,
+          type: "INTERVIEW_COMPLETED",
+          relatedId: application.jobId,
+        });
+
         return result;
       }
+
+      const existingJob = await FindJobsByIds([application.jobId]);
+
+      await CreateNotification({
+        userId: application.candidateId,
+        message: `Failed aptitude round for ${existingJob[0].jobTitle}`,
+        type: "INTERVIEW_COMPLETED",
+        relatedId: application.jobId,
+      });
 
       return result;
     } else {

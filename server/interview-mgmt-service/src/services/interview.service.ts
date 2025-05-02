@@ -76,7 +76,7 @@ export class InterviewService implements IInterviewService {
       jobSeekerId
     );
 
-    const existingJob = await FindJobsByIds([jobId])
+    const existingJob = await FindJobsByIds([jobId]);
 
     console.log("@@ existingJob - ", existingJob);
 
@@ -125,7 +125,9 @@ export class InterviewService implements IInterviewService {
       }
     }
 
-    const createdApplication =  await this.interviewRepo.createApplication(applicationData);
+    const createdApplication = await this.interviewRepo.createApplication(
+      applicationData
+    );
 
     await CreateNotification({
       userId: jobSeekerId,
@@ -133,9 +135,9 @@ export class InterviewService implements IInterviewService {
       type: "INTERVIEW_COMPLETED",
       relatedId: jobId,
     });
-    
+
     return createdApplication;
-  } 
+  }
 
   async getApplicationsStatus(
     jobSeekerId: string,
@@ -217,31 +219,38 @@ export class InterviewService implements IInterviewService {
     companyId: string
   ): Promise<any[]> {
     const jobs = await FindJobIdsByCompanyId(companyId);
-  
+
     if (!jobs || jobs.length === 0) {
       return [];
     }
-  
+
     const interviews = await this.interviewRepo.getJobApplications(jobs);
     const uniqueCandidateIds = Array.from(
       new Set(interviews.map((app: any) => app.candidateId))
     );
-  
+
     try {
       const [userDetailsResult, jobDetails] = await Promise.all([
         GetJobSeekerDetailsById(uniqueCandidateIds),
         FindJobsByIds(jobs),
       ]);
-  
+
       const jobSeekers = (
         userDetailsResult as {
-          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+          jobSeekers: {
+            id: string;
+            fullName: string;
+            email: string;
+            image?: string;
+          }[];
         }
       ).jobSeekers;
-  
+
       const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
-      const jobMap = new Map(jobDetails.map((job: any) => [job.id, job.jobTitle]));
-  
+      const jobMap = new Map(
+        jobDetails.map((job: any) => [job.id, job.jobTitle])
+      );
+
       return interviews.map((interview: any) => {
         const {
           _id,
@@ -252,7 +261,7 @@ export class InterviewService implements IInterviewService {
           createdAt,
           updatedAt,
         } = interview._doc;
-  
+
         return {
           id: _id.toString(),
           jobId,
@@ -276,29 +285,35 @@ export class InterviewService implements IInterviewService {
       throw new Error("Failed to fetch candidate or job details");
     }
   }
-  
 
   async getJobApplications(jobId: string): Promise<any[]> {
     const applications = await this.interviewRepo.getJobApplications([jobId]);
-  
+
     if (!applications || applications.length === 0) {
       return [];
     }
-  
+
     const uniqueCandidateIds = Array.from(
       new Set(applications.map((app: any) => app.candidateId))
     );
-  
+
     try {
-      const userDetailsResult = await GetJobSeekerDetailsById(uniqueCandidateIds);
+      const userDetailsResult = await GetJobSeekerDetailsById(
+        uniqueCandidateIds
+      );
       const jobSeekers = (
         userDetailsResult as {
-          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+          jobSeekers: {
+            id: string;
+            fullName: string;
+            email: string;
+            image?: string;
+          }[];
         }
       ).jobSeekers;
-  
+
       const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
-  
+
       return applications.map((app: any) => {
         const {
           _id,
@@ -309,7 +324,7 @@ export class InterviewService implements IInterviewService {
           createdAt,
           updatedAt,
         } = app;
-  
+
         return {
           id: _id.toString(),
           jobId,
@@ -332,7 +347,6 @@ export class InterviewService implements IInterviewService {
       throw new Error("Failed to fetch candidate details");
     }
   }
-  
 
   async getApplicationsCandidate(userId: string): Promise<IInterviewWithJob[]> {
     const interviews = await this.interviewRepo.findApplicationByCandidateId(
@@ -366,28 +380,36 @@ export class InterviewService implements IInterviewService {
 
   async getScheduleInterviews(userId: string): Promise<any[]> {
     const interviews = await this.employeeInterviewsRepo.findMySchedule(userId);
-  
+
     if (!interviews || interviews.length === 0) {
       return [];
     }
-  
+
     const uniqueCandidateIds = Array.from(
       new Set(interviews.map((i: any) => i.candidateId))
     );
-  
+
     try {
-      const userDetailsResult = await GetJobSeekerDetailsById(uniqueCandidateIds);
+      const userDetailsResult = await GetJobSeekerDetailsById(
+        uniqueCandidateIds
+      );
       const jobSeekers = (
         userDetailsResult as {
-          jobSeekers: { id: string; fullName: string; email: string; image?: string }[];
+          jobSeekers: {
+            id: string;
+            fullName: string;
+            email: string;
+            image?: string;
+          }[];
         }
       ).jobSeekers;
-  
+
       const candidateMap = new Map(jobSeekers.map((js: any) => [js.id, js]));
-  
+
       return interviews.map((interview: any) => {
-        const { _id, scheduledInterviewId, candidateId, time, link } = interview;
-  
+        const { _id, scheduledInterviewId, candidateId, time, link } =
+          interview;
+
         return {
           _id,
           scheduledInterviewId,
@@ -408,7 +430,6 @@ export class InterviewService implements IInterviewService {
       throw new Error("Failed to fetch candidate details");
     }
   }
-  
 
   async scheduleInterview(
     interviewId: string,
@@ -455,10 +476,20 @@ export class InterviewService implements IInterviewService {
           ]["_id"],
         videoCallLink,
       };
+
       const updatedInterview = await this.interviewRepo.addInterviewRound(
         interviewId,
         roundData
       );
+
+      const existingJob = await FindJobsByIds([interview.jobId]);
+
+      await CreateNotification({
+        userId: interview.candidateId,
+        message: `${roundData.roundType} scheduled for ${existingJob[0].jobTitle}`,
+        type: "INTERVIEW_COMPLETED",
+        relatedId: interview.jobId,
+      });
 
       if (!updatedInterview) {
         throw new Error("Failed to update interview");
@@ -565,6 +596,16 @@ export class InterviewService implements IInterviewService {
 
         if (updatedInterview.state.length === filteredArr.length) {
           console.log("Interview Completed");
+
+          const existingJob = await FindJobsByIds([interview.jobId]);
+
+          await CreateNotification({
+            userId: interview.candidateId,
+            message: `${existingJob[0].jobTitle} Interview completed successfully`,
+            type: "INTERVIEW_COMPLETED",
+            relatedId: interview.jobId,
+          });
+
           return updatedInterview;
         } else {
           nextTest = {
@@ -574,6 +615,15 @@ export class InterviewService implements IInterviewService {
             updatedAt: now,
           };
 
+          const existingJob = await FindJobsByIds([interview.jobId]);
+
+          await CreateNotification({
+            userId: interview.candidateId,
+            message: `${nextTest.roundType} scheduled for ${existingJob[0].jobTitle}`,
+            type: "INTERVIEW_COMPLETED",
+            relatedId: interview.jobId,
+          });
+
           console.log(nextTest);
           if (!nextTest) {
             throw new Error("No pending test found to schedule next.");
@@ -581,6 +631,15 @@ export class InterviewService implements IInterviewService {
           return await this.interviewRepo.addNextTest(interviewId, nextTest);
         }
       }
+      
+      const existingJob = await FindJobsByIds([interview.jobId]);
+
+      await CreateNotification({
+        userId: interview.candidateId,
+        message: `Falied interview for ${existingJob[0].jobTitle}`,
+        type: "INTERVIEW_COMPLETED",
+        relatedId: interview.jobId,
+      });
 
       return updatedInterview;
     } catch (error) {

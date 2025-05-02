@@ -40,11 +40,11 @@ class EmailService implements IEmailService {
 
       console.log(verificationUrl);
 
-      // await this.transporter.sendMail({
-      //   to: email,
-      //   subject: "Email Verification",
-      //   html: message,
-      // });
+      await this.transporter.sendMail({
+        to: email,
+        subject: "Email Verification",
+        html: message,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -81,11 +81,11 @@ class EmailService implements IEmailService {
 
       console.log(message.bgCyan);
 
-      // await this.transporter.sendMail({
-      //   to: email,
-      //   subject: `Invitation to Join ${companyName} as ${role}`,
-      //   html: message,
-      // });
+      await this.transporter.sendMail({
+        to: email,
+        subject: `Invitation to Join ${companyName} as ${role}`,
+        html: message,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -95,7 +95,7 @@ class EmailService implements IEmailService {
     try {
       const passwordChangeUrl = `${process.env.FRONT_END_URL}/auth/forgot-password/${token}`;
       
-      const message = `<p>Dear [User's Name],</p>
+      const message = `<p>Dear User</p>
     
         <p>We received a request to reset the password for your <strong>HireArena</strong> account.</p>
     

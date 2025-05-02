@@ -5,7 +5,11 @@ import { IMachineTaskRepository } from "@core/interfaces/repository/IMachineTask
 import { IMachineTask } from "model/MachineTask";
 import { IRoundStatus, RoundStatus, RoundType } from "model/Interview";
 import { IInterviewRepository } from "@core/interfaces/repository/IInterviewRepository";
-import { IsJobExist } from "@config/grpcClient";
+import {
+  CreateNotification,
+  FindJobsByIds,
+  IsJobExist,
+} from "@config/grpcClient";
 
 class MachineTaskService implements IMachineTaskService {
   constructor(
@@ -40,7 +44,9 @@ class MachineTaskService implements IMachineTaskService {
     return task;
   }
 
-  async fetchMachineTaskDetails(taskId: string): Promise<Partial<IMachineTask>> {
+  async fetchMachineTaskDetails(
+    taskId: string
+  ): Promise<Partial<IMachineTask>> {
     const task = await this.machineTaskRepo.getMachineTaskDetails(taskId);
     if (!task) throw new Error("Machine task not found");
     return task;
@@ -72,7 +78,7 @@ class MachineTaskService implements IMachineTaskService {
     candidateId: string,
     taskId: string,
     repoUrl: string,
-    jobId: string,
+    jobId: string
   ): Promise<{ status: RoundStatus; evaluationScore: number }> {
     const machineTask = await this.machineTaskRepo.getTaskById(taskId);
     if (!machineTask) throw new Error("Machine Task not found");
@@ -91,7 +97,7 @@ class MachineTaskService implements IMachineTaskService {
       status
     );
 
-    if(status === RoundStatus.Completed){
+    if (status === RoundStatus.Completed) {
       const testOptions: Array<string> = [
         "Technical Interview",
         "Behavioral Interview",
@@ -114,19 +120,27 @@ class MachineTaskService implements IMachineTaskService {
         "CEO Interview",
       ];
 
-      const filteredArr = priorityOrder.filter(
-        (task) => tests[task] === true
-      );
+      const filteredArr = priorityOrder.filter((task) => tests[task] === true);
 
       console.log("@@filteredArr ", filteredArr);
 
       let nextTest: Partial<IRoundStatus> | null = null;
       const now = new Date();
 
-      if((updatedInterview.state.length-1)===filteredArr.length){
-        console.log("Interview Completed"); 
-        return updatedInterview
-      }else{
+      if (updatedInterview.state.length - 1 === filteredArr.length) {
+        console.log("Interview Completed");
+
+        const existingJob = await FindJobsByIds([jobId]);
+
+        await CreateNotification({
+          userId: candidateId,
+          message: `Interview Completed for for ${existingJob[0].jobTitle}`,
+          type: "INTERVIEW_COMPLETED",
+          relatedId: jobId,
+        });
+
+        return updatedInterview;
+      } else {
         nextTest = {
           roundType: RoundType[filteredArr[updatedInterview.state.length]],
           status: RoundStatus.Pending,
@@ -134,14 +148,41 @@ class MachineTaskService implements IMachineTaskService {
           updatedAt: now,
         };
 
+        const existingJob = await FindJobsByIds([jobId]);
+
+        await CreateNotification({
+          userId: candidateId,
+          message: `Machine Task Completed for ${existingJob[0].jobTitle}`,
+          type: "INTERVIEW_COMPLETED",
+          relatedId: jobId,
+        });
+
+        await CreateNotification({
+          userId: candidateId,
+          message: `New round ${nextTest.roundType} assigned for ${existingJob[0].jobTitle}`,
+          type: "INTERVIEW_COMPLETED",
+          relatedId: jobId,
+        });
+
         console.log(nextTest);
         if (!nextTest) {
           throw new Error("No pending test found to schedule next.");
         }
-        return await this.interviewRepo.addNextTest(updatedInterview._id, nextTest);
-        
+        return await this.interviewRepo.addNextTest(
+          updatedInterview._id,
+          nextTest
+        );
       }
     }
+
+    const existingJob = await FindJobsByIds([jobId]);
+
+    await CreateNotification({
+      userId: candidateId,
+      message: `Failed Machine for ${existingJob[0].jobTitle}`,
+      type: "INTERVIEW_COMPLETED",
+      relatedId: jobId,
+    });
 
     return { status, evaluationScore };
   }
