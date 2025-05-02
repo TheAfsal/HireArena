@@ -33,7 +33,7 @@ services:
 
   # User service
   user-service:
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.1
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.2
     build:
       context: ./server/user-service
     container_name: user-service
@@ -119,7 +119,7 @@ services:
     build:
       context: ./server/interview-mgmt-service
     container_name: interview-management-service
-    image: interview-management-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.0
     ports:
       - "5006:5006"
       - "5007:5007"
@@ -136,6 +136,7 @@ services:
       - JOB_SERVER_URL=job-service:5015
       - USER_SERVER_URL=user-service:5051
       - CHAT_SERVER_URL=chat-service:5010
+      - NOTIFICATION_SERVER_URL=notification-service:5021
       - FRONTEND_URL=http://localhost:3000
       # - NODE_ENV=development
       # - MONGO_DB=db-mongo
@@ -193,6 +194,27 @@ services:
       # - REDIS_PASSWORD=your-redis-password
     networks:
       - app-network
+
+   # Notification service
+  notification-service:
+    build:
+      context: ./server/notification-service
+    container_name: notification-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/notification-service:v1.0.0
+    ports:
+      - "5020:5020"
+      - "5021:5021"
+    volumes:
+      - ./server/notification-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    environment:
+      - PORT=5020
+      - GRPC_PORT=5021
+      - MONGO_DB=mongodb+srv://hireArenaKey1:hireArenaKey1Password@hirearenacluster.xiics9u.mongodb.net/notification
+    networks:
+      - app-network    
 
   # Chat service
   chat-service:

@@ -58,6 +58,7 @@ import {
   RoundStatus,
   JobStatus,
 } from "@/Types/job.types";
+import { fetchJobSeekerProfileByAdmin } from "@/app/api/profile";
 
 const JobDashboardPage: React.FC = () => {
   const { jobId } = useParams();
@@ -98,8 +99,7 @@ const JobDashboardPage: React.FC = () => {
   const handleViewApplicationDetails = async (application: IInterview) => {
     setSelectedApplication(application);
 
-    // Fetch candidate details
-    const candidate = await fetchCandidateDetails(application.candidateId);
+    const candidate = await fetchJobSeekerProfileByAdmin(application.candidateId);
     setSelectedCandidate(candidate);
 
     setIsDialogOpen(true);
@@ -1264,7 +1264,6 @@ export default JobDashboardPage;
 // };
 
 const fetchCandidateDetails = (candidateId: string): Promise<ICandidate> => {
-  // This would be an API call in a real application
   const candidates = [
     {
       _id: "d0105245-3de5-41df-9ce7-407b50c92d9b",

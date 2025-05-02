@@ -77,6 +77,7 @@ export const ADMIN_ROUTES = {
 
 export const USER_ROUTES = {
   JOB_SEEKER_PROFILE: `${SERVICES.USER_SERVICE}/job-seeker/profile`,
+  JOB_SEEKER_PROFILE_BY_ADMIN: `${SERVICES.USER_SERVICE}/job-seeker/profile/admin`,
   JOB_SEEKER_MINIMAL_PROFILE: `${SERVICES.USER_SERVICE}/job-seeker/profile/minimal`,
   COMPANY_PROFILE: `${SERVICES.USER_SERVICE}/company/profile`,
   COMPANY_MEDIA_LINK: `${SERVICES.USER_SERVICE}/company/media-links`,

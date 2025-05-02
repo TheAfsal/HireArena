@@ -43,6 +43,22 @@ export async function fetchJobSeekerProfile(): Promise<any> {
   }
 }
 
+export async function fetchJobSeekerProfileByAdmin(userId:string): Promise<any> {
+  try {
+    const response = await axiosInstance.get(`${USER_ROUTES.JOB_SEEKER_PROFILE_BY_ADMIN}/${userId}`);
+
+    return response.data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+
+    throw new Error("Unknown error occurred");
+  }
+}
+
 export async function fetchJobSeekerMinimalProfile(): Promise<any> {
   try {
     const response = await axiosInstance.get(
