@@ -31,7 +31,7 @@ const subscriptionSchema = z.object({
     .refine((val) => Number(val) <= 365, "Duration must not exceed 365 days"),
   features: z.record(z.string(), z.boolean()).refine(
     (features) => Object.values(features).some((enabled) => enabled),
-    "At least one feature must be selected"
+    { message: "At least one feature must be selected" }
   ),
   status: z.enum(["active", "inactive"]).optional(),
 });
@@ -234,8 +234,10 @@ function SubscriptionForm({ mode, plan, onSuccess }: SubscriptionFormProps) {
             </div>
           ))}
         </div>
-        {errors.features && (
-          <p className="text-red-500 text-sm">{errors.features.message}</p>
+        {errors.features && errors.features.message && (
+          <p className="text-red-500 text-sm">
+            {(errors.features as any).message}
+          </p>
         )}
       </div>
 

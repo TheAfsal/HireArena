@@ -1176,42 +1176,42 @@ export default JobDashboardPage;
 //   return Promise.resolve(applications.filter((app) => app.jobId === jobId));
 // };
 
-const fetchCandidateDetails = (candidateId: string): Promise<ICandidate> => {
-  const candidates = [
-    {
-      _id: "d0105245-3de5-41df-9ce7-407b50c92d9b",
-      name: "John Smith",
-      email: "john.smith@example.com",
-      phone: "+1 (555) 123-4567",
-      resume: "/resumes/john-smith-resume.pdf",
-      experience: "4 years",
-      skills: ["JavaScript", "React", "TypeScript", "CSS", "HTML"],
-    },
-    {
-      _id: "a7105245-3de5-41df-9ce7-407b50c92d9c",
-      name: "Emily Johnson",
-      email: "emily.johnson@example.com",
-      phone: "+1 (555) 987-6543",
-      resume: "/resumes/emily-johnson-resume.pdf",
-      experience: "3 years",
-      skills: ["JavaScript", "React", "Redux", "Node.js", "MongoDB"],
-    },
-    {
-      _id: "b8105245-3de5-41df-9ce7-407b50c92d9d",
-      name: "Michael Chen",
-      email: "michael.chen@example.com",
-      phone: "+1 (555) 456-7890",
-      resume: "/resumes/michael-chen-resume.pdf",
-      experience: "5 years",
-      skills: ["JavaScript", "React", "TypeScript", "GraphQL", "AWS"],
-    },
-  ];
+// const fetchCandidateDetails = (candidateId: string): Promise<ICandidate> => {
+//   const candidates = [
+//     {
+//       _id: "d0105245-3de5-41df-9ce7-407b50c92d9b",
+//       name: "John Smith",
+//       email: "john.smith@example.com",
+//       phone: "+1 (555) 123-4567",
+//       resume: "/resumes/john-smith-resume.pdf",
+//       experience: "4 years",
+//       skills: ["JavaScript", "React", "TypeScript", "CSS", "HTML"],
+//     },
+//     {
+//       _id: "a7105245-3de5-41df-9ce7-407b50c92d9c",
+//       name: "Emily Johnson",
+//       email: "emily.johnson@example.com",
+//       phone: "+1 (555) 987-6543",
+//       resume: "/resumes/emily-johnson-resume.pdf",
+//       experience: "3 years",
+//       skills: ["JavaScript", "React", "Redux", "Node.js", "MongoDB"],
+//     },
+//     {
+//       _id: "b8105245-3de5-41df-9ce7-407b50c92d9d",
+//       name: "Michael Chen",
+//       email: "michael.chen@example.com",
+//       phone: "+1 (555) 456-7890",
+//       resume: "/resumes/michael-chen-resume.pdf",
+//       experience: "5 years",
+//       skills: ["JavaScript", "React", "TypeScript", "GraphQL", "AWS"],
+//     },
+//   ];
 
-  const candidate = candidates.find((c) => c._id === candidateId);
+//   const candidate = candidates.find((c) => c._id === candidateId);
 
-  if (!candidate) {
-    return Promise.reject(new Error("Candidate not found"));
-  }
+//   if (!candidate) {
+//     return Promise.reject(new Error("Candidate not found"));
+//   }
 
-  return Promise.resolve(candidate);
-};
+//   return Promise.resolve(candidate);
+// };

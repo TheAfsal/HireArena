@@ -39,11 +39,13 @@ export enum RoundStatus {
 
 export interface ICandidate {
   _id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
   resume: string;
-  experience: string;
+  yearsOfExperience: string;
+  currentJobTitle: string;
+  location: string;
   skills: string[];
 }
 
