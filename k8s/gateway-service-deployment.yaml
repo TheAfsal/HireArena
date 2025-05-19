@@ -39,6 +39,13 @@ spec:
               value: "your-access-token-secret"
             - name: REFRESH_TOKEN_SECRET
               value: "your-refresh-token-secret"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

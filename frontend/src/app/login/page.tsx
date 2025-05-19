@@ -18,7 +18,7 @@ export default function Page() {
   }, [auth]);
 
   return (
-    <div className="h-screen relative overflow-hidden bg-white dark:bg-neutral-950">
+    <div className="h-screen relative bg-white dark:bg-neutral-950">
       <Navbar />
       <BackgroundPaths title="HireArena" />
       <div className="relative z-10 pt-16 pb-24">

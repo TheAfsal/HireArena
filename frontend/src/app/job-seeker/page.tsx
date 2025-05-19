@@ -605,7 +605,7 @@ const CandidateDashboard: React.FC = () => {
                   </p>
                   <p className="text-sm">Start your job search journey today</p>
                   <Link href="/job-seeker/jobs" className="mt-4 inline-block">
-                    <Button className="mt-4 rounded-full bg-gradient-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-900">
+                    <Button className="mt-4 rounded-full bg-gradient-to-r text-slate-100 from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-900">
                       Browse Available Jobs
                     </Button>
                   </Link>

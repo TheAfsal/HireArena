@@ -129,8 +129,18 @@ function Page() {
     return `$${min.toLocaleString()} - $${max.toLocaleString()}`;
   };
 
-  console.log("@ statusDetails", statusDetails);
-  console.log("@ {auth.role}", auth.role);
+  // const dateStr = new Date(jobDetails.createdAt).toLocaleDateString(
+  //     "en-GB",
+  //     { day: "2-digit", month: "2-digit", year: "2-digit" } // dd/mm/yy
+  // );
+
+  const dateStr = (dateStr:any) =>{
+    const date = new Date(dateStr);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 md:px-6 lg:py-12">
@@ -203,49 +213,47 @@ function Page() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <div className="flex items-center gap-2">
-            <BriefcaseIcon className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Job Type</p>
-              <p className="font-medium">
-                {jobDetails?.employmentTypes
-                  ?.map((typeItem) => typeItem.type.replace("_", " "))
-                  .reverse()
-                  .join(", ")}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Salary Range</p>
-              <p className="font-medium">
-                {formatSalary(jobDetails!.salaryMin, jobDetails!.salaryMax)}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <LocateIcon className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Location</p>
-              <p className="font-medium">{jobDetails!.location}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Posted On</p>
-              <p className="font-medium">
-                {new Date(jobDetails!.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        </div>
+        {/*<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">*/}
+        {/*  <div className="flex items-center gap-2">*/}
+        {/*    <BriefcaseIcon className="h-5 w-5 text-muted-foreground" />*/}
+        {/*    <div>*/}
+        {/*      <p className="text-sm text-muted-foreground">Job Type</p>*/}
+        {/*      <p className="font-medium">*/}
+        {/*        {jobDetails?.employmentTypes*/}
+        {/*          ?.map((typeItem) => typeItem.type.replace("_", " "))*/}
+        {/*          .reverse()*/}
+        {/*          .join(", ")}*/}
+        {/*      </p>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*  <div className="flex items-center gap-2">*/}
+        {/*    <DollarSign className="h-5 w-5 text-muted-foreground" />*/}
+        {/*    <div>*/}
+        {/*      <p className="text-sm text-muted-foreground">Salary Range</p>*/}
+        {/*      <p className="font-medium">*/}
+        {/*        {formatSalary(jobDetails!.salaryMin, jobDetails!.salaryMax)}*/}
+        {/*      </p>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*  <div className="flex items-center gap-2">*/}
+        {/*    <LocateIcon className="h-5 w-5 text-muted-foreground" />*/}
+        {/*    <div>*/}
+        {/*      <p className="text-sm text-muted-foreground">Location</p>*/}
+        {/*      <p className="font-medium">{jobDetails!.location}</p>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*  <div className="flex items-center gap-2">*/}
+        {/*    <CalendarDays className="h-5 w-5 text-muted-foreground" />*/}
+        {/*    <div>*/}
+        {/*      <p className="text-sm text-muted-foreground">Posted On</p>*/}
+        {/*      <p className="font-medium">{dateStr(jobDetails!.createdAt)}</p>*/}
+        {/*    </div>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </div>
 
       {/* Main Content */}
-      {jobDetails && <MainContent jobDetails={jobDetails} />}
+      {/*{jobDetails && <MainContent jobDetails={jobDetails} />}*/}
     </div>
   );
 }

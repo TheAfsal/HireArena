@@ -33,7 +33,7 @@ services:
 
   # User service
   user-service:
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.2
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.4
     build:
       context: ./server/user-service
     container_name: user-service
@@ -119,7 +119,7 @@ services:
     build:
       context: ./server/interview-mgmt-service
     container_name: interview-management-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.0
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.1
     ports:
       - "5006:5006"
       - "5007:5007"

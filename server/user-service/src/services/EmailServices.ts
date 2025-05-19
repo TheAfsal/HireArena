@@ -9,8 +9,8 @@ class EmailService implements IEmailService {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "ahammedijas7885@gmail.com",
-        pass: "wsau wond lzgf xowd",
+        user: process.env.MAIL,
+        pass: process.env.MAIL_PASSWORD,
       },
     });
   }
@@ -40,11 +40,11 @@ class EmailService implements IEmailService {
 
       console.log(verificationUrl);
 
-      await this.transporter.sendMail({
-        to: email,
-        subject: "Email Verification",
-        html: message,
-      });
+      // await this.transporter.sendMail({
+      //   to: email,
+      //   subject: "Email Verification",
+      //   html: message,
+      // });
     } catch (error) {
       console.log(error);
     }
@@ -81,11 +81,11 @@ class EmailService implements IEmailService {
 
       console.log(message.bgCyan);
 
-      await this.transporter.sendMail({
-        to: email,
-        subject: `Invitation to Join ${companyName} as ${role}`,
-        html: message,
-      });
+      // await this.transporter.sendMail({
+      //   to: email,
+      //   subject: `Invitation to Join ${companyName} as ${role}`,
+      //   html: message,
+      // });
     } catch (error) {
       console.log(error);
     }
@@ -117,11 +117,11 @@ class EmailService implements IEmailService {
   
       console.log(passwordChangeUrl);
   
-      await this.transporter.sendMail({
-        to: email,
-        subject: "Password Change Request",
-        html: message,
-      });
+      // await this.transporter.sendMail({
+      //   to: email,
+      //   subject: "Password Change Request",
+      //   html: message,
+      // });
     } catch (error) {
       console.error("Error sending password change email:", error);
     }

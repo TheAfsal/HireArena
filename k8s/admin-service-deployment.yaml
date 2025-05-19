@@ -39,6 +39,13 @@ spec:
             #   value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&statement_cache_mode=describe"
             - name: DATABASE_URL
               value: "postgresql://postgres.hnzqywzpwpxpzolkgilg:hireArenaPostgressPassword@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

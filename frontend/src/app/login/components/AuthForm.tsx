@@ -84,10 +84,17 @@ function AuthForm() {
       errors.push("Password must be at least 6 characters long.")
     }
 
-    if (formState === "signup" && !formValues.name?.trim()) {
-      setLoading(false)
-      errors.push("Name is required.")
+    if (formState === "signup") {
+      const name = formValues.name?.trim() || "";
+
+      const lettersOnly = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+
+      if (!lettersOnly.test(name)) {
+        setLoading(false);
+        errors.push("Name can contain letters and spaces only.");
+      }
     }
+
 
     if (errors.length > 0) {
       setErrorMessage(errors.join(" "))

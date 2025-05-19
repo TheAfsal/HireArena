@@ -64,19 +64,4 @@ export class ChatService implements IChatService {
     );
   }
 
-  // async getUserConversations(userId: string) {
-  //   const userConversations = await this.userConversationsRepo.getUserConversations(userId);
-  //   if (!userConversations || !userConversations.conversationIds.length) {
-  //     return [];
-  //   }
-
-
-  //   const conversations = await Promise.all(
-  //     userConversations.conversationIds.map((conversationId) =>
-  //       this.conversationRepo.findConversationById(conversationId)
-  //     )
-  //   );
-
-  //   return conversations.filter((conv): conv is IConversation => conv !== null);
-  // }  
 }

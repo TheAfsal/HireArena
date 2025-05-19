@@ -46,6 +46,13 @@ spec:
               value: "interview-management-service:5007"
             - name: CHAT_SERVER_URL
               value: "chat-service:5010"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

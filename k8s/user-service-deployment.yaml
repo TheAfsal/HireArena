@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.2
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.4
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -50,10 +50,21 @@ spec:
               value: "file-service"
             - name: ADMIN_SERVER_URL
               value: "admin-service"
+            - name: MAIL
+              value: "hirearena.web@gmail.com"
+            - name: MAIL_PASSWORD
+              value: "ebkv kmwm kyqy rhvd"
             - name: STRIPE_PUBLISH_KEY
               value: "pk_test_51QsD8pJtvAld9KrEaCGt4OohObgN59tumaWYrxBhenHHJzguKP2n4bcKk2Q0xJRkBoLCG4OspvSDgtVQUhkfSPTV00zfNEiSSb"
             - name: STRIPE_SECRET_KEY
               value: "sk_test_51QsD8pJtvAld9KrEzbzfrvAvoMRYhUtAHznZmdggraojmTXGyAxPqkY34z4qNMBhRj78ValWRTCMBIVM1LnHa7Wm00rNDZpwy9"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

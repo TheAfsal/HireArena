@@ -30,6 +30,13 @@ spec:
               value: "user-service:5051"
             - name: ACCESS_TOKEN_SECRET
               value: "your-access-token-secret"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service

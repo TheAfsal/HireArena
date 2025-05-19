@@ -25,6 +25,13 @@ spec:
               value: "mongodb+srv://hireArenaKey1:hireArenaKey1Password@hirearenacluster.xiics9u.mongodb.net/video_db"
             - name: ACCESS_TOKEN_SECRET
               value: "your-access-token-secret"
+      resources:
+            requests:
+              memory: "512Mi"  
+              cpu: "250m"      
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
