@@ -38,7 +38,10 @@ interface DataTableProps {
   pageSize: number;
   total: number;
   onPageChange: (page: number) => void;
-  onSearch: (term: string) => void;
+  onSearch: (term: string) => void; // Kept for compatibility
+  onSearchButtonClick: (term: string) => void; // New prop for button-based search
+  searchInput: string; // New prop for search input value
+  setSearchInput: (term: string) => void; // New prop for updating search input
   isLoading: boolean;
 }
 
@@ -55,6 +58,9 @@ export function DataTable({
   total,
   onPageChange,
   onSearch,
+  onSearchButtonClick,
+  searchInput,
+  setSearchInput,
   isLoading,
 }: DataTableProps) {
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -78,20 +84,31 @@ export function DataTable({
     }
   };
 
+  const handleSearch = () => {
+    onSearchButtonClick(searchInput);
+  };
+
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
 
       {/* Search */}
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
-        <Input
-          type="search"
-          placeholder={searchPlaceholder || "Search"}
-          className="pl-10 bg-gray-50"
-          onChange={(e) => onSearch(e.target.value)}
-          disabled={isLoading}
-        />
+      <div className="relative mb-6 flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+          <Input
+            type="search"
+            placeholder={searchPlaceholder || "Search"}
+            className="pl-10 bg-gray-50"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+            disabled={isLoading}
+          />
+        </div>
+        <Button onClick={handleSearch} disabled={isLoading || !searchInput.trim()}>
+          Search
+        </Button>
       </div>
 
       {/* Table */}

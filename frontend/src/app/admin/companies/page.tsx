@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchCompanies } from "@/app/api/company";
 import { toast } from "@/hooks/use-toast";
 import {
@@ -21,8 +21,9 @@ export default function CompaniesPage() {
   const [companies, setCompanies] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(10); // Increased from 1 to 10 for better UX
   const [total, setTotal] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -46,12 +47,12 @@ export default function CompaniesPage() {
     getCompanies();
   }, [page, searchTerm]);
 
-  const handleSearch = (term: string) => {
+  const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
     setPage(1);
-  };
+  }, []);
 
-  const handleBlockUnblock = (companyName: string) => {
+  const handleBlockUnblock = useCallback((companyName: string) => {
     setCompanies((prevCompanies) =>
       prevCompanies.map((company) =>
         company.companyName === companyName
@@ -62,9 +63,9 @@ export default function CompaniesPage() {
           : company
       )
     );
-  };
+  }, []);
 
-  const handleApproveVerification = async (companyId: string) => {
+  const handleApproveVerification = useCallback(async (companyId: string) => {
     setIsLoading(true);
     try {
       await approveCompanyVerification(companyId);
@@ -87,38 +88,38 @@ export default function CompaniesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleRejectVerification = async (
-    companyId: string,
-    reason: string
-  ) => {
-    setIsLoading(true);
-    try {
-      await rejectCompanyVerification(companyId, reason);
-      setCompanies((prevCompanies) =>
-        prevCompanies.map((company) =>
-          company.id === companyId
-            ? { ...company, status: "Rejected" }
-            : company
-        )
-      );
-      toast({
-        title: "Success",
-        description: "Company verification rejected",
-      });
-    } catch (error) {
-      console.error("Failed to reject verification:", error);
-      toast({
-        title: "Error",
-        description: "Failed to reject company verification",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
+  const handleRejectVerification = useCallback(
+    async (companyId: string, reason: string) => {
+      setIsLoading(true);
+      try {
+        await rejectCompanyVerification(companyId, reason);
+        setCompanies((prevCompanies) =>
+          prevCompanies.map((company) =>
+            company.id === companyId
+              ? { ...company, status: "Rejected" }
+              : company
+          )
+        );
+        toast({
+          title: "Success",
+          description: "Company verification rejected",
+        });
+      } catch (error) {
+        console.error("Failed to reject verification:", error);
+        toast({
+          title: "Error",
+          description: "Failed to reject company verification",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
   return (
     <DataTable
       title="Companies"
@@ -132,7 +133,10 @@ export default function CompaniesPage() {
       pageSize={pageSize}
       total={total}
       onPageChange={setPage}
-      onSearch={handleSearch}
+      onSearch={() => {}} 
+      onSearchButtonClick={handleSearch}
+      searchInput={searchInput}
+      setSearchInput={setSearchInput}
       isLoading={isLoading}
     />
   );
