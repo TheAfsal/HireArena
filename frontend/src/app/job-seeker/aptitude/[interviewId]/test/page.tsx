@@ -18,9 +18,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Clock, AlertCircle, ArrowLeft, ArrowRight, Flag, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Clock,
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Flag,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAptitudeQuestions, submitAptitude } from "@/app/api/interview";
+import SubmitTaskDialog from "../components/submitTask";
 
 export interface AptitudeQuestion {
   q_id: string;
@@ -56,7 +65,7 @@ function ResultsPopup({
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          router.push("/job-seeker"); 
+          router.push("/job-seeker");
           return 0;
         }
         return prev - 1;
@@ -95,11 +104,15 @@ function ResultsPopup({
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Correct Answers</p>
-              <p className="text-2xl font-bold text-green-600">{correctAnswers}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {correctAnswers}
+              </p>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">Incorrect Answers</p>
-              <p className="text-2xl font-bold text-red-600">{incorrectAnswers}</p>
+              <p className="text-2xl font-bold text-red-600">
+                {incorrectAnswers}
+              </p>
             </div>
           </div>
 
@@ -148,9 +161,6 @@ function ResultsPopup({
         </div>
         <AlertDialogFooter className="mt-6">
           <div className="flex w-full items-center justify-between">
-            {/* <span className="text-sm text-muted-foreground">
-              Redirecting to home in {timeLeft} seconds...
-            </span> */}
             <Button onClick={handleSkip}>Go to Home Now</Button>
           </div>
         </AlertDialogFooter>
@@ -160,8 +170,8 @@ function ResultsPopup({
 }
 
 export default function TestPage() {
-  const router = useRouter();
   const { interviewId } = useParams<{ interviewId: string }>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
 
   const {
@@ -200,10 +210,26 @@ export default function TestPage() {
     return () => clearInterval(timer);
   }, []);
 
+  if (isLoading || loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <p className="text-red-500">{"Job not found"}</p>
+      </div>
+    );
+  }
+
   if (!questions) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <div>Unexpected Error</div>
+        <div>Loading...</div>
       </div>
     );
   }
@@ -249,6 +275,7 @@ export default function TestPage() {
 
   const submitTest = async () => {
     try {
+      setLoading(true);
       const response = await submitAptitude(
         interviewId,
         answers.map((answer, i) => ({
@@ -259,6 +286,7 @@ export default function TestPage() {
       setTestResult(response);
       setShowSubmitDialog(false);
       setShowTimeUpDialog(false);
+      setLoading(false);
     } catch (error) {
       console.error("Submission failed:", error);
     }
@@ -274,30 +302,11 @@ export default function TestPage() {
     return "bg-gray-100 border-gray-300";
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center">
-        <p className="text-red-500">{"Job not found"}</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Results Popup */}
       {testResult && (
-        <ResultsPopup
-          result={testResult}
-          onClose={() => setTestResult(null)}
-        />
+        <ResultsPopup result={testResult} onClose={() => setTestResult(null)} />
       )}
 
       {/* Header with timer and progress */}
@@ -364,7 +373,7 @@ export default function TestPage() {
 
             <Button
               variant="destructive"
-              className="w-full mt-4"
+              className="w-full mt-5 px-8 py-6 rounded-full bg-primary text-white"
               onClick={() => setShowSubmitDialog(true)}
             >
               Submit Test
@@ -434,47 +443,38 @@ export default function TestPage() {
                 >
                   <ArrowLeft className="h-4 w-4" /> Previous
                 </Button>
-                <Button
-                  onClick={goToNextQuestion}
-                  disabled={currentQuestion === questions.length - 1}
-                  className="flex items-center gap-1"
-                >
-                  Next <ArrowRight className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={goToNextQuestion}
+                    disabled={currentQuestion === questions.length - 1}
+                    className="flex items-center gap-1"
+                  >
+                    Next <ArrowRight className="h-4 w-4" />
+                  </Button>
+                  {currentQuestion === questions.length - 1 && (
+                    <Button
+                      variant="destructive"
+                      className="px-8 py-3 rounded-full bg-primary text-white"
+                      onClick={() => setShowSubmitDialog(true)}
+                    >
+                      Submit Test
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Submit confirmation dialog */}
-      <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Submit Test?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have answered {answeredCount} out of {questions.length}{" "}
-              questions.
-              {answeredCount < questions.length && (
-                <div className="mt-2 flex items-center text-amber-600">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  You still have {questions.length - answeredCount} unanswered
-                  questions.
-                </div>
-              )}
-              Are you sure you want to submit your test?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Continue Test</AlertDialogCancel>
-            <AlertDialogAction onClick={submitTest}>
-              Submit Test
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <SubmitTaskDialog
+        open={showSubmitDialog}
+        onOpenChange={setShowSubmitDialog}
+        answeredCount={answeredCount}
+        totalQuestions={questions.length}
+        onSubmit={submitTest}
+      />
 
-      {/* Time up dialog */}
       <AlertDialog open={showTimeUpDialog} onOpenChange={setShowTimeUpDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

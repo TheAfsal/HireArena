@@ -10,7 +10,7 @@ function Home() {
   const { interviewId } = useParams<{ interviewId: string }>();
 
   return (
-    <div className="container bg-amber-400 mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col items-center justify-center space-y-8 text-center">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           TechHire
