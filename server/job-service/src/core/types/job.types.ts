@@ -4,7 +4,7 @@ export interface ICategoryTypeInput {
   name: string;
   description: string;
   status: boolean;
-  jobCategories: { connect: { id: string }[] }; 
+  jobCategories: { connect: { id: string }[] };
 }
 
 export interface IJobCreateInput {
@@ -32,9 +32,9 @@ export interface IJobResponse {
   jobDescription: string;
   responsibilities: string;
   qualifications: string;
-  testOptions: any; 
+  testOptions: any;
   niceToHave?: string | null;
-  benefits: any; 
+  benefits: any;
   companyId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -70,11 +70,23 @@ export interface ServerJobData {
 
 export interface JobFilters {
   searchQuery?: string;
-  type?: EmploymentType; // Use enum instead of string
+  type?: EmploymentType;
   category?: string;
   level?: string;
   skill?: string;
   location?: string;
   page?: string;
   pageSize?: string;
+}
+
+export interface JobFilterParams {
+  page: number;
+  pageSize: number;
+  search: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  department?: string;
 }

@@ -50,31 +50,6 @@ class JobController implements IJobController {
     }
   }
 
-
-  // getJobById = async (req: Request, res: Response) => {
-  //   try {
-  //     const job = await this.jobService.getJobById(req.params.id);
-  //     if (!job) {
-  //       return res.status(404).json({ message: "Job not found" });
-  //     }
-  //     res.json(job);
-  //   } catch (error) {
-  //     res.status(500).json({ error: (error as Error).message });
-  //   }
-  // };
-
-  // getAllJobs = async (req: Request, res: Response) => {
-  //   try {
-  //     const { userId } = req.headers["x-user"]
-  //       ? JSON.parse(req.headers["x-user"] as string)
-  //       : null;
-  //     const jobs = await this.jobService.getAllJobsForAdmin();
-  //     res.json(jobs);
-  //   } catch (error) {
-  //     res.status(500).json({ error: (error as Error).message });
-  //   }
-  // };
-
   getAllJobs = async (req: Request, res: Response) => {
     try {
       const { userId } = req.headers["x-user"]
@@ -84,7 +59,36 @@ class JobController implements IJobController {
       const pageSize = parseInt(req.query.pageSize as string) || 10;
       const search = (req.query.search as string) || "";
 
-      const { jobs, total } = await this.jobService.getAllJobsForAdmin(page, pageSize, search);
+      // const { jobs, total } = await this.jobService.getAllJobsForAdmin(page, pageSize, search);
+      // res.json({ jobs, total });
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });
+    }
+  };
+
+  getAllJobsForAdmin = async (req: Request, res: Response) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const search = (req.query.search as string) || "";
+      const sortBy = (req.query.sortBy as string) || "updatedAt";
+      const sortOrder = (req.query.sortOrder as string) === "asc" ? "asc" : "desc";
+      const startDate = (req.query.startDate as string) || undefined;
+      const endDate = (req.query.endDate as string) || undefined;
+      const status = (req.query.status as string) || undefined;
+      const department = (req.query.department as string) || undefined;
+
+      const { jobs, total } = await this.jobService.getAllJobsForAdmin({
+        page,
+        pageSize,
+        search,
+        sortBy,
+        sortOrder,
+        startDate,
+        endDate,
+        status,
+        department,
+      });
       res.json({ jobs, total });
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: (error as Error).message });

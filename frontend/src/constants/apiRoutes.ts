@@ -88,6 +88,7 @@ export const USER_ROUTES = {
 
 export const JOB_ROUTES = {
   JOB: `${SERVICES.JOB_SERVICE}/jobs`,
+  JOB_FOR_ADMIN: `${SERVICES.JOB_SERVICE}/jobs/admin`,
   JOB_LIST_BRIEF: `${SERVICES.JOB_SERVICE}/jobs/brief`,
   POSTED_JOBS: `${SERVICES.JOB_SERVICE}/jobs/company`,
   FILTER_JOBS: `${SERVICES.JOB_SERVICE}/jobs/filter`,

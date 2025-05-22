@@ -9,7 +9,11 @@ import { IJobService } from "@core/interfaces/services/IJobService";
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
 import { IJobApplicationRepository } from "@core/interfaces/repository/IJobApplicationRepository";
 import { IJob, IJobApplication } from "@shared/types/job.types";
-import { IJobResponse, ServerJobData } from "@core/types/job.types";
+import {
+  IJobResponse,
+  JobFilterParams,
+  ServerJobData,
+} from "@core/types/job.types";
 
 class JobService implements IJobService {
   private jobRepository: IJobRepository;
@@ -85,12 +89,14 @@ class JobService implements IJobService {
       }
 
       console.log("@@ testOptions: ", testOptions);
-      console.log("@@ testOptions['Machine Task']: ", testOptions["Machine Task"]);
-      
+      console.log(
+        "@@ testOptions['Machine Task']: ",
+        testOptions["Machine Task"]
+      );
 
       if (testOptions["Machine Task"]) {
         console.log("123");
-        
+
         const interviewServerResponse = await createMachineTask(
           job.id,
           companyId
@@ -102,20 +108,38 @@ class JobService implements IJobService {
     }
 
     console.log(4);
-    
 
     return job;
   }
 
-  async updateJob(id: string, data: Partial<ServerJobData>): Promise<Partial<IJob>> {
+  async updateJob(
+    id: string,
+    data: Partial<ServerJobData>
+  ): Promise<Partial<IJob>> {
     //@ts-ignore
     const updatedJob = await this.jobRepository.update(id, data);
     return updatedJob;
   }
 
-  async getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }> {
-    const skip = (page - 1) * pageSize;
-    return await this.jobRepository.getAllJobsForAdmin(skip, pageSize, search);
+  async getAllJobsForAdmin(
+    params: JobFilterParams
+  ): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }> {
+    const skip = (params.page - 1) * params.pageSize;
+    let a = await this.jobRepository.getAllJobsForAdmin({
+      //@ts-ignore
+      skip,
+      take: params.pageSize,
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      status: params.status,
+      department: params.department,
+    });
+    console.log("@@ a :", a);
+
+    return a;
   }
 
   async getAllJobs(jobSeekerId: string): Promise<Omit<IJob, "applications">[]> {

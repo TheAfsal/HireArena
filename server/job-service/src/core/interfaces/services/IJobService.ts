@@ -1,6 +1,6 @@
 import { IJob } from "@shared/types/job.types";
 import * as grpc from "@grpc/grpc-js";
-import { ServerJobData } from "@core/types/job.types";
+import { JobFilterParams, ServerJobData } from "@core/types/job.types";
 export interface IJobService {
   createJob(data: any, userId: string): Promise<any>;
 
@@ -16,11 +16,8 @@ export interface IJobService {
 
   applyForJob(jobId: string, jobSeekerId: string): Promise<any>;
 
-  // getFilteredJobs(filters: any, jobSeekerId: string): Promise<any[]>;
-
   getCompanyJobs(companyId: string): Promise<any[]>;
 
-  // fetchFilteredJobs(filters: any): Promise<any[]>;
   fetchFilteredJobs(filters: any): Promise<{
     jobs: Omit<IJob, "applications">[];
     total: number;
@@ -34,7 +31,7 @@ export interface IJobService {
   ): void;
 
   fetchJobDetails (ids: string[], callback: grpc.sendUnaryData< any >): void
-  getAllJobsForAdmin(page: number, pageSize: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
+  getAllJobsForAdmin(params: JobFilterParams): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }>
 
   updateJob(id: string, data: Partial<ServerJobData>): Promise<Partial<IJob>>
 }

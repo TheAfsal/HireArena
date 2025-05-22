@@ -1,4 +1,4 @@
-import { IJobCreateInput, IJobResponse, JobFilters } from "@core/types/job.types";
+import { IJobCreateInput, IJobResponse, JobFilterParams, JobFilters } from "@core/types/job.types";
 import { IJob } from "@shared/types/job.types";
 
 export interface IJobRepository {
@@ -40,7 +40,7 @@ export interface IJobRepository {
       page: number;
       pageSize: number;
     }>
-  getAllJobsForAdmin(skip: number, take: number, search: string): Promise<{ jobs: Omit<IJob, "applications">[], total: number }>
+  getAllJobsForAdmin(params: JobFilterParams): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }>
   update(id: string, data: Partial<IJob & {
     employmentTypes?: { type: string }[];
     categories?: { id: string }[];

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DataTable } from "./compnonets/data-table";
-import { fetchAllJobs } from "@/app/api/job";
+import { useEffect, useState, useCallback } from "react";
+import { DataTable } from "./components/data-table";
+import { fetchAllJobsForAdmin } from "@/app/api/job";
 
 interface Job {
   id: string;
@@ -10,6 +10,16 @@ interface Job {
   jobDescription: string;
   status: string;
   updatedAt: string;
+  location?: string;
+  department?: string;
+}
+
+interface FilterParams {
+  searchTerm: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  department?: string;
 }
 
 const columns = [
@@ -25,14 +35,20 @@ export default function JobsPage() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<FilterParams>({ searchTerm: "" });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getJobs = async () => {
       setIsLoading(true);
       try {
-        const response = await fetchAllJobs(page, pageSize, searchTerm);
+        const response = await fetchAllJobsForAdmin({
+          page,
+          pageSize,
+          sortBy: "updatedAt",
+          sortOrder: "desc",
+          ...filters,
+        });
         setJobs(response.jobs);
         setTotal(response.total);
       } catch (err) {
@@ -43,9 +59,9 @@ export default function JobsPage() {
     };
 
     getJobs();
-  }, [page, pageSize, searchTerm]);
+  }, [page, pageSize, filters]);
 
-  const handleBlockUnblock = (jobId: string) => {
+  const handleBlockUnblock = useCallback((jobId: string) => {
     setJobs((prevJobs) =>
       prevJobs.map((job) =>
         job.id === jobId
@@ -53,16 +69,29 @@ export default function JobsPage() {
           : job
       )
     );
-  };
+  }, []);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-  };
+  }, []);
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setPage(1); // Reset to first page on search
-  };
+  const handleFilterChange = useCallback((newFilters: Partial<FilterParams>) => {
+    setFilters((prev) => {
+      const updatedFilters = { ...prev, ...newFilters };
+      // Only update if filters have changed to avoid infinite loop
+      if (
+        prev.searchTerm === updatedFilters.searchTerm &&
+        prev.startDate === updatedFilters.startDate &&
+        prev.endDate === updatedFilters.endDate &&
+        prev.status === updatedFilters.status &&
+        prev.department === updatedFilters.department
+      ) {
+        return prev;
+      }
+      return updatedFilters;
+    });
+    setPage(1);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -76,7 +105,7 @@ export default function JobsPage() {
         pageSize={pageSize}
         total={total}
         onPageChange={handlePageChange}
-        onSearch={handleSearch}
+        onFilterChange={handleFilterChange}
         isLoading={isLoading}
       />
     </div>

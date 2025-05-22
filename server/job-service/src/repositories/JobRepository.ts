@@ -1,5 +1,5 @@
 import { IJobRepository } from "@core/interfaces/repository/IJobRepository";
-import { IJobCreateInput, IJobResponse, JobFilters } from "@core/types/job.types";
+import { IJobCreateInput, IJobResponse, JobFilterParams, JobFilters } from "@core/types/job.types";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { IJob } from "@shared/types/job.types";
 
@@ -62,37 +62,61 @@ class JobRepository implements IJobRepository {
     });
   }
 
-  async getAllJobsForAdmin(
-    skip: number,
-    take: number,
-    search: string
-  ): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }> {
-    const where = search
-      ? {
-          OR: [
-            { jobTitle: { contains: search, mode: "insensitive" } },
-            { jobDescription: { contains: search, mode: "insensitive" } },
-          ],
-        }
-      : {};
+  async getAllJobsForAdmin({
+    //@ts-ignore
+    skip,
+    //@ts-ignore
+    take,
+    search,
+    sortBy = "updatedAt",
+    sortOrder = "desc",
+    startDate,
+    endDate,
+    status,
+    department,
+  }: JobFilterParams): Promise<{ jobs: Omit<IJob, "applications">[]; total: number }> {
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { jobTitle: { contains: search, mode: "insensitive" } },
+        { jobDescription: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (department) {
+      where.department = department;
+    }
+
+    if (startDate || endDate) {
+      where.updatedAt = {};
+      if (startDate) {
+        where.updatedAt.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.updatedAt.lte = new Date(endDate);
+      }
+    }
 
     const [jobs, total] = await Promise.all([
       this.prisma.job.findMany({
         skip,
         take,
-        //@ts-ignore
         where,
+        orderBy: sortBy ? { [sortBy]: sortOrder } : { updatedAt: "desc" },
         include: {
           employmentTypes: true,
           categories: true,
           requiredSkills: true,
         },
       }),
-      //@ts-ignore
       this.prisma.job.count({ where }),
     ]);
 
-    //@ts-ignore
     return { jobs, total };
   }
 

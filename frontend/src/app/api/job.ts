@@ -49,6 +49,55 @@ export async function fetchAllJobs(
   }
 }
 
+export async function fetchAllJobsForAdmin({
+  page = 1,
+  pageSize = 10,
+  searchTerm = "",
+  sortBy = "updatedAt",
+  sortOrder = "desc",
+  startDate,
+  endDate,
+  status,
+  department,
+}: {
+  page?: number;
+  pageSize?: number;
+  searchTerm?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  department?: string;
+}): Promise<any> {
+  try {
+    const response = await axiosInstance.get(JOB_ROUTES.JOB_FOR_ADMIN, {
+      params: {
+        page,
+        pageSize,
+        search: searchTerm,
+        sortBy,
+        sortOrder,
+        startDate,
+        endDate,
+        status,
+        department,
+      },
+    });
+    return {
+      jobs: response.data.jobs,
+      total: response.data.total,
+    };
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response ? error.response.data.error : "Something went wrong"
+      );
+    }
+    throw new Error("Unknown error occurred");
+  }
+}
+
 export async function fetchJobDetails(id: string): Promise<any> {
   try {
     const response = await axiosInstance.get(`${JOB_ROUTES.JOB}/${id}`);
