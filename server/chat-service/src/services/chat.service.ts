@@ -9,21 +9,36 @@ import { inject, injectable } from "inversify";
 @injectable()
 export class ChatService implements IChatService {
   constructor(
-    @inject(TYPES.ConversationRepository) private conversationRepo: IConversationRepository,
+    @inject(TYPES.ConversationRepository)
+    private conversationRepo: IConversationRepository,
     @inject(TYPES.MessageRepository) private messageRepo: IMessageRepository,
-    @inject(TYPES.UserConversationsRepository) private userConversationsRepo: IUserConversationsRepository
+    @inject(TYPES.UserConversationsRepository)
+    private userConversationsRepo: IUserConversationsRepository
   ) {}
 
-  async startConversation(participants: string[], jobId: string ,companyName: string, logo: string) {
+  async startConversation(
+    participants: string[],
+    jobId: string,
+    companyName: string,
+    logo: string
+  ) {
     if (participants.length < 2) {
       throw new Error("At least two participants are required");
     }
 
-    const conversation = await this.conversationRepo.createConversation(participants, jobId, companyName, logo);
+    const conversation = await this.conversationRepo.createConversation(
+      participants,
+      jobId,
+      companyName,
+      logo
+    );
 
     await Promise.all(
       participants.map((userId) =>
-        this.userConversationsRepo.upsertUserConversation(userId, conversation.id)
+        this.userConversationsRepo.upsertUserConversation(
+          userId,
+          conversation.id
+        )
       )
     );
 
@@ -48,7 +63,8 @@ export class ChatService implements IChatService {
   }
 
   async getUserConversations(userId: string): Promise<IConversation[]> {
-    const userConversations = await this.userConversationsRepo.getUserConversations(userId);
+    const userConversations =
+      await this.userConversationsRepo.getUserConversations(userId);
     if (!userConversations || !userConversations.conversationIds.length) {
       return [];
     }
@@ -59,9 +75,22 @@ export class ChatService implements IChatService {
       )
     );
 
-    return conversations.filter(
-      (conv): conv is IConversation => conv !== null
-    );
+    return conversations.filter((conv): conv is IConversation => conv !== null);
   }
 
+  async markMessagesRead(
+    conversationId: string,
+    userId: string
+  ): Promise<IMessage[]> {
+    const messages = await this.messageRepo.getMessagesByConversationId(
+      conversationId
+    );
+    const unreadMessages = messages.filter(
+      (msg) => msg.receiverId === userId && msg.status !== "read"
+    );
+    for (const message of unreadMessages) {
+      await this.messageRepo.updateMessageStatus(message.id, "read");
+    }
+    return unreadMessages;
+  }
 }

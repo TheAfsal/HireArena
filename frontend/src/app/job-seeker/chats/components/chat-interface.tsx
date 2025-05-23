@@ -13,20 +13,24 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { formatTime } from "@/lib/utils";
-import { Message, User } from "../page";
+import { Message, User } from "./chat";
 
 interface ChatInterfaceProps {
-  userId:string
+  myId: string;
   user: User;
   messages: Message[];
   onSendMessage: (content: string) => void;
+  onTyping: () => void;
+  typingUsers: { [key: string]: boolean };
 }
 
 export function ChatInterface({
-  userId,
+  myId,
   user,
   messages,
   onSendMessage,
+  onTyping,
+  typingUsers,
 }: ChatInterfaceProps) {
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -45,6 +49,11 @@ export function ChatInterface({
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    onTyping();
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -52,19 +61,15 @@ export function ChatInterface({
   const renderMessageStatus = (status: string) => {
     switch (status) {
       case "sent":
-        return <Check className="h-3 w-3 text-text-content" />;
+        return <Check className="h-3 w-3 text-gray-500" />;
       case "delivered":
-        return <CheckCheck className="h-3 w-3 text-text-content" />;
+        return <CheckCheck className="h-3 w-3 text-gray-500" />;
       case "read":
         return <CheckCheck className="h-3 w-3 text-primary" />;
       default:
         return null;
     }
   };
-
-  // console.log("user : ->" , user);
-  // console.log("user : ->" , userId);
-    
 
   return (
     <div className="flex flex-col h-full">
@@ -73,13 +78,13 @@ export function ChatInterface({
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <Avatar className="h-10 w-10 mr-3">
-          <AvatarImage src={user.logo} alt={user.companyName} />
+          <AvatarImage src={user.image} alt={user.name} />
           <AvatarFallback>
-            {user.companyName.substring(0, 2).toUpperCase()}
+            {user.name.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h2 className="font-medium text-text-header">{user.companyName}</h2>
+          <h2 className="font-medium text-text-header">{user.name}</h2>
           <p className="text-xs text-text-content">{user.status}</p>
         </div>
         <div className="flex space-x-2">
@@ -92,7 +97,7 @@ export function ChatInterface({
       <ScrollArea className="flex-1 p-4 bg-background">
         <div className="space-y-4">
           {messages.map((message) => {
-            const isCurrentUser = message.senderId === userId; 
+            const isCurrentUser = message.senderId === myId;
             return (
               <div
                 key={message.id}
@@ -114,16 +119,17 @@ export function ChatInterface({
                     }`}
                   >
                     <span>{formatTime(message.timestamp)}</span>
-                    {isCurrentUser && (
-                      <span className="ml-1">
-                        {renderMessageStatus(message.status)}
-                      </span>
-                    )}
+                    <span className="ml-1">{renderMessageStatus(message.status)}</span>
                   </div>
                 </div>
               </div>
             );
           })}
+          {Object.keys(typingUsers).length > 0 && (
+            <div className="text-sm text-gray-500 italic">
+              {user.name} is typing...
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
@@ -133,7 +139,7 @@ export function ChatInterface({
           <Input
             placeholder="Type a message"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyPress}
             className="bg-muted"
           />

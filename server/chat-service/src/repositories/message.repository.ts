@@ -10,14 +10,17 @@ export class MessageRepository
   constructor() {
     super(Message);
   }
-
+  
   async saveMessage(message: IMessage): Promise<IMessage> {
-    return await this.create(message);
+    const newMessage = new Message(message);
+    return await newMessage.save();
   }
 
-  async getMessagesByConversationId(
-    conversationId: string
-  ): Promise<IMessage[]> {
+  async getMessagesByConversationId(conversationId: string): Promise<IMessage[]> {
     return await Message.find({ conversationId }).sort({ timestamp: 1 }).exec();
+  }
+
+  async updateMessageStatus(messageId: string, status: "sent" | "delivered" | "read"): Promise<void> {
+    await Message.updateOne({ id: messageId }, { $set: { status } });
   }
 }

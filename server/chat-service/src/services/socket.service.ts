@@ -6,7 +6,6 @@ import { IMessageDTO } from "@core/types/chat.types";
 import { getCompanyIdByUserId } from "@config/grpc.client";
 import jwt from "jsonwebtoken";
 
-
 const rooms = new Map();
 
 @injectable()
@@ -58,13 +57,19 @@ export class SocketManager {
     this.io.on("connection", (socket: Socket) => {
       console.log(`User ${socket.userId} connected`);
 
-      console.log("@@@@@@@@\n\n\n\n\n\n\n\n\n\n\n\n");
-
       socket.join(`user:${socket.userId}`);
 
       socket.on("joinRoom", (roomId: string) => {
         console.log(`${socket.userId} joined room ${roomId}`);
         socket.join(roomId);
+      });
+
+      socket.on("typing", ({ conversationId, userId }: { conversationId: string; userId: string }) => {
+        socket.to(conversationId).emit("typing", { conversationId, userId });
+      });
+
+      socket.on("stopTyping", ({ conversationId, userId }: { conversationId: string; userId: string }) => {
+        socket.to(conversationId).emit("stopTyping", { conversationId, userId });
       });
 
       socket.on(
@@ -88,17 +93,14 @@ export class SocketManager {
               conversationId: roomId,
               senderId: socket.userId,
               receiverId:
-                conversation.participants.find((m) => m !== socket.userId) ??
-                "",
+                conversation.participants.find((m) => m !== socket.userId) ?? "",
               content,
             };
 
             const savedMessage = await this.chatService.sendMessage(message);
 
-            // Emit to the conversation room (for users who have joined the room)
             this.io.to(roomId).emit("newMessage", savedMessage);
 
-            // Send notifications to both participants
             const participants = conversation.participants;
             participants.forEach((participantId) => {
               if (participantId !== socket.userId) {
@@ -139,17 +141,14 @@ export class SocketManager {
               conversationId: roomId,
               senderId: companyId,
               receiverId:
-                conversation.participants.find((m) => m !== socket.userId) ??
-                "",
+                conversation.participants.find((m) => m !== socket.userId) ?? "",
               content,
             };
 
             const savedMessage = await this.chatService.sendMessage(message);
 
-            // Emit to the conversation room
             this.io.to(roomId).emit("newMessage", savedMessage);
 
-            // Send notifications to participants
             const participants = conversation.participants;
             participants.forEach((participantId) => {
               if (participantId !== socket.userId) {
@@ -166,6 +165,17 @@ export class SocketManager {
           }
         }
       );
+
+      socket.on("markMessagesRead", async ({ conversationId, userId }: { conversationId: string; userId: string }) => {
+        try {
+          const messages = await this.chatService.markMessagesRead(conversationId, userId);
+          const messageIds = messages.map((msg) => msg.id);
+          this.io.to(conversationId).emit("messageRead", { conversationId, messageIds });
+        } catch (error) {
+          console.error(error);
+          socket.emit("error", "Failed to mark messages as read");
+        }
+      });
 
       socket.on("chatHistory", async (roomId: string) => {
         try {
