@@ -76,6 +76,7 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
 
     const fetchUsers = async () => {
       try {
+        //@ts-ignore
         let response;
         if (userType === "job-seeker") {
           response = await fetchMyChats();
@@ -94,6 +95,7 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
           const conversations = await Promise.all(
             response.conversations.map(async (conv: any) => {
               for (const userId of conv.participants) {
+                //@ts-ignore
                 if (userId !== response.companyId) {
                   const profile = await fetchCandidateProfile(userId);
                   return {
