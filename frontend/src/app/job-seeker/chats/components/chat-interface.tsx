@@ -119,7 +119,9 @@ export function ChatInterface({
                     }`}
                   >
                     <span>{formatTime(message.timestamp)}</span>
-                    <span className="ml-1">{renderMessageStatus(message.status)}</span>
+                    {isCurrentUser && (
+                      <span className="ml-1">{renderMessageStatus(message.status)}</span>
+                    )}
                   </div>
                 </div>
               </div>

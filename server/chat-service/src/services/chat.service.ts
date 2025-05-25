@@ -51,7 +51,8 @@ export class ChatService implements IChatService {
       id: new Date().toISOString(),
       status: "sent",
     } as IMessage;
-    return await this.messageRepo.saveMessage(newMessage);
+    const savedMessage = await this.messageRepo.saveMessage(newMessage);
+    return savedMessage;
   }
 
   async getChatHistory(conversationId: string) {
@@ -82,15 +83,17 @@ export class ChatService implements IChatService {
     conversationId: string,
     userId: string
   ): Promise<IMessage[]> {
-    const messages = await this.messageRepo.getMessagesByConversationId(
-      conversationId
-    );
-    const unreadMessages = messages.filter(
-      (msg) => msg.receiverId === userId && msg.status !== "read"
-    );
-    for (const message of unreadMessages) {
-      await this.messageRepo.updateMessageStatus(message.id, "read");
-    }
-    return unreadMessages;
+    return await this.messageRepo.markMessagesAsRead(conversationId, userId);
+  }
+
+  async markMessagesDelivered(
+    conversationId: string,
+    userId: string
+  ): Promise<IMessage[]> {
+    return await this.messageRepo.markMessagesAsDelivered(conversationId, userId);
+  }
+
+  async getMessageStatuses(conversationId: string, userId: string): Promise<IMessage[]> {
+    return await this.messageRepo.getMessageStatuses(conversationId, userId);
   }
 }

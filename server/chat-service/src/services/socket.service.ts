@@ -59,9 +59,45 @@ export class SocketManager {
 
       socket.join(`user:${socket.userId}`);
 
-      socket.on("joinRoom", (roomId: string) => {
+      socket.on("joinRoom", async (roomId: string) => {
         console.log(`${socket.userId} joined room ${roomId}`);
         socket.join(roomId);
+
+        // Mark messages as read when the user joins the room
+        try {
+          //@ts-ignore
+          const messages = await this.chatService.markMessagesRead(roomId, socket.userId);
+          const messageIds = messages.map((msg) => msg.id);
+          if (messageIds.length > 0) {
+            this.io.to(roomId).emit("messageRead", { conversationId: roomId, messageIds });
+          }
+        } catch (error) {
+          console.error(error);
+          socket.emit("error", "Failed to mark messages as read");
+        }
+
+        // Mark messages as delivered for online users
+        try {
+          const conversation = await this.chatService.getConversation(roomId);
+          if (conversation) {
+            const participants = conversation.participants;
+            for (const participantId of participants) {
+              if (participantId !== socket.userId) {
+                const sockets = await this.io.in(`user:${participantId}`).fetchSockets();
+                if (sockets.length > 0) {
+                  const messages = await this.chatService.markMessagesDelivered(roomId, participantId);
+                  const messageIds = messages.map((msg) => msg.id);
+                  if (messageIds.length > 0) {
+                    this.io.to(roomId).emit("messageDelivered", { conversationId: roomId, messageIds });
+                  }
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.error(error);
+          socket.emit("error", "Failed to mark messages as delivered");
+        }
       });
 
       socket.on("typing", ({ conversationId, userId }: { conversationId: string; userId: string }) => {
@@ -98,19 +134,27 @@ export class SocketManager {
             };
 
             const savedMessage = await this.chatService.sendMessage(message);
-
             this.io.to(roomId).emit("newMessage", savedMessage);
 
+            // Notify participants and mark as delivered if online
             const participants = conversation.participants;
-            participants.forEach((participantId) => {
+            for (const participantId of participants) {
               if (participantId !== socket.userId) {
+                const sockets = await this.io.in(`user:${participantId}`).fetchSockets();
                 this.io.to(`user:${participantId}`).emit("notification", {
                   conversationId: roomId,
                   message: savedMessage,
                   senderId: socket.userId,
                 });
+                if (sockets.length > 0) {
+                  const messages = await this.chatService.markMessagesDelivered(roomId, participantId);
+                  const messageIds = messages.map((msg) => msg.id);
+                  if (messageIds.length > 0) {
+                    this.io.to(roomId).emit("messageDelivered", { conversationId: roomId, messageIds });
+                  }
+                }
               }
-            });
+            }
           } catch (error) {
             console.error(error);
             socket.emit("error", "Failed to send message");
@@ -146,19 +190,27 @@ export class SocketManager {
             };
 
             const savedMessage = await this.chatService.sendMessage(message);
-
             this.io.to(roomId).emit("newMessage", savedMessage);
 
+            // Notify participants and mark as delivered if online
             const participants = conversation.participants;
-            participants.forEach((participantId) => {
+            for (const participantId of participants) {
               if (participantId !== socket.userId) {
+                const sockets = await this.io.in(`user:${participantId}`).fetchSockets();
                 this.io.to(`user:${participantId}`).emit("notification", {
                   conversationId: roomId,
                   message: savedMessage,
                   senderId: companyId,
                 });
+                if (sockets.length > 0) {
+                  const messages = await this.chatService.markMessagesDelivered(roomId, participantId);
+                  const messageIds = messages.map((msg) => msg.id);
+                  if (messageIds.length > 0) {
+                    this.io.to(roomId).emit("messageDelivered", { conversationId: roomId, messageIds });
+                  }
+                }
               }
-            });
+            }
           } catch (error) {
             console.error(error);
             socket.emit("error", "Failed to send company message");
@@ -170,7 +222,9 @@ export class SocketManager {
         try {
           const messages = await this.chatService.markMessagesRead(conversationId, userId);
           const messageIds = messages.map((msg) => msg.id);
-          this.io.to(conversationId).emit("messageRead", { conversationId, messageIds });
+          if (messageIds.length > 0) {
+            this.io.to(conversationId).emit("messageRead", { conversationId, messageIds });
+          }
         } catch (error) {
           console.error(error);
           socket.emit("error", "Failed to mark messages as read");

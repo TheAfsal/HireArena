@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: job-service
-          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/job-service
+          image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/job-service:v1.0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 5002

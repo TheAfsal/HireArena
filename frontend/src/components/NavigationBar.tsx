@@ -24,9 +24,9 @@ const NavigationBar = () => {
   }, [auth]);
 
   const handleLogout = () => {
-    setLoadingState(true)
+    setLoadingState(true);
     dispatch(logout());
-    router.push("/login")
+    router.push("/login");
   };
 
   return (
@@ -38,15 +38,20 @@ const NavigationBar = () => {
               HireArena
             </Link>
             <div className="hidden md:flex gap-6">
-              <Link href="/jobs" className="text-gray-600 hover:text-gray-900">
-                Find Jobs
-              </Link>
-              <a
+              {auth.token && (
+                <Link
+                  href="/jobs"
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  Find Jobs
+                </Link>
+              )}
+              {/* <a
                 href="/companies"
                 className="text-gray-600 hover:text-gray-900"
               >
                 Browse Companies
-              </a>
+              </a> */}
             </div>
           </div>
           <div className="flex gap-3">

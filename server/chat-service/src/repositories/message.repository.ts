@@ -10,7 +10,7 @@ export class MessageRepository
   constructor() {
     super(Message);
   }
-  
+
   async saveMessage(message: IMessage): Promise<IMessage> {
     const newMessage = new Message(message);
     return await newMessage.save();
@@ -20,7 +20,45 @@ export class MessageRepository
     return await Message.find({ conversationId }).sort({ timestamp: 1 }).exec();
   }
 
-  async updateMessageStatus(messageId: string, status: "sent" | "delivered" | "read"): Promise<void> {
-    await Message.updateOne({ id: messageId }, { $set: { status } });
+  async updateMessageStatus(messageIds: string[], status: "sent" | "delivered" | "read"): Promise<void> {
+    await Message.updateMany(
+      { _id: { $in: messageIds } },
+      { $set: { status } }
+    ).exec();
+  }
+
+  async markMessagesAsDelivered(conversationId: string, receiverId: string): Promise<IMessage[]> {
+    const messages = await Message.find({
+      conversationId,
+      receiverId,
+      status: "sent",
+    }).exec();
+    const messageIds = messages.map((msg) => msg._id);
+    if (messageIds.length > 0) {
+      //@ts-ignore
+      await this.updateMessageStatus(messageIds, "delivered");
+    }
+    return messages;
+  }
+
+  async markMessagesAsRead(conversationId: string, receiverId: string): Promise<IMessage[]> {
+    const messages = await Message.find({
+      conversationId,
+      receiverId,
+      status: { $in: ["sent", "delivered"] },
+    }).exec();
+    const messageIds = messages.map((msg) => msg._id);
+    if (messageIds.length > 0) {
+      //@ts-ignore
+      await this.updateMessageStatus(messageIds, "read");
+    }
+    return messages;
+  }
+
+  async getMessageStatuses(conversationId: string, userId: string): Promise<IMessage[]> {
+    return await Message.find({
+      conversationId,
+      $or: [{ senderId: userId }, { receiverId: userId }],
+    }).select("id status").exec();
   }
 }

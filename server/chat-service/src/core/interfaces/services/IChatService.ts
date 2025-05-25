@@ -6,6 +6,14 @@ export interface IChatService {
   getChatHistory(conversationId: string): Promise<IMessage[]>;
   getConversation(conversationId: string): Promise<IConversation | null>;
   getUserConversations(userId: string): Promise<IConversation[]>
-  markMessagesRead(conversationId: string, userId: string): Promise<IMessage[]>
+  markMessagesRead(
+    conversationId: string,
+    userId: string
+  ): Promise<IMessage[]>
+  markMessagesDelivered(
+    conversationId: string,
+    userId: string
+  ): Promise<IMessage[]> 
+  getMessageStatuses(conversationId: string, userId: string): Promise<IMessage[]>
 }
 

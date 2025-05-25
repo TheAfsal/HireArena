@@ -86,7 +86,9 @@ export function UserList({
                         <span className="text-xs text-text-content flex items-center">
                           {formatDistanceToNow(lastMessage.timestamp)}
                           {lastMessage.senderId === myId && (
-                            <span className="ml-1">{renderMessageStatus(lastMessage.status)}</span>
+                            <span className="ml-1">
+                              {renderMessageStatus(lastMessage.status)}
+                            </span>
                           )}
                         </span>
                       )}
@@ -94,6 +96,7 @@ export function UserList({
                     {lastMessage && (
                       <div className="flex justify-between items-center">
                         <p className="text-sm text-text-content truncate">
+                          {lastMessage.senderId === myId ? "You: " : ""}
                           {lastMessage.content}
                         </p>
                         {unreadCount > 0 && (

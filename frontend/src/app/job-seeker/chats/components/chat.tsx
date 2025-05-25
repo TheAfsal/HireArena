@@ -60,6 +60,10 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
 
     newSocket.on("connect", () => {
       console.log("Connected to chat server");
+      // Fetch statuses for all conversations on connect
+      if (selectedConversationId) {
+        newSocket.emit("getMessageStatuses", selectedConversationId);
+      }
     });
 
     newSocket.on("connect_error", (error) => {
@@ -113,13 +117,14 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
     fetchUsers();
 
     newSocket.on("newMessage", (message: Message) => {
-      setMessages((prev) => ({
-        ...prev,
-        [message.conversationId]: [
-          ...(prev[message.conversationId] || []),
+      setMessages((prev) => {
+        const updated = { ...prev };
+        updated[message.conversationId] = [
+          ...(updated[message.conversationId] || []),
           message,
-        ],
-      }));
+        ];
+        return updated;
+      });
       if (message.conversationId === selectedConversationId) {
         setNotifications((prev) => {
           const updated = { ...prev };
@@ -132,13 +137,14 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
     newSocket.on("notification", (notification: Notification) => {
       if (notification.conversationId === selectedConversationId) return;
 
-      setMessages((prev) => ({
-        ...prev,
-        [notification.conversationId]: [
-          ...(prev[notification.conversationId] || []),
+      setMessages((prev) => {
+        const updated = { ...prev };
+        updated[notification.conversationId] = [
+          ...(updated[notification.conversationId] || []),
           notification.message,
-        ],
-      }));
+        ];
+        return updated;
+      });
 
       setNotifications((prev) => ({
         ...prev,
@@ -163,6 +169,19 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
       }
     });
 
+    newSocket.on("messageStatuses", ({ conversationId, messages }: { conversationId: string; messages: Message[] }) => {
+      setMessages((prev) => {
+        const updated = { ...prev };
+        if (updated[conversationId]) {
+          updated[conversationId] = updated[conversationId].map((msg) => {
+            const updatedMsg = messages.find((m) => m.id === msg.id);
+            return updatedMsg ? { ...msg, status: updatedMsg.status } : msg;
+          });
+        }
+        return updated;
+      });
+    });
+
     newSocket.on("typing", ({ conversationId, userId }: { conversationId: string; userId: string }) => {
       if (conversationId === selectedConversationId) {
         setTypingUsers((prev) => ({ ...prev, [userId]: true }));
@@ -181,25 +200,25 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
 
     newSocket.on("messageDelivered", ({ conversationId, messageIds }: { conversationId: string; messageIds: string[] }) => {
       setMessages((prev) => {
-        const updatedMessages = { ...prev };
-        if (updatedMessages[conversationId]) {
-          updatedMessages[conversationId] = updatedMessages[conversationId].map((msg) =>
+        const updated = { ...prev };
+        if (updated[conversationId]) {
+          updated[conversationId] = updated[conversationId].map((msg) =>
             messageIds.includes(msg.id) ? { ...msg, status: "delivered" } : msg
           );
         }
-        return updatedMessages;
+        return updated;
       });
     });
 
     newSocket.on("messageRead", ({ conversationId, messageIds }: { conversationId: string; messageIds: string[] }) => {
       setMessages((prev) => {
-        const updatedMessages = { ...prev };
-        if (updatedMessages[conversationId]) {
-          updatedMessages[conversationId] = updatedMessages[conversationId].map((msg) =>
+        const updated = { ...prev };
+        if (updated[conversationId]) {
+          updated[conversationId] = updated[conversationId].map((msg) =>
             messageIds.includes(msg.id) ? { ...msg, status: "read" } : msg
           );
         }
-        return updatedMessages;
+        return updated;
       });
     });
 
@@ -223,6 +242,7 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
       });
       socket.emit("joinRoom", conversationId);
       socket.emit("chatHistory", conversationId);
+      socket.emit("getMessageStatuses", conversationId);
       socket.emit("markMessagesRead", { conversationId, userId: myId });
     }
   }, [selectedUser, socket, myId]);
@@ -294,6 +314,7 @@ export default function ChatApp({ userType }: { userType: "job-seeker" | "compan
     </div>
   );
 }
+
 
 export interface UserListProps {
   myId: string;

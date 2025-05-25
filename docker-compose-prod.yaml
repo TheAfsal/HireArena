@@ -4,7 +4,7 @@ services:
     build:
       context: ./server/gateway-service
     container_name: gateway-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/gateway-service:v1.0.2
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/gateway-service:v1.0.3
     ports:
       - "4000:4000"
     volumes:
@@ -33,7 +33,7 @@ services:
 
   # User service
   user-service:
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.4
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.5
     build:
       context: ./server/user-service
     container_name: user-service
@@ -81,7 +81,7 @@ services:
     container_name: job-service
     build:
       context: ./server/job-service
-    image: job-service:latest
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/job-service:v1.0.1
     ports:
       - "5002:5002"
       - "5015:5015"
@@ -119,7 +119,7 @@ services:
     build:
       context: ./server/interview-mgmt-service
     container_name: interview-management-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.1
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.2
     ports:
       - "5006:5006"
       - "5007:5007"
@@ -148,7 +148,7 @@ services:
     build:
       context: ./server/file-service
     container_name: file-service
-    image: file-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/file-service:v1.0.1
     ports:
       - "5004:5004"
     volumes:
@@ -170,7 +170,7 @@ services:
     build:
       context: ./server/admin-service
     container_name: admin-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/admin-service:v1.0.0
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/admin-service:v1.0.1
     ports:
       - "5003:5003"
     volumes:
@@ -200,7 +200,7 @@ services:
     build:
       context: ./server/notification-service
     container_name: notification-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/notification-service:v1.0.0
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/notification-service:v1.0.1
     ports:
       - "5020:5020"
       - "5021:5021"
@@ -221,7 +221,7 @@ services:
     build:
       context: ./server/chat-service
     container_name: chat-service
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/chat-service:v1.0.0
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/chat-service:v1.0.1
     ports:
       - "5009:5009"
       - "5010:5010"
