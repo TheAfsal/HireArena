@@ -1,0 +1,177 @@
+services:
+  # Gateway service
+  gateway-service:
+    build:
+      context: ./server/gateway-service
+    container_name: gateway-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/gateway-service:v1.0.3
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/gateway-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/gateway-service/.env.production
+    networks:
+      - app-network
+    depends_on:
+      - user-service
+      - job-service
+
+  # User service
+  user-service:
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.5
+    build:
+      context: ./server/user-service
+    container_name: user-service
+    ports:
+      - "5000:5000"
+      - "5051:5051"
+    volumes:
+      - ./server/user-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/user-service/.env.production
+    networks:
+      - app-network
+
+  # Job service
+  job-service:
+    container_name: job-service
+    build:
+      context: ./server/job-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/job-service:v1.0.1
+    ports:
+      - "5002:5002"
+      - "5015:5015"
+    volumes:
+      - ./server/job-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/job-service/.env.production
+    networks:
+      - app-network
+
+  # Interview Management Service
+  interview-management-service:
+    build:
+      context: ./server/interview-mgmt-service
+    container_name: interview-management-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/interview-management-service:v1.0.2
+    ports:
+      - "5006:5006"
+      - "5007:5007"
+    volumes:
+      - ./server/interview-mgmt-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/interview-mgmt-service/.env.production
+    networks:
+      - app-network
+
+  # File service
+  file-service:
+    build:
+      context: ./server/file-service
+    container_name: file-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/file-service:v1.0.1
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./server/file-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/file-service/.env.production
+    networks:
+      - app-network
+
+  # Admin service
+  admin-service:
+    build:
+      context: ./server/admin-service
+    container_name: admin-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/admin-service:v1.0.1
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./server/admin-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/admin-service/.env.production
+    networks:
+      - app-network
+
+    # Notification service
+  notification-service:
+    build:
+      context: ./server/notification-service
+    container_name: notification-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/notification-service:v1.0.1
+    ports:
+      - "5020:5020"
+      - "5021:5021"
+    volumes:
+      - ./server/notification-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/notification-service/.env.production
+    networks:
+      - app-network
+
+  # Chat service
+  chat-service:
+    build:
+      context: ./server/chat-service
+    container_name: chat-service
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/chat-service:v1.0.1
+    ports:
+      - "5009:5009"
+      - "5010:5010"
+    volumes:
+      - ./server/chat-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    env_file:
+      - ./server/chat-service/.env.production
+    networks:
+      - app-network
+
+  # Video service
+  video-service:
+    image: video-service
+    build:
+      context: ./server/video-service
+    container_name: video-service
+    ports:
+      - "5013:5013"
+    volumes:
+      - ./server/video-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    env_file:
+      - ./server/video-service/.env.production
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  loki-data:

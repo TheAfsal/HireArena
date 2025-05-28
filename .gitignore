@@ -5,4 +5,5 @@ node_modules
 frontend/.vscode
 server/.vscode
 
-config
+config/configmap.yaml
+k8s/

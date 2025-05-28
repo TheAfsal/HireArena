@@ -1,0 +1,253 @@
+services:
+  # Gateway service
+  gateway-service:
+    build:
+      context: ./server/gateway-service
+    container_name: gateway-service
+    image: gateway-service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server/gateway-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/gateway-service/.env
+    networks:
+      - app-network
+    depends_on:
+      - user-service
+      - job-service
+
+  # User service
+  user-service:
+    image: user-service
+    build:
+      context: ./server/user-service
+    container_name: user-service
+    ports:
+      - "5000:5000"
+      - "5051:5051"
+    volumes:
+      - ./server/user-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/user-service/.env
+    networks:
+      - app-network
+
+  # Job service
+  job-service:
+    container_name: job-service
+    build:
+      context: ./server/job-service
+    image: job-service:latest
+    ports:
+      - "5002:5002"
+      - "5015:5015"
+    volumes:
+      - ./server/job-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/job-service/.env
+    networks:
+      - app-network
+
+  # Interview Management Service
+  interview-management-service:
+    build:
+      context: ./server/interview-mgmt-service
+    container_name: interview-management-service
+    image: interview-management-service
+    ports:
+      - "5006:5006"
+      - "5007:5007"
+    volumes:
+      - ./server/interview-mgmt-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/interview-mgmt-service/.env
+    networks:
+      - app-network
+
+  # File service
+  file-service:
+    build:
+      context: ./server/file-service
+    container_name: file-service
+    image: file-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./server/file-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/file-service/.env
+    networks:
+      - app-network
+
+  # Admin service
+  admin-service:
+    build:
+      context: ./server/admin-service
+    container_name: admin-service
+    image: admin-service
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./server/admin-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/admin-service/.env
+    networks:
+      - app-network
+
+  # Chat service
+  chat-service:
+    build:
+      context: ./server/chat-service
+    container_name: chat-service
+    image: chat-service
+    ports:
+      - "5009:5009"
+      - "5010:5010"
+    volumes:
+      - ./server/chat-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    env_file:
+      - ./server/chat-service/.env
+    networks:
+      - app-network
+
+    # Notification service
+  notification-service:
+    build:
+      context: ./server/notification-service
+    container_name: notification-service
+    image: notification-service
+    ports:
+      - "5020:5020"
+      - "5021:5021"
+    volumes:
+      - ./server/notification-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    command: npm run dev
+    env_file:
+      - ./server/notification-service/.env
+    networks:
+      - app-network
+
+  # Video service
+  video-service:
+    image: video-service
+    build:
+      context: ./server/video-service
+    container_name: video-service
+    ports:
+      - "5013:5013"
+    volumes:
+      - ./server/video-service:/app
+      - /app/node_modules
+      - ./shared:/shared
+    env_file:
+      - ./server/video-service/.env
+    networks:
+      - app-network
+
+  # Client-side (Frontend)
+  client:
+    build:
+      context: ./frontend
+    container_name: client
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+      - ./shared:/shared
+    networks:
+      - app-network
+
+  # Prometheus service
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+    depends_on:
+      - gateway-service
+      - user-service
+      - job-service
+      - interview-management-service
+      - file-service
+      - admin-service
+      - chat-service
+      - video-service
+      - client
+
+  # Grafana service
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
+
+  # Loki service
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  loki-data:
