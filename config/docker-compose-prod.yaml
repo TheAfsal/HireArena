@@ -22,7 +22,7 @@ services:
 
   # User service
   user-service:
-    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.5
+    image: 324037317995.dkr.ecr.us-east-1.amazonaws.com/user-service:v1.0.6
     build:
       context: ./server/user-service
     container_name: user-service

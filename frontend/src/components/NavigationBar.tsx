@@ -34,13 +34,13 @@ const NavigationBar = () => {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-semibold">
+            <Link href="/job-seeker" className="text-xl font-semibold">
               HireArena
             </Link>
             <div className="hidden md:flex gap-6">
               {auth.token && (
                 <Link
-                  href="/jobs"
+                  href="/job-seeker/jobs"
                   className="text-gray-600 hover:text-gray-900"
                 >
                   Find Jobs

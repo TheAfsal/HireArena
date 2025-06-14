@@ -40,11 +40,11 @@ class EmailService implements IEmailService {
 
       console.log(verificationUrl);
 
-      // await this.transporter.sendMail({
-      //   to: email,
-      //   subject: "Email Verification",
-      //   html: message,
-      // });
+      await this.transporter.sendMail({
+        to: email,
+        subject: "Email Verification",
+        html: message,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -81,11 +81,11 @@ class EmailService implements IEmailService {
 
       console.log(message.bgCyan);
 
-      // await this.transporter.sendMail({
-      //   to: email,
-      //   subject: `Invitation to Join ${companyName} as ${role}`,
-      //   html: message,
-      // });
+      await this.transporter.sendMail({
+        to: email,
+        subject: `Invitation to Join ${companyName} as ${role}`,
+        html: message,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -94,7 +94,7 @@ class EmailService implements IEmailService {
   async sendPasswordChangeEmail(email: string, token: string): Promise<void> {
     try {
       const passwordChangeUrl = `${process.env.FRONT_END_URL}/auth/forgot-password/${token}`;
-      
+
       const message = `<p>Dear User</p>
     
         <p>We received a request to reset the password for your <strong>HireArena</strong> account.</p>
@@ -114,19 +114,18 @@ class EmailService implements IEmailService {
     
         <p style="font-size: 12px; color: #888;">If you're having trouble clicking the button, use this link: <a href="${passwordChangeUrl}">${passwordChangeUrl}</a></p>
       `;
-  
+
       console.log(passwordChangeUrl);
-  
-      // await this.transporter.sendMail({
-      //   to: email,
-      //   subject: "Password Change Request",
-      //   html: message,
-      // });
+
+      await this.transporter.sendMail({
+        to: email,
+        subject: "Password Change Request",
+        html: message,
+      });
     } catch (error) {
       console.error("Error sending password change email:", error);
     }
   }
-  
 }
 
 export default EmailService;

@@ -13,7 +13,13 @@ export default function Page() {
 
   useEffect(() => {
     if (auth.token) {
+      console.log(auth.role);
       router.push("/");
+      // if(auth.role === "job-seeker"){
+      //   router.push("/dashboard");
+      // }else{
+      //   router.push("/panel");
+      // }
     }
   }, [auth]);
 
@@ -23,8 +29,8 @@ export default function Page() {
       <BackgroundPaths title="HireArena" />
       <div className="relative z-10 pt-16 pb-24">
         <main className="grid lg:grid-cols-2 mt-10 px-4 max-w-7xl mx-auto">
-          <div /> 
-          <AuthForm /> 
+          <div />
+          <AuthForm />
         </main>
       </div>
     </div>
